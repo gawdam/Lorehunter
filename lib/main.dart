@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     String response = await gemini(text);
     setState(() {
-      chatHistory += response;
+      chatHistory += "AI: $response\n";
     });
   }
 
