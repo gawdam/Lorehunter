@@ -8,9 +8,10 @@ final model = GenerativeModel(
   model: 'gemini-1.5-flash-latest',
   apiKey: apiKey,
 );
+ChatSession? chatBot;
 Future<String> gemini(String prompt) async {
-  final content = [Content.text(prompt)];
-  final response = await model.generateContent(content);
+  final content = Content.text(prompt);
+  final response = await chatBot!.sendMessage(content);
 
   return (response.text!);
 }
@@ -73,6 +74,16 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _textController = TextEditingController();
   String chatHistory = "";
 
+  Future<void> initAI() async {
+    _textController.clear();
+    chatBot = model.startChat();
+    final response =
+        await chatBot!.sendMessage(Content.text("""You are a pirate tour guide. 
+        I will type the location that I'm in and you will generate a walking tour of that location for me. 
+        Your response will always be markdown. Your reply should be no more than 200 words"""));
+    print(response.text);
+  }
+
   Future<void> sendMessage(String text) async {
     _textController.clear();
     setState(() {
@@ -80,8 +91,15 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     String response = await gemini(text);
     setState(() {
-      chatHistory += "AI: $response\n";
+      chatHistory += "AI: ${response.text}\n";
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initAI();
   }
 
   @override
