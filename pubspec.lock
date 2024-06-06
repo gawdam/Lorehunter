@@ -41,6 +41,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+  csc_picker:
+    dependency: "direct main"
+    description:
+      name: csc_picker
+      sha256: "7e5d6023a81f53b89a7fb0369953fd4dc676f7ea20e9a0c0707973a5f0aedf14"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.7"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -258,3 +266,4 @@ packages:
     version: "0.5.1"
 sdks:
   dart: ">=3.3.4 <4.0.0"
+  flutter: ">=1.17.0"
