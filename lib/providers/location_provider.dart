@@ -33,11 +33,15 @@ final cityListProvider = StateProvider<List<String>>((ref) {
           } else {
             final filteredLocations = locations
                 .where((location) => location.country == selectedCountry)
+                .toSet()
                 .toList();
-            return filteredLocations.map((location) => location.name).toList();
+            return filteredLocations
+                .map((location) => location.name)
+                .toSet()
+                .toList();
           }
         },
-        loading: () => [],
+        loading: () => ['none'],
         error: (error, stackTrace) =>
             throw Exception('Error loading locations: $error'),
       );
@@ -47,16 +51,16 @@ final cityListProvider = StateProvider<List<String>>((ref) {
 final countryListProvider = StateProvider<List<String>>((ref) {
   return ref.watch(locationFutureProvider).when(
         data: (locations) {
-          return locations.map((location) => location.country).toList();
+          return locations.map((location) => location.country).toSet().toList();
         },
-        loading: () => [],
+        loading: () => ['none'],
         error: (error, stackTrace) =>
             throw Exception('Error loading locations: $error'),
       );
 });
 
 // State provider for selected city
-final selectedCityProvider = StateProvider<String?>((ref) => null);
+final selectedCityProvider = StateProvider<String?>((ref) => "Chennai");
 
 // State provider for selected country
-final selectedCountryProvider = StateProvider<String?>((ref) => null);
+final selectedCountryProvider = StateProvider<String?>((ref) => "India");

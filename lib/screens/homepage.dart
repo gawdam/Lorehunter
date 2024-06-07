@@ -90,12 +90,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     // TODO: implement initState
     super.initState();
     initAI();
-    // cityValue = ref.watch(selectedCityProvider);
+    cityValue = ref.watch(selectedCityProvider);
   }
 
   @override
   Widget build(BuildContext context) {
-    // cityValue = ref.watch(selectedCityProvider);
+    cityValue = ref.watch(selectedCityProvider);
+    print("city: $cityValue");
+
     return ProviderScope(
       child: Scaffold(
         appBar: AppBar(
