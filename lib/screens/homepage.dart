@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,15 +59,15 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         I will type the location that I'm in and you will generate a walking tour of that location for me.
         All places must within a 5km radius. 
         The order of locations should be chained in such a way that the total distance is minimum.
-        Your response will always be markdown. Your reply should be no more than 200 words.
-        Your response should be of the following JSON format- 
-
+        Your response should be of the following format- 
+        Sample output:
         { 
-          'places': [<list of places>]
-          'distance': [<distance between places>]
-          'total_time' : <an estimate of total tour time in number of hours>
-          'best_experienced_at': <best @ time of day, choose between morning, afternoon and evening>
+          'places': list<str> [list of places]
+          'distance': list<str> [distance between places]
+          'total_time' : str [an estimate of total tour time in number of hours]
+          'best_experienced_at': str [best @ time of day, choose between morning, afternoon and evening]
         }
+        Do not write any additional details. Make sure the JSON is valid
         """));
     print(response.text);
 
@@ -83,6 +85,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     setState(() {
       chatHistory += "AI: ${response}\n";
     });
+    print(jsonDecode(response.substring(4)));
   }
 
   @override
@@ -90,7 +93,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     // TODO: implement initState
     super.initState();
     initAI();
-    cityValue = ref.watch(selectedCityProvider);
+    // cityValue = ref.watch(selectedCityProvider);
   }
 
   @override
