@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:csc_picker/csc_picker.dart';
 import 'package:lorehunter/providers/location_provider.dart';
+import 'package:lorehunter/routes/geocoding.dart';
+import 'package:lorehunter/routes/routes.dart';
 import 'package:lorehunter/widgets/location_picker.dart';
 
 ChatSession? chatBot;
@@ -39,6 +41,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   String chatHistory = "";
   String apiKey = '';
   late GenerativeModel model;
+  List<String>? places;
 
   String? cityValue = "";
 
@@ -59,13 +62,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         I will type the location that I'm in and you will generate a walking tour of that location for me.
         All places must within a 5km radius. 
         The order of locations should be chained in such a way that the total distance is minimum.
+        All your responses should be in plain text, no markdowns, no formatting.
         Your response should be of the following format- 
         Sample output:
         { 
-          'places': list<str> [list of places]
-          'distance': list<str> [distance between places]
-          'total_time' : str [an estimate of total tour time in number of hours]
-          'best_experienced_at': str [best @ time of day, choose between morning, afternoon and evening]
+          "places": list<str> [list of places]
+          "distance": list<str> [distance between places]
+          "total_time" : str [an estimate of total tour time in number of hours]
+          "best_experienced_at": str [best @ time of day, choose between morning, afternoon and evening]
         }
         Do not write any additional details. Make sure the JSON is valid
         """));
@@ -81,11 +85,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     setState(() {
       chatHistory += "User: $text\n";
     });
-    String response = await gemini(text);
+    final response = jsonDecode(await gemini(text));
     setState(() {
-      chatHistory += "AI: ${response}\n";
+      chatHistory = "${response['places']}\n";
+      places = List<String>.from(response['places'] as List);
     });
-    print(jsonDecode(response.substring(4)));
   }
 
   @override
@@ -109,6 +113,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         body: Column(
           children: [
             LocationPicker(),
+            places == null
+                ? Container()
+                : Container(
+                    width: 400, height: 400, child: Routes(places: places!)),
             Expanded(
               child: Container(
                 padding: EdgeInsets.all(16),

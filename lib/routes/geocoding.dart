@@ -4,7 +4,7 @@ import 'dart:convert' as convert;
 
 // Assuming you have a function to get the user-entered place name
 
-Future<Map<String, double>> getCoordinates(String placeName) async {
+Future<Map<String, dynamic>> getCoordinates(String placeName) async {
   await dotenv.load(fileName: ".env");
 
   final apiKey =
@@ -21,7 +21,7 @@ Future<Map<String, double>> getCoordinates(String placeName) async {
     if (status == 'OK') {
       final results = data['results'] as List;
       final geometry = results[0]['geometry'] as Map<String, dynamic>;
-      final location = geometry['location'] as Map<String, double>;
+      final location = geometry['location'] as Map<String, dynamic>;
       print(location['lat']);
       return location;
     } else {
