@@ -58,9 +58,30 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   Future<void> initSession() async {
     chatBot = model.startChat();
     final response =
-        await chatBot!.sendMessage(Content.text("""You are a pirate tour guide. 
+        await chatBot!.sendMessage(Content.text("""You are a tour guide. 
         I will type the location that I'm in and you will generate a walking tour of that location for me.
         All places must within a 5km radius. 
+        These are the kind of places I want you to suggest 
+        Beaches
+Peaks / Mountains
+Museums
+Malls
+Historical Sites (Forts, Palaces, Monuments)
+Religious Sites (Temples, Churches, Mosques)
+National Parks / Nature Reserves
+Theme Parks / Amusement Parks
+Art Galleries / Studios
+Gardens / Botanical Gardens
+Zoos / Aquariums
+Theaters / Concert Halls
+Sporting Venues / Stadiums
+Architectural Landmarks (Bridges, Skyscrapers)
+Culinary Experiences (Restaurants, Street Food Markets)
+Wineries / Breweries / Distilleries
+Festivals / Events
+Unique Cultural Experiences (Performances, Shows)
+Shopping Districts / Markets (Souvenirs, Antiques)
+Scenic Drives / Boat Tours
         The order of locations should be chained in such a way that the total distance is minimum.
         All your responses should be in plain text, no markdowns, no formatting.
         Your response should be of the following format- 
@@ -138,7 +159,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.send),
+                    icon: Icon(Icons.star),
                     onPressed: () => sendMessage(cityValue!),
                   ),
                 ],
