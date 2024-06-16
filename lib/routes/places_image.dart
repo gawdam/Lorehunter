@@ -1,11 +1,12 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class PlaceImage {
   final List<String> places;
-  final String apiKey; // Assuming you have an API key stored
+  late String apiKey; // Assuming you have an API key stored
 
-  const PlaceImage({required this.places, required this.apiKey});
+  PlaceImage({required this.places});
 
   Future<List<String>> getImages() async {
     final imageUrls = <String>[];
@@ -32,6 +33,8 @@ class PlaceImage {
   }
 
   Future<String?> _findPlaceId(String placeName) async {
+    await dotenv.load(fileName: ".env");
+    apiKey = dotenv.env['maps_api_key']!;
     final url = Uri.parse(
         'https://maps.googleapis.com/maps/api/place/textsearch/json?query=$placeName&key=$apiKey');
     final response = await http.get(url);
@@ -39,6 +42,7 @@ class PlaceImage {
       final data = json.decode(response.body);
       final results = data['results'] as List;
       if (results.isNotEmpty) {
+        print(results[0]);
         return results[0]['place_id'] as String;
       }
     }

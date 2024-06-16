@@ -8,6 +8,7 @@ import 'package:csc_picker/csc_picker.dart';
 import 'package:lorehunter/providers/location_provider.dart';
 import 'package:lorehunter/routes/geocoding.dart';
 import 'package:lorehunter/routes/routes.dart';
+import 'package:lorehunter/widgets/itinerary.dart';
 import 'package:lorehunter/widgets/location_picker.dart';
 
 ChatSession? chatBot;
@@ -104,7 +105,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     cityValue = ref.watch(selectedCityProvider);
-    print("city: $cityValue");
 
     return ProviderScope(
       child: Scaffold(
@@ -117,15 +117,23 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             places == null
                 ? Container()
                 : Container(
-                    width: 400, height: 400, child: Routes(places: places!)),
+                    width: 300, height: 200, child: Routes(places: places!)),
             Expanded(
               child: Container(
                 padding: EdgeInsets.all(16),
-                child: SelectableText(
-                  chatHistory,
-                  style: TextStyle(fontSize: 16),
-                ),
+                // child: SelectableText(
+                //   chatHistory,
+                //   style: TextStyle(fontSize: 16),
+                // ),
               ),
+            ),
+            Builder(
+              builder: (context) {
+                if (places != null) {
+                  return Itinerary(places: places!);
+                }
+                return Container();
+              },
             ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16),
