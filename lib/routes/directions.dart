@@ -14,19 +14,29 @@ class MyMap extends StatefulWidget {
 
 class _MyMapState extends State<MyMap> {
   final Set<Marker> _markers = {};
-  late String _apiKey;
+  Map<PolylineId, Polyline> polylines = {};
 
   @override
   void initState() {
     super.initState();
     _createMarkers();
-    initMaps();
+    generatePolylineFromPoints();
   }
 
-  void initMaps() async {
-    await dotenv.load(fileName: ".env");
+  void generatePolylineFromPoints() async {
+    List<LatLng> polylineCoordinates = await getPolyLinePoints();
+    print(polylineCoordinates[0]);
 
-    final apiKey = dotenv.env['maps_api_key']!;
+    PolylineId id = PolylineId("poly");
+    Polyline polyline = Polyline(
+        polylineId: id,
+        points: polylineCoordinates,
+        color: Colors.black,
+        width: 8);
+    setState(() {
+      polylines[id] = polyline;
+    });
+    print(polylines);
   }
 
   Future<List<LatLng>> getPolyLinePoints() async {
@@ -79,6 +89,7 @@ class _MyMapState extends State<MyMap> {
         zoom: 14.0,
       ),
       markers: _markers,
+      polylines: Set<Polyline>.of(polylines.values),
     );
   }
 }
