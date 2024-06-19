@@ -42,7 +42,6 @@ class PlaceImage {
       final data = json.decode(response.body);
       final results = data['results'] as List;
       if (results.isNotEmpty) {
-        print(results[0]);
         return results[0]['place_id'] as String;
       }
     }

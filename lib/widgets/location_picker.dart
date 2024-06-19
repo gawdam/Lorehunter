@@ -17,7 +17,7 @@ class LocationPicker extends ConsumerWidget {
     final selectedCountry = ref.watch(selectedCountryProvider);
     final selectedCity = ref.watch(selectedCityProvider);
 
-    print(countries);
+    // print(countries);
 
     return Column(
       children: [

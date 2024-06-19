@@ -22,7 +22,6 @@ Future<Map<String, dynamic>> getCoordinates(String placeName) async {
       final results = data['results'] as List;
       final geometry = results[0]['geometry'] as Map<String, dynamic>;
       final location = geometry['location'] as Map<String, dynamic>;
-      print(location['lat']);
       return location;
     } else {
       // Handle errors based on status code (e.g., INVALID_REQUEST)

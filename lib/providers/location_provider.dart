@@ -19,7 +19,6 @@ final locationFutureProvider = FutureProvider<List<Location>>((ref) async {
   final data = await json.decode(rawData) as List;
   final locations =
       data.map((item) => Location(item['name'], item['country'])).toList();
-  print(locations.first);
   return locations;
 });
 
@@ -60,7 +59,7 @@ final countryListProvider = StateProvider<List<String>>((ref) {
 });
 
 // State provider for selected city
-final selectedCityProvider = StateProvider<String?>((ref) => "Bengaluru");
+final selectedCityProvider = StateProvider<String?>((ref) => "Amsterdam");
 
 // State provider for selected country
-final selectedCountryProvider = StateProvider<String?>((ref) => "IN");
+final selectedCountryProvider = StateProvider<String?>((ref) => "NL");
