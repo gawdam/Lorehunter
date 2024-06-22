@@ -110,11 +110,26 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     return ProviderScope(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Chat with AI"),
+          title: Text(
+            "Lore Hunter",
+            style: TextStyle(fontSize: 26),
+            textAlign: TextAlign.center,
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.purple[200],
         ),
         body: Column(
           children: [
             LocationPicker(),
+            SizedBox(
+              height: 10,
+            ),
+            ElevatedButton(
+                // style: ButtonStyle(mi),
+                onPressed: () {
+                  sendMessage(cityValue!);
+                },
+                child: Icon(Icons.star)),
             places == null
                 ? Container()
                 : Container(
@@ -135,24 +150,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 }
                 return Container();
               },
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _textController,
-                      decoration:
-                          InputDecoration(hintText: "Type your message"),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.star),
-                    onPressed: () => sendMessage(cityValue!),
-                  ),
-                ],
-              ),
             ),
           ],
         ),

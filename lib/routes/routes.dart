@@ -64,6 +64,7 @@ class _RoutesState extends State<Routes> {
       waypoints.add(PolylineWayPoint(
           location: "${coordinates[i].latitude}, ${coordinates[i].longitude}"));
     }
+
     polylineResult = await polylinePoints.getRouteBetweenCoordinates(
         apiKey,
         PointLatLng(coordinates.first.latitude, coordinates.first.longitude),
@@ -78,6 +79,7 @@ class _RoutesState extends State<Routes> {
     } else {
       print("some random error: ${polylineResult.errorMessage}");
     }
+    print(polylineResult.distance);
 
     setState(() {});
     return polylineCoordinates;
@@ -99,7 +101,7 @@ class _RoutesState extends State<Routes> {
           markerId: MarkerId(coordinate.toString()),
           position: latLng,
           infoWindow: InfoWindow(
-            title: 'Marker',
+            title: element,
           ),
         ),
       );
