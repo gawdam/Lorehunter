@@ -21,21 +21,22 @@ class Routes extends StatefulWidget {
 
 class _RoutesState extends State<Routes> {
   final Set<Marker> _markers = {};
-  late LatLng coord;
+  LatLng coord = LatLng(0, 0);
   List<LatLng> coordinates = [];
-  Map<PolylineId, Polyline> polylines = {};
+  Map<PolylineId, Polyline> _polylines = {};
 
   @override
   void initState() {
     super.initState();
-    _createMarkers();
+    _createRoute();
   }
 
   Future<void> generatePolylineFromPoints() async {
-    print("Called first");
+    print("Getting coordinates");
     List<LatLng> polylineCoordinates = await getPolyLinePoints();
+
     print(
-        "--------------------------------------------${polylineCoordinates[0]}-----------------------------------------------------");
+        "Sample coordinate:--------------------------------------------${polylineCoordinates[0]}-----------------------------------------------------");
 
     PolylineId id = PolylineId("poly");
     Polyline polyline = Polyline(
@@ -44,7 +45,7 @@ class _RoutesState extends State<Routes> {
         color: Colors.black,
         width: 8);
     setState(() {
-      polylines[id] = polyline;
+      _polylines[id] = polyline;
     });
   }
 
@@ -57,28 +58,33 @@ class _RoutesState extends State<Routes> {
     PolylinePoints polylinePoints = PolylinePoints();
     List<PolylineResult> results = [];
     PolylineResult polylineResult;
-    for (var i = 0; i < coordinates.length - 1; i++) {
-      polylineResult = await polylinePoints.getRouteBetweenCoordinates(
-          apiKey,
-          PointLatLng(coordinates[i].latitude, coordinates[i].longitude),
-          PointLatLng(
-              coordinates[i + 1].latitude, coordinates[i + 1].longitude),
-          travelMode: TravelMode.walking);
-      if (polylineResult.points.isNotEmpty) {
-        polylineResult.points.forEach((PointLatLng point) {
-          polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-        });
-        results.add(polylineResult);
-      } else {
-        print("some random error: ${polylineResult.errorMessage}");
-      }
+
+    List<PolylineWayPoint> waypoints = [];
+    for (var i = 1; i < coordinates.length - 1; i++) {
+      waypoints.add(PolylineWayPoint(
+          location: "${coordinates[i].latitude}, ${coordinates[i].longitude}"));
     }
+    polylineResult = await polylinePoints.getRouteBetweenCoordinates(
+        apiKey,
+        PointLatLng(coordinates.first.latitude, coordinates.first.longitude),
+        PointLatLng(coordinates.last.latitude, coordinates.last.longitude),
+        wayPoints: waypoints,
+        travelMode: TravelMode.walking);
+    if (polylineResult.points.isNotEmpty) {
+      polylineResult.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+      results.add(polylineResult);
+    } else {
+      print("some random error: ${polylineResult.errorMessage}");
+    }
+
     setState(() {});
     return polylineCoordinates;
   }
 
   Future<void> _createMarkers() async {
-    print("Error here");
+    print(widget.places);
     for (final element in widget.places) {
       final coordinate = await getCoordinates(element);
 
@@ -98,25 +104,33 @@ class _RoutesState extends State<Routes> {
         ),
       );
     }
-    setState(() {});
-    await generatePolylineFromPoints();
-    setState(() {});
 
     // Update UI after coordinates are retrieved
+    setState(() {});
+  }
+
+  Future<Map<String, dynamic>> _createRoute() async {
+    print("Creating markers");
+    await _createMarkers();
+    print("Generating polylines");
+    await generatePolylineFromPoints();
+    print("done generating polylines");
+    return {'markers': _markers, 'polyline': _polylines};
   }
 
   @override
   Widget build(BuildContext context) {
-    generatePolylineFromPoints();
-    return GoogleMap(
-      initialCameraPosition: CameraPosition(
-        target: coord == null
-            ? LatLng(0, 0)
-            : coord, // Default to (0, 0) if no coordinates
-        zoom: 14.0,
-      ),
-      markers: _markers,
-      polylines: Set<Polyline>.of(polylines.values),
-    );
+    print(_polylines.values);
+    return Builder(builder: (context) {
+      if (_markers.isEmpty) return CircularProgressIndicator();
+      return GoogleMap(
+        initialCameraPosition: CameraPosition(
+          target: coord, // Default to (0, 0) if no coordinates
+          zoom: 14.0,
+        ),
+        markers: _markers,
+        polylines: Set<Polyline>.of(_polylines.values),
+      );
+    });
   }
 }
