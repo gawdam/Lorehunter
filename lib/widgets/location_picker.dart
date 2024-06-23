@@ -18,6 +18,8 @@ String getFlag(String countryCode) {
 }
 
 class LocationPicker extends ConsumerWidget {
+  TextEditingController textController = TextEditingController();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final countries = ref.watch(countryListProvider);
@@ -33,61 +35,46 @@ class LocationPicker extends ConsumerWidget {
       countriesWithFlags.add("$element ${getFlag(element)}");
     });
 
-    Widget _style(BuildContext context, String? selectedItem) {
-      return Text(
-        selectedItem!,
-        style: TextStyle(fontFamily: 'MeQuran2'),
-      );
-    }
-
-    Widget _style1(BuildContext context, String? item, bool isSelected) {
-      return Directionality(
-        textDirection: TextDirection.rtl,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            item!,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontFamily: 'MeQuran2',
-                color: isSelected ? Colors.cyanAccent : null),
-          ),
-        ),
-      );
-    }
-
     return Container(
-      width: MediaQuery.sizeOf(context).width * 0.9,
-      height: 85,
+      width: MediaQuery.sizeOf(context).width * 0.75,
+      height: 55,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: MediaQuery.sizeOf(context).width * 0.17,
+            width: 48,
             height: 35,
+            color: Colors.grey[100],
             child: DropdownSearch<String>(
               dropdownButtonProps: DropdownButtonProps(
                   icon: Icon(
-                Icons.location_on_outlined,
+                null,
                 size: 14,
               )),
+              // dropdownDecoratorProps: DropDownDecoratorProps(
+              //     dropdownSearchDecoration:
+              //         InputDecoration(fillColor: Colors.grey[100])),
               popupProps: PopupProps.menu(
                 showSearchBox: true,
                 showSelectedItems: true,
                 searchDelay: Duration.zero,
                 listViewProps: ListViewProps(),
                 // favoriteItemProps: FavoriteItemProps(),
+                // scrollbarProps: ScrollbarProps(
+                //     thumbVisibility: false, trackVisibility: false),
                 searchFieldProps: TextFieldProps(
                     strutStyle: StrutStyle(),
                     autofocus: true,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 10),
+                    style: TextStyle(fontSize: 16, height: 1),
                     padding: EdgeInsets.all(5)),
                 itemBuilder: (context, item, isSelected) => Column(
                   children: [
                     Text(
                       item,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -96,18 +83,13 @@ class LocationPicker extends ConsumerWidget {
                 ),
               ),
               items: countriesWithFlags,
-
-              // dropdownDecoratorProps: DropDownDecoratorProps(
-              //   dropdownSearchDecoration:
-              //       InputDecoration(labelStyle: TextStyle(fontSize: 12)
-              //           // labelText: "Menu mode",
-              //           // hintText: "country in menu mode",
-              //           ),
-              // ),
-              onChanged: (country) => country == null
-                  ? null
-                  : ref.read(selectedCountryProvider.notifier).state = country,
-              selectedItem: selectedFlag.substring(0, 4),
+              onChanged: (country) {
+                if (country != null) {
+                  ref.read(selectedCountryProvider.notifier).state =
+                      country.substring(0, 2);
+                }
+              },
+              selectedItem: getFlag(selectedCountry),
             ),
 
             // DropdownWithSearch(
@@ -126,20 +108,64 @@ class LocationPicker extends ConsumerWidget {
           SizedBox(
             width: 10,
           ),
-          SearchBar(
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.sizeOf(context).width * 0.7 - 10,
-                minHeight: 40),
-          ),
+          SearchAnchor(
+              viewBackgroundColor: Colors.grey[100],
+              builder: (BuildContext context, SearchController controller) {
+                // controller.text = selectedCity!;
+
+                // print(controller.value.text);
+                // controller.text ??= "Amsterdam";
+                return SearchBar(
+                  backgroundColor: MaterialStateProperty.resolveWith((states) {
+                    // If the button is pressed, return green, otherwise blue
+
+                    return Colors.grey[100];
+                  }),
+                  hintText: "City",
+                  controller: controller,
+                  onTap: () {
+                    controller.openView();
+                  },
+                  onChanged: (city) {
+                    controller.openView();
+                    ref.read(selectedCityProvider.notifier).state = city;
+                  },
+                  leading: const Icon(Icons.location_on_outlined),
+                  constraints: BoxConstraints(
+                      maxWidth:
+                          MediaQuery.sizeOf(context).width * 0.75 - 48 - 10,
+                      minHeight: 40),
+                );
+              },
+              suggestionsBuilder:
+                  (BuildContext context, SearchController controller) {
+                List<String> filteredCities = [];
+                cities.forEach((element) {
+                  if (element
+                      .toLowerCase()
+                      .contains(controller.text.toLowerCase())) {
+                    filteredCities.add(element);
+                  }
+                });
+                return List<ListTile>.generate(filteredCities.length,
+                    (int index) {
+                  final String item = filteredCities[index];
+                  return ListTile(
+                    title: Text(item),
+                    onTap: () {
+                      controller.closeView(item);
+                    },
+                  );
+                });
+              }),
+
           // Container(
           //   width: MediaQuery.sizeOf(context).width * 0.7,
           //   child: DropdownWithSearch(
           //     title: "City",
           //     placeHolder: "Select city",
           //     items: cities,
-          //     onChanged: (city) => city == null
-          //         ? null
-          //         : ref.read(selectedCityProvider.notifier).state = city,
+
           //     selected: selectedCity,
           //     label: selectedCity ?? "None",
           //   ),

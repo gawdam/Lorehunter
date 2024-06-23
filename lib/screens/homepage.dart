@@ -8,6 +8,7 @@ import 'package:csc_picker/csc_picker.dart';
 import 'package:lorehunter/providers/location_provider.dart';
 import 'package:lorehunter/routes/geocoding.dart';
 import 'package:lorehunter/routes/routes.dart';
+import 'package:lorehunter/widgets/info_card.dart';
 import 'package:lorehunter/widgets/itinerary.dart';
 import 'package:lorehunter/widgets/location_picker.dart';
 
@@ -43,6 +44,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   String apiKey = '';
   late GenerativeModel model;
   List<String>? places;
+  String? distance;
+  String? duration;
+  String? time;
 
   String? cityValue = "";
 
@@ -92,6 +96,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     setState(() {
       chatHistory = "${response['places']}\n";
       places = List<String>.from(response['places'] as List);
+      distance = response['distance'][0];
+      duration = response['total_time'];
+      time = response['best_experienced_at'];
     });
   }
 
@@ -109,49 +116,85 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
     return ProviderScope(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "Lore Hunter",
-            style: TextStyle(fontSize: 26),
-            textAlign: TextAlign.center,
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.purple[200],
-        ),
-        body: Column(
-          children: [
-            LocationPicker(),
-            SizedBox(
-              height: 10,
-            ),
-            ElevatedButton(
-                // style: ButtonStyle(mi),
-                onPressed: () {
-                  sendMessage(cityValue!);
-                },
-                child: Icon(Icons.star)),
-            places == null
-                ? Container()
-                : Container(
-                    width: 300, height: 200, child: Routes(places: places!)),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.all(16),
-                // child: SelectableText(
-                //   chatHistory,
-                //   style: TextStyle(fontSize: 16),
-                // ),
+        resizeToAvoidBottomInset: false,
+        // appBar: AppBar(
+        //   title: Text(
+        //     "Lore Hunter",
+        //     style: TextStyle(fontSize: 26),
+        //     textAlign: TextAlign.center,
+        //   ),
+        //   centerTitle: true,
+        //   backgroundColor: Colors.purple[200],
+        // ),
+        body: Center(
+          child: Stack(
+            children: [
+              places == null
+                  ? Container()
+                  : Container(
+                      width: MediaQuery.sizeOf(context).width * 1,
+                      height: MediaQuery.sizeOf(context).height * 1,
+                      child: Routes(places: places!)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.05,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.sizeOf(context).width * 0.05,
+                      ),
+                      LocationPicker(),
+                      SizedBox(
+                        width: MediaQuery.sizeOf(context).width * 0.02,
+                      ),
+                      Container(
+                        width: MediaQuery.sizeOf(context).width * 0.15,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey[100]),
+                            onPressed: () {
+                              sendMessage(cityValue!);
+                            },
+                            child: Icon(Icons.star)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                      // height: MediaQuery.sizeOf(context).height * 0.03,
+                      ),
+                  InfoCard(
+                    cardValues: [
+                      places?.length.toString() ?? null,
+                      duration,
+                      distance,
+                      time
+                    ],
+                  ),
+
+                  // Expanded(
+                  //   child: Container(
+                  //     padding: EdgeInsets.all(16),
+                  //     // child: SelectableText(
+                  //     //   chatHistory,
+                  //     //   style: TextStyle(fontSize: 16),
+                  //     // ),
+                  //   ),
+                  // ),
+                  // Builder(
+                  //   builder: (context) {
+                  //     if (places != null) {
+                  //       return Itinerary(places: places!);
+                  //     }
+                  //     return Container();
+                  //   },
+                  // ),
+                ],
               ),
-            ),
-            Builder(
-              builder: (context) {
-                if (places != null) {
-                  return Itinerary(places: places!);
-                }
-                return Container();
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
