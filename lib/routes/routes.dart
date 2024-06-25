@@ -32,11 +32,7 @@ class _RoutesState extends State<Routes> {
   }
 
   Future<void> generatePolylineFromPoints() async {
-    print("Getting coordinates");
     List<LatLng> polylineCoordinates = await getPolyLinePoints();
-
-    print(
-        "Sample coordinate:--------------------------------------------${polylineCoordinates[0]}-----------------------------------------------------");
 
     PolylineId id = PolylineId("poly");
     Polyline polyline = Polyline(
@@ -50,7 +46,6 @@ class _RoutesState extends State<Routes> {
   }
 
   Future<List<LatLng>> getPolyLinePoints() async {
-    print("Called interior");
     await dotenv.load(fileName: ".env");
 
     final apiKey = dotenv.env['maps_api_key']!;
@@ -79,7 +74,7 @@ class _RoutesState extends State<Routes> {
     } else {
       print("some random error: ${polylineResult.errorMessage}");
     }
-    print(polylineResult.distance);
+    print("Distance: ${polylineResult.distance}");
 
     setState(() {});
     return polylineCoordinates;
@@ -88,7 +83,7 @@ class _RoutesState extends State<Routes> {
   Future<void> _createMarkers() async {
     print(widget.places);
     for (final element in widget.places) {
-      final coordinate = await getCoordinates(element);
+      final coordinate = await getCoordinatesForFree(element);
 
       LatLng latLng = convertCoordinates(coordinate);
       setState(() {
@@ -105,6 +100,7 @@ class _RoutesState extends State<Routes> {
           ),
         ),
       );
+      await Future.delayed(Duration(seconds: 1));
     }
 
     // Update UI after coordinates are retrieved
@@ -124,7 +120,12 @@ class _RoutesState extends State<Routes> {
   Widget build(BuildContext context) {
     print(_polylines.values);
     return Builder(builder: (context) {
-      if (_markers.isEmpty) return CircularProgressIndicator();
+      if (_markers.isEmpty)
+        return Container(
+            height: 50,
+            width: 50,
+            alignment: Alignment.center,
+            child: CircularProgressIndicator());
       return GoogleMap(
         initialCameraPosition: CameraPosition(
           target: coord, // Default to (0, 0) if no coordinates

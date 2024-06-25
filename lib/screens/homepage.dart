@@ -39,7 +39,6 @@ class MyHomePage extends ConsumerStatefulWidget {
 }
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
-  final TextEditingController _textController = TextEditingController();
   String chatHistory = "";
   String apiKey = '';
   late GenerativeModel model;
@@ -81,13 +80,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         Do not write any additional details. Make sure the JSON is valid
         """));
     // print(response.text);
-
-    _textController.clear();
   }
 
   Future<void> sendMessage(String text) async {
     await initSession();
-    _textController.clear();
     chatHistory = '';
     setState(() {
       chatHistory += "User: $text\n";

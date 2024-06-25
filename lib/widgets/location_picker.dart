@@ -123,12 +123,17 @@ class LocationPicker extends ConsumerWidget {
                   }),
                   hintText: "City",
                   controller: controller,
+                  onSubmitted: (value) {
+                    print(value);
+                    ref.read(selectedCityProvider.notifier).state = value;
+                  },
                   onTap: () {
                     controller.openView();
                   },
                   onChanged: (city) {
                     controller.openView();
                     ref.read(selectedCityProvider.notifier).state = city;
+                    print(city);
                   },
                   leading: const Icon(Icons.location_on_outlined),
                   constraints: BoxConstraints(

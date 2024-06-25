@@ -5,20 +5,20 @@ import 'dart:convert';
 import 'package:riverpod/riverpod.dart';
 
 // Model class for location data (optional, can be simplified)
-class Location {
+class CityCountry {
   final String name;
   final String country;
 
-  Location(this.name, this.country);
+  CityCountry(this.name, this.country);
 }
 
 // Future provider to load locations from JSON data
-final locationFutureProvider = FutureProvider<List<Location>>((ref) async {
+final locationFutureProvider = FutureProvider<List<CityCountry>>((ref) async {
   final rawData = await rootBundle
       .loadString('assets/cities/cities.json'); // Assuming your JSON file path
   final data = await json.decode(rawData) as List;
   final locations =
-      data.map((item) => Location(item['name'], item['country'])).toList();
+      data.map((item) => CityCountry(item['name'], item['country'])).toList();
   return locations;
 });
 

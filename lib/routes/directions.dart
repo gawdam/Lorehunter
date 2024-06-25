@@ -25,8 +25,6 @@ class _MyMapState extends State<MyMap> {
 
   void generatePolylineFromPoints() async {
     List<LatLng> polylineCoordinates = await getPolyLinePoints();
-    print(
-        "--------------------------------------------${polylineCoordinates[0]}-----------------------------------------------------");
 
     PolylineId id = PolylineId("poly");
     Polyline polyline = Polyline(
@@ -40,7 +38,6 @@ class _MyMapState extends State<MyMap> {
   }
 
   Future<List<LatLng>> getPolyLinePoints() async {
-    print("1211111111111111111111111");
     await dotenv.load(fileName: ".env");
 
     final apiKey = dotenv.env['maps_api_key']!;

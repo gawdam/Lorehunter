@@ -1,6 +1,11 @@
+import 'dart:ffi';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+
+import 'package:lorehunter/providers/location_provider.dart';
 
 // Assuming you have a function to get the user-entered place name
 
@@ -22,7 +27,6 @@ Future<Map<String, dynamic>> getCoordinates(String placeName) async {
       final results = data['results'] as List;
       final geometry = results[0]['geometry'] as Map<String, dynamic>;
       final location = geometry['location'] as Map<String, dynamic>;
-      print(response.body);
       return location;
     } else {
       // Handle errors based on status code (e.g., INVALID_REQUEST)
@@ -32,4 +36,10 @@ Future<Map<String, dynamic>> getCoordinates(String placeName) async {
     // Handle other HTTP errors
     throw Exception('Failed to get coordinates: ${response.statusCode}');
   }
+}
+
+Future<Map<String, dynamic>> getCoordinatesForFree(String placeName) async {
+  List<Location> locations = await locationFromAddress(placeName);
+  print(locations[0]);
+  return {'lat': locations[0].latitude, 'lng': locations[0].longitude};
 }
