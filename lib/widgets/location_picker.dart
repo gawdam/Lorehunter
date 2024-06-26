@@ -110,6 +110,10 @@ class LocationPicker extends ConsumerWidget {
           ),
           SearchAnchor(
               viewBackgroundColor: Colors.grey[100],
+              viewOnSubmitted: (city) {
+                ref.read(selectedCityProvider.notifier).state = city;
+                print(city);
+              },
               builder: (BuildContext context, SearchController controller) {
                 // controller.text = selectedCity!;
 
@@ -129,11 +133,7 @@ class LocationPicker extends ConsumerWidget {
                   },
                   onTap: () {
                     controller.openView();
-                  },
-                  onChanged: (city) {
-                    controller.openView();
-                    ref.read(selectedCityProvider.notifier).state = city;
-                    print(city);
+                    print("TAPPED");
                   },
                   leading: const Icon(Icons.location_on_outlined),
                   constraints: BoxConstraints(
