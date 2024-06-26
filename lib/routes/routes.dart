@@ -1,13 +1,22 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lorehunter/routes/geocoding.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:lorehunter/routes/getRoute.dart';
 
 LatLng convertCoordinates(Map<String, dynamic> coordinate) {
   final lat = coordinate['lat'] as double; // Assuming 'latitude' is the key
   final lng = coordinate['lng'] as double; // Assuming 'longitude' is the key
   return (LatLng(lat, lng));
+}
+
+String convertLatLngListToJson(List<LatLng> coordinates) {
+  final List<List<double>> latLngList =
+      coordinates.map((latLng) => [latLng.longitude, latLng.latitude]).toList();
+  return jsonEncode({'coordinates': latLngList});
 }
 
 class Routes extends StatefulWidget {
@@ -51,30 +60,24 @@ class _RoutesState extends State<Routes> {
     final apiKey = dotenv.env['maps_api_key']!;
     List<LatLng> polylineCoordinates = [];
     PolylinePoints polylinePoints = PolylinePoints();
-    List<PolylineResult> results = [];
-    PolylineResult polylineResult;
+    List<PointLatLng> results = [];
+    List<PointLatLng> polylineResult;
 
     List<PolylineWayPoint> waypoints = [];
     for (var i = 1; i < coordinates.length - 1; i++) {
       waypoints.add(PolylineWayPoint(
           location: "${coordinates[i].latitude}, ${coordinates[i].longitude}"));
     }
-
-    polylineResult = await polylinePoints.getRouteBetweenCoordinates(
-        apiKey,
-        PointLatLng(coordinates.first.latitude, coordinates.first.longitude),
-        PointLatLng(coordinates.last.latitude, coordinates.last.longitude),
-        wayPoints: waypoints,
-        travelMode: TravelMode.walking);
-    if (polylineResult.points.isNotEmpty) {
-      polylineResult.points.forEach((PointLatLng point) {
+    polylineResult =
+        await getRoutePolyline(convertLatLngListToJson(coordinates));
+    if (polylineResult.isNotEmpty) {
+      polylineResult.forEach((PointLatLng point) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
       });
-      results.add(polylineResult);
     } else {
-      print("some random error: ${polylineResult.errorMessage}");
+      print("some random error: ${polylineResult}");
     }
-    print("Distance: ${polylineResult.distance}");
+    // print("Distance: ${polylineResult.distance}");
 
     setState(() {});
     return polylineCoordinates;
