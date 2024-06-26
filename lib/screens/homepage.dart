@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
@@ -103,6 +104,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     // TODO: implement initState
     super.initState();
     initAI();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
     // cityValue = ref.watch(selectedCityProvider);
   }
 
