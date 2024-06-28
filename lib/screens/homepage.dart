@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
@@ -9,6 +10,7 @@ import 'package:csc_picker/csc_picker.dart';
 import 'package:lorehunter/providers/location_provider.dart';
 import 'package:lorehunter/routes/geocoding.dart';
 import 'package:lorehunter/routes/routes.dart';
+import 'package:lorehunter/screens/itinerary_information.dart';
 import 'package:lorehunter/widgets/info_card.dart';
 import 'package:lorehunter/widgets/itinerary.dart';
 import 'package:lorehunter/widgets/location_picker.dart';
@@ -114,6 +116,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
     return ProviderScope(
       child: Scaffold(
+        backgroundColor: Colors.grey,
         resizeToAvoidBottomInset: false,
         // appBar: AppBar(
         //   title: Text(
@@ -137,7 +140,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: MediaQuery.sizeOf(context).height * 0.05,
+                    height: MediaQuery.sizeOf(context).height * 0.035,
                   ),
                   Row(
                     children: [
@@ -163,14 +166,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   const SizedBox(
                       // height: MediaQuery.sizeOf(context).height * 0.03,
                       ),
-                  InfoCard(
-                    cardValues: [
-                      places?.length.toString() ?? null,
-                      duration,
-                      distance,
-                      time
-                    ],
-                  ),
 
                   // Expanded(
                   //   child: Container(
@@ -191,6 +186,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   // ),
                 ],
               ),
+              Positioned(
+                  bottom: 0,
+                  width: MediaQuery.sizeOf(context).width,
+                  height: MediaQuery.sizeOf(context).height,
+                  child: ItineraryInformationScreen()),
             ],
           ),
         ),

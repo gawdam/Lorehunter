@@ -46,6 +46,7 @@ dependencies:
   country_flags: ^3.0.0
   dropdown_search: ^5.0.6
   geocoding: ^3.0.0
+  sliding_up_panel: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:
