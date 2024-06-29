@@ -1,6 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:lorehunter/routes/places_image.dart';
+import 'package:lorehunter/directions/places_image.dart';
 import 'package:lorehunter/widgets/image_carousel.dart';
 
 class Itinerary extends StatefulWidget {

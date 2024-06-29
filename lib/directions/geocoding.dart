@@ -38,8 +38,18 @@ Future<Map<String, dynamic>> getCoordinates(String placeName) async {
   }
 }
 
-Future<Map<String, dynamic>> getCoordinatesForFree(String placeName) async {
-  List<Location> locations = await locationFromAddress(placeName);
-  print(locations[0]);
-  return {'lat': locations[0].latitude, 'lng': locations[0].longitude};
+Future<Map<String, dynamic>?> getCoordinatesForFree(String placeName) async {
+  print(placeName);
+  var coords = null;
+  try {
+    coords = locationFromAddress(placeName).then((locations) {
+      if (locations.isNotEmpty) {
+        return {'lat': locations[0].latitude, 'lng': locations[0].longitude};
+      }
+      return null;
+    });
+  } on Exception catch (e) {
+    print(e);
+  }
+  return coords;
 }

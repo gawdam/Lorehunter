@@ -7,9 +7,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:csc_picker/csc_picker.dart';
+import 'package:lorehunter/interns/find_places_intern.dart';
+import 'package:lorehunter/models/tour_details.dart';
 import 'package:lorehunter/providers/location_provider.dart';
-import 'package:lorehunter/routes/geocoding.dart';
-import 'package:lorehunter/routes/routes.dart';
+import 'package:lorehunter/directions/geocoding.dart';
+import 'package:lorehunter/widgets/routes.dart';
 import 'package:lorehunter/screens/itinerary_information.dart';
 import 'package:lorehunter/widgets/info_card.dart';
 import 'package:lorehunter/widgets/itinerary.dart';
@@ -25,16 +27,6 @@ Future<String> gemini(String prompt) async {
 
 class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -45,74 +37,41 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   String chatHistory = "";
   String apiKey = '';
   late GenerativeModel model;
-  List<String>? places;
-  String? distance;
-  String? duration;
-  String? time;
+  Tour? tour;
+
+  PlacesFinder placesFinder = PlacesFinder();
 
   String? cityValue = "";
-
-  Future<void> initAI() async {
-    await dotenv.load(fileName: ".env");
-
-    model = GenerativeModel(
-      model: 'gemini-1.5-flash-latest',
-      apiKey: dotenv.env['gemini_api_key']!,
-    );
-    await initSession();
-  }
-
-  Future<void> initSession() async {
-    chatBot = model.startChat();
-    final response =
-        await chatBot!.sendMessage(Content.text("""You are a tour guide. 
-        I will type the location that I'm in and you will generate a walking tour of that location for me.
-        There should be a total of 3 places.
-        All places must within a 5km radius. 
-        The order of locations should be chained in such a way that the total distance is minimum.
-        All your responses should be in plain text, no markdowns, no formatting.
-        Your response should be of the following format- 
-        Sample output:
-        { 
-          "places": list<str> [list of places]
-          "distance": list<str> [distance between places]
-          "total_time" : str [an estimate of total tour time in number of hours]
-          "wiki_link": list<str> [https link of wikipedia page for each place]
-          "best_experienced_at": str [best @ time of day, choose between morning, afternoon and evening]
-        }
-        Do not write any additional details. Make sure the JSON is valid
-        """));
-    // print(response.text);
-  }
-
-  Future<void> sendMessage(String text) async {
-    await initSession();
-    chatHistory = '';
-    setState(() {
-      chatHistory += "User: $text\n";
-    });
-    final response = jsonDecode(await gemini(text));
-    setState(() {
-      chatHistory = "${response['places']}\n";
-      places = List<String>.from(response['places'] as List);
-      distance = response['distance'][0];
-      duration = response['total_time'];
-      time = response['best_experienced_at'];
-    });
-  }
+  String? countryValue = "";
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    initAI();
+    placesFinder.initAI();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
-    // cityValue = ref.watch(selectedCityProvider);
+  }
+
+  Future<void> initAI() async {}
+
+  Future<void> getPlaces(String city) async {
+    String jsonString = await placesFinder.gemini(city);
+    var jsonMap = jsonDecode(jsonString);
+    setState(() {
+      tour = Tour(
+        name: jsonMap['name'],
+        places: List<String>.from(jsonMap['places'] as List),
+        types: List<String>.from(jsonMap['types'] as List),
+        icons: List<String>.from(jsonMap['icons'] as List),
+        time_of_day: jsonMap['best_experienced_at'],
+      );
+    });
+    print(jsonMap);
   }
 
   @override
   Widget build(BuildContext context) {
     cityValue = ref.watch(selectedCityProvider);
+    countryValue = ref.watch(selectedCountryProvider);
 
     return ProviderScope(
       child: Scaffold(
@@ -130,12 +89,12 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         body: Center(
           child: Stack(
             children: [
-              places == null
+              tour == null
                   ? Container()
                   : Container(
                       width: MediaQuery.sizeOf(context).width * 1,
                       height: MediaQuery.sizeOf(context).height * 1,
-                      child: Routes(places: places!)),
+                      child: Routes(places: tour!.places)),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -156,9 +115,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.grey[100]),
-                            onPressed: () {
-                              sendMessage(cityValue!);
-                            },
+                            onPressed: placesFinder.initialized
+                                ? () {
+                                    getPlaces("$cityValue, $countryValue");
+                                  }
+                                : null,
                             child: Icon(Icons.star)),
                       ),
                     ],
@@ -186,11 +147,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   // ),
                 ],
               ),
-              Positioned(
-                  bottom: 0,
-                  width: MediaQuery.sizeOf(context).width,
-                  height: MediaQuery.sizeOf(context).height,
-                  child: ItineraryInformationScreen()),
+              tour == null
+                  ? Container()
+                  : Positioned(
+                      bottom: 0,
+                      width: MediaQuery.sizeOf(context).width,
+                      height: MediaQuery.sizeOf(context).height,
+                      child:
+                          ItineraryInformationScreen(placeDetails: tour!.name)),
             ],
           ),
         ),

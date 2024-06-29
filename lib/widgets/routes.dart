@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:lorehunter/routes/geocoding.dart';
+import 'package:lorehunter/directions/geocoding.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:lorehunter/routes/getRoute.dart';
+import 'package:lorehunter/directions/get_route.dart';
 
 LatLng convertCoordinates(Map<String, dynamic> coordinate) {
   final lat = coordinate['lat'] as double; // Assuming 'latitude' is the key
@@ -57,10 +57,7 @@ class _RoutesState extends State<Routes> {
   Future<List<LatLng>> getPolyLinePoints() async {
     await dotenv.load(fileName: ".env");
 
-    final apiKey = dotenv.env['maps_api_key']!;
     List<LatLng> polylineCoordinates = [];
-    PolylinePoints polylinePoints = PolylinePoints();
-    List<PointLatLng> results = [];
     List<PointLatLng> polylineResult;
 
     List<PolylineWayPoint> waypoints = [];
@@ -88,22 +85,24 @@ class _RoutesState extends State<Routes> {
     for (final element in widget.places) {
       final coordinate = await getCoordinatesForFree(element);
 
-      LatLng latLng = convertCoordinates(coordinate);
-      setState(() {
-        coord = latLng;
-        coordinates.add(coord);
-      });
+      if (coordinate != null) {
+        LatLng latLng = convertCoordinates(coordinate);
+        setState(() {
+          coord = latLng;
+          coordinates.add(coord);
+        });
 
-      _markers.add(
-        Marker(
-          markerId: MarkerId(coordinate.toString()),
-          position: latLng,
-          infoWindow: InfoWindow(
-            title: element,
+        _markers.add(
+          Marker(
+            markerId: MarkerId(coordinate.toString()),
+            position: latLng,
+            infoWindow: InfoWindow(
+              title: element,
+            ),
           ),
-        ),
-      );
-      await Future.delayed(Duration(seconds: 1));
+        );
+        await Future.delayed(Duration(seconds: 1));
+      }
     }
 
     // Update UI after coordinates are retrieved
@@ -111,17 +110,13 @@ class _RoutesState extends State<Routes> {
   }
 
   Future<Map<String, dynamic>> _createRoute() async {
-    print("Creating markers");
     await _createMarkers();
-    print("Generating polylines");
     await generatePolylineFromPoints();
-    print("done generating polylines");
     return {'markers': _markers, 'polyline': _polylines};
   }
 
   @override
   Widget build(BuildContext context) {
-    print(_polylines.values);
     return Builder(builder: (context) {
       if (_markers.isEmpty)
         return Container(

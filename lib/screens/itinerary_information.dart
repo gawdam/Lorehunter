@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:lorehunter/models/place_details.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class ItineraryInformationScreen extends StatefulWidget {
+  ItineraryInformationScreen({required this.placeDetails});
+
+  String placeDetails;
   @override
   State<ItineraryInformationScreen> createState() =>
       _ItineraryInformationScreenState();
@@ -73,7 +77,7 @@ class _ItineraryInformationScreenState
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    "Explore Pittsburgh",
+                    widget.placeDetails,
                     style: TextStyle(
                       fontWeight: FontWeight.normal,
                       fontSize: 24.0,
