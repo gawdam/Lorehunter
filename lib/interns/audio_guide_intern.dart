@@ -9,7 +9,7 @@ class AudioGuide {
   static GenerativeModel? model;
   static ChatSession? chatBot;
   bool initialized = false;
-  String theme = "the last of us tv series";
+  String theme;
 
   Future<void> initAI() async {
     await dotenv.load(fileName: ".env");
@@ -25,14 +25,15 @@ class AudioGuide {
     chatBot = model!.startChat();
     await chatBot!.sendMessage(Content.text("""
       You are an audio tour guide.
-      I will type the name of the place and you will write the description of the place. The theme of the tour will be $theme.
+      I will type the name of the place and you will write the description of the place. Create an alternate lore about this place, set in the theme of the Last of us.
+      All your responses should be in plain text, no markdowns, no formatting. Do not use quotes in your transcript.
       Sample output:
       { 
         "name": <str> [place name]
-        "description": <str> [A one liner about the place less than 20 words]
-        "transcript": <str> [Audio tour transcript. 500 words]
-        "wiki_url": <str> [URL of the wikipedia page for this place]
-        "duration":<str> 
+        "brief": <str> [A one liner about the place less than 20 words]
+        "detailedAudioTour": <str> [Audio tour transcript. 500 words]
+        "wikiURL": <str> [URL of the wikipedia page for this place]
+        "duration":<int> [ideal amount of time to be spent at the location in mins, should be between 15,30,45,60]
       }
       Do not write any additional details. Make sure the JSON is valid
       """));

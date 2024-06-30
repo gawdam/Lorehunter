@@ -47,6 +47,7 @@ dependencies:
   dropdown_search: ^5.0.6
   geocoding: ^3.0.0
   sliding_up_panel: ^2.0.0+1
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:

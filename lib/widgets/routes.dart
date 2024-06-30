@@ -1,11 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:lorehunter/directions/geocoding.dart';
+import 'package:lorehunter/functions/geocoding.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:lorehunter/directions/get_route.dart';
+import 'package:lorehunter/functions/get_route.dart';
+import 'package:lorehunter/interns/audio_guide_intern.dart';
+import 'package:lorehunter/models/tour_details.dart';
+import 'package:lorehunter/providers/tour_provider.dart';
 
 LatLng convertCoordinates(Map<String, dynamic> coordinate) {
   final lat = coordinate['lat'] as double; // Assuming 'latitude' is the key
@@ -19,16 +23,16 @@ String convertLatLngListToJson(List<LatLng> coordinates) {
   return jsonEncode({'coordinates': latLngList});
 }
 
-class Routes extends StatefulWidget {
+class Routes extends ConsumerStatefulWidget {
   final List<String> places;
 
   const Routes({Key? key, required this.places}) : super(key: key);
 
   @override
-  State<Routes> createState() => _RoutesState();
+  ConsumerState<Routes> createState() => _RoutesState();
 }
 
-class _RoutesState extends State<Routes> {
+class _RoutesState extends ConsumerState<Routes> {
   final Set<Marker> _markers = {};
   LatLng coord = LatLng(0, 0);
   List<LatLng> coordinates = [];
@@ -65,8 +69,10 @@ class _RoutesState extends State<Routes> {
       waypoints.add(PolylineWayPoint(
           location: "${coordinates[i].latitude}, ${coordinates[i].longitude}"));
     }
-    polylineResult =
-        await getRoutePolyline(convertLatLngListToJson(coordinates));
+    var res = await getRoutePolyline(convertLatLngListToJson(coordinates));
+    polylineResult = res['result'];
+    var dist = res['distance'];
+
     if (polylineResult.isNotEmpty) {
       polylineResult.forEach((PointLatLng point) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
@@ -74,7 +80,9 @@ class _RoutesState extends State<Routes> {
     } else {
       print("some random error: ${polylineResult}");
     }
-    // print("Distance: ${polylineResult.distance}");
+    Tour? tour = ref.read(tourProvider.notifier).state;
+    tour!.distance = dist;
+    ref.read(tourProvider.notifier).state = tour;
 
     setState(() {});
     return polylineCoordinates;

@@ -24,6 +24,7 @@ class PlacesFinder {
     await chatBot!.sendMessage(Content.text("""
       I will type the location that I'm in and you will generate a walking tour of that location for me.
       Give the tour a very cool name.
+      There should be a total of 5 places
       All places must within a 5km radius. 
       The order of locations should be chained in such a way that the total distance is minimum. 
       All your responses should be in plain text, no markdowns, no formatting.
@@ -32,7 +33,7 @@ class PlacesFinder {
       { 
         "name": <str> [tour name]
         "places": list<str> [list of places]
-        "best_experienced_at": str [best @ time of day, choose between morning, afternoon and evening]
+        "best_experienced_at": str [best @ time of day, choose between Morning, Afternoon and Evening]
         "types": list<str> [the type of the place - park/monument/museum]
         "icons": list<str> [an android icon for this place]
       }

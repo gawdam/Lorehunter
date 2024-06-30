@@ -17,7 +17,7 @@ Map<String, dynamic> parseRouteData(String responseBody) {
   }
 }
 
-Future<List<PointLatLng>> getRoutePolyline(String coordinates) async {
+Future<Map> getRoutePolyline(String coordinates) async {
   await dotenv.load(fileName: ".env");
 
   final apiKey = dotenv.env['openStreetRoutes_key']!;
@@ -38,5 +38,5 @@ Future<List<PointLatLng>> getRoutePolyline(String coordinates) async {
   Map<String, dynamic> value = parseRouteData(res.body);
   List<PointLatLng> result = polylinePoints.decodePolyline(value['geometry']);
   print("Distance travelled - ${value['distance']}");
-  return result;
+  return {'result': result, 'distance': value['distance']};
 }

@@ -10,20 +10,12 @@ import 'package:csc_picker/csc_picker.dart';
 import 'package:lorehunter/interns/find_places_intern.dart';
 import 'package:lorehunter/models/tour_details.dart';
 import 'package:lorehunter/providers/location_provider.dart';
-import 'package:lorehunter/directions/geocoding.dart';
+import 'package:lorehunter/functions/geocoding.dart';
+import 'package:lorehunter/providers/tour_provider.dart';
 import 'package:lorehunter/widgets/routes.dart';
-import 'package:lorehunter/screens/itinerary_information.dart';
-import 'package:lorehunter/widgets/info_card.dart';
+import 'package:lorehunter/widgets/itinerary_information.dart';
 import 'package:lorehunter/widgets/itinerary.dart';
 import 'package:lorehunter/widgets/location_picker.dart';
-
-ChatSession? chatBot;
-Future<String> gemini(String prompt) async {
-  final content = Content.text(prompt);
-  final response = await chatBot!.sendMessage(content);
-
-  return (response.text!);
-}
 
 class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -51,27 +43,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
   }
 
-  Future<void> initAI() async {}
-
   Future<void> getPlaces(String city) async {
     String jsonString = await placesFinder.gemini(city);
-    var jsonMap = jsonDecode(jsonString);
-    setState(() {
-      tour = Tour(
-        name: jsonMap['name'],
-        places: List<String>.from(jsonMap['places'] as List),
-        types: List<String>.from(jsonMap['types'] as List),
-        icons: List<String>.from(jsonMap['icons'] as List),
-        time_of_day: jsonMap['best_experienced_at'],
-      );
-    });
-    print(jsonMap);
+    tour = getTourFromJson(jsonString);
+    ref.read(tourProvider.notifier).state = tour;
   }
 
   @override
   Widget build(BuildContext context) {
     cityValue = ref.watch(selectedCityProvider);
     countryValue = ref.watch(selectedCountryProvider);
+    tour = ref.watch(tourProvider);
 
     return ProviderScope(
       child: Scaffold(
@@ -153,8 +135,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       bottom: 0,
                       width: MediaQuery.sizeOf(context).width,
                       height: MediaQuery.sizeOf(context).height,
-                      child:
-                          ItineraryInformationScreen(placeDetails: tour!.name)),
+                      child: ItineraryInformationScreen(tour: tour!)),
             ],
           ),
         ),

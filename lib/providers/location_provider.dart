@@ -1,16 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:lorehunter/models/location_details.dart';
 import 'dart:convert';
 
 import 'package:riverpod/riverpod.dart';
-
-// Model class for location data (optional, can be simplified)
-class CityCountry {
-  final String name;
-  final String country;
-
-  CityCountry(this.name, this.country);
-}
 
 // Future provider to load locations from JSON data
 final locationFutureProvider = FutureProvider<List<CityCountry>>((ref) async {
@@ -59,7 +52,7 @@ final countryListProvider = StateProvider<List<String>>((ref) {
 });
 
 // State provider for selected city
-final selectedCityProvider = StateProvider<String?>((ref) => "The Hague");
+final selectedCityProvider = StateProvider<String?>((ref) => "Lyon");
 
 // State provider for selected country
-final selectedCountryProvider = StateProvider<String?>((ref) => "NL");
+final selectedCountryProvider = StateProvider<String?>((ref) => "FR");

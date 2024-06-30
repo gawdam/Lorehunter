@@ -5,6 +5,7 @@ class Tour {
     required this.types,
     required this.icons,
     required this.time_of_day,
+    this.distance,
   });
 
   String name;
@@ -12,4 +13,5 @@ class Tour {
   List<String> types;
   List<String> places;
   String time_of_day;
+  double? distance;
 }
