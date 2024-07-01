@@ -57,7 +57,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
     return ProviderScope(
       child: Scaffold(
-        backgroundColor: Colors.grey,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         resizeToAvoidBottomInset: false,
         // appBar: AppBar(
         //   title: Text(

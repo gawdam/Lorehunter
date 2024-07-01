@@ -13,5 +13,5 @@ class PlaceDetails {
   String brief;
   String detailedAudioTour;
   String? wikiURL;
-  String tourDuration;
+  int tourDuration;
 }

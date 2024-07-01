@@ -29,13 +29,25 @@ class _TourCardState extends State<PlaceCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       InkWell(
-                        onTap: () => launch(widget.placeDetails.wikiURL!),
-                        child: Text(
-                          widget.placeDetails.name,
-                          style: TextStyle(
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        onTap: () =>
+                            launchUrl(Uri.http(widget.placeDetails.wikiURL!)),
+                        child: Row(
+                          children: [
+                            Text(
+                              widget.placeDetails.name,
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              widget.placeDetails.name,
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 8.0),
@@ -58,7 +70,7 @@ class _TourCardState extends State<PlaceCard> {
                         borderRadius: BorderRadius.circular(4.0),
                       ),
                       child: Text(
-                        widget.placeDetails.tourDuration,
+                        "${widget.placeDetails.tourDuration} mins",
                         style: TextStyle(fontSize: 14.0),
                       ),
                     ),
@@ -77,7 +89,7 @@ class _TourCardState extends State<PlaceCard> {
           ),
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            height: _isExpanded ? 350.0 : 0.0,
+            height: _isExpanded ? 400.0 : 0.0,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(

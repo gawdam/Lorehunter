@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lorehunter/functions/get_place_details.dart';
+import 'package:lorehunter/interns/audio_guide_intern.dart';
 import 'package:lorehunter/models/place_details.dart';
 import 'package:lorehunter/models/tour_details.dart';
 import 'package:lorehunter/providers/place_details_provider.dart';
@@ -19,32 +22,47 @@ class ItineraryInformationScreen extends ConsumerStatefulWidget {
 class _ItineraryInformationScreenState
     extends ConsumerState<ItineraryInformationScreen> {
   final double _initFabHeight = 120.0;
-  List<String>? _places;
-  late List<PlaceDetails> _placeDetails;
+  List<String> _places = [];
+  List<PlaceDetails> _placeDetails = [];
+  int _timeSpentAtPlaces = 0;
 
   @override
   void initState() {
     // TODO: implement initState
     _places = widget.tour.places;
     print("list of places${_places}");
-    getPlaceDetailsFromListOfPlaces();
+    getPlaceDetails(_places!);
   }
 
-  void getPlaceDetailsFromListOfPlaces() async {
-    print("getPlaceDetailsFromListOfPlaces");
-    _placeDetails = await getPlaceDetails(_places!);
-    print(_placeDetails);
-    ref.read(placeDetailsProvider.notifier).state = _placeDetails;
+  Future<List<PlaceDetails>> getPlaceDetails(List<String> places) async {
+    AudioGuide audioGuide = AudioGuide(theme: "The last of us tv series");
+    await audioGuide.initAI();
+    List<PlaceDetails> listOfPlaceDetails = [];
+    for (String place in places) {
+      var response = await audioGuide.gemini(place);
+      PlaceDetails placeDetails = await getPlaceDetailsFromJson(response);
+      listOfPlaceDetails.add(placeDetails);
+      ref.read(placeDetailsProvider.notifier).state = listOfPlaceDetails;
+      setState(() {
+        _placeDetails = listOfPlaceDetails;
+        _timeSpentAtPlaces += placeDetails.tourDuration;
+      });
+    }
+
+    return listOfPlaceDetails;
   }
 
   double _fabHeight = 0;
 
-  double _panelHeightOpen = 500;
+  final double _panelHeightOpen = 800;
 
-  double _panelHeightClosed = 200.0;
+  final double _panelHeightClosed = 200.0;
 
   @override
   Widget build(BuildContext context) {
+    int duration = ((widget.tour.distance ?? 0) / 1000 / 6 * 60).round() +
+        _timeSpentAtPlaces;
+    final _placeDetailsProvider = ref.watch(placeDetailsProvider);
     Widget _button(String label, IconData icon, Color color) {
       return Column(
         children: <Widget>[
@@ -118,10 +136,8 @@ class _ItineraryInformationScreenState
                       Icons.account_balance, Colors.blue),
                   _button("${((widget.tour.distance ?? 0) / 1000).round()} km",
                       Icons.directions_walk, Colors.red),
-                  _button(
-                      "${((widget.tour.distance ?? 0) / 1000 / 6 * 60).round()} mins",
-                      Icons.timer_outlined,
-                      Colors.green),
+                  _button("${(duration / 60).round()} hrs",
+                      Icons.timer_outlined, Colors.green),
                   _button(widget.tour.time_of_day, Icons.sunny,
                       Colors.yellow[700]!),
                 ],
@@ -140,27 +156,22 @@ class _ItineraryInformationScreenState
 //     return PlaceCard(placeDetails: item);
 //   },
 // ),
-              Container(
-                padding: const EdgeInsets.only(left: 24.0, right: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[PlaceCard(placeDetails: _placeDetails[0])],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.only(left: 24.0, right: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[PlaceCard(placeDetails: _placeDetails[1])],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.only(left: 24.0, right: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[PlaceCard(placeDetails: _placeDetails[3])],
-                ),
-              ),
+              _placeDetails.isEmpty
+                  ? Container(
+                      width: 50, height: 50, child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                      child: Container(
+                        height: 600,
+                        child: ListView.builder(
+                          itemBuilder: (context, index) {
+                            return PlaceCard(
+                              placeDetails: _placeDetails[index],
+                            );
+                          },
+                          itemCount: _placeDetails.length,
+                        ),
+                      ),
+                    ),
               SizedBox(
                 height: 24,
               ),

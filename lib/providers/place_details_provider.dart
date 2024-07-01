@@ -18,6 +18,6 @@ PlaceDetails getPlaceDetailsFromJson(String jsonString) {
       brief: jsonMap['brief'],
       detailedAudioTour: jsonMap['detailedAudioTour'],
       wikiURL: jsonMap['wikiURL'],
-      tourDuration: "${jsonMap['duration']} mins");
+      tourDuration: jsonMap['duration']);
   return placeDetails;
 }

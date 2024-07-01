@@ -17,9 +17,10 @@ LatLng convertCoordinates(Map<String, dynamic> coordinate) {
   return (LatLng(lat, lng));
 }
 
-String convertLatLngListToJson(List<LatLng> coordinates) {
+String convertLatLngListToJson(List<LatLng> coordinates, List<String> places) {
   final List<List<double>> latLngList =
       coordinates.map((latLng) => [latLng.longitude, latLng.latitude]).toList();
+  latLngList.sort((a, b) => a[0].compareTo(b[0]));
   return jsonEncode({'coordinates': latLngList});
 }
 
@@ -59,8 +60,6 @@ class _RoutesState extends ConsumerState<Routes> {
   }
 
   Future<List<LatLng>> getPolyLinePoints() async {
-    await dotenv.load(fileName: ".env");
-
     List<LatLng> polylineCoordinates = [];
     List<PointLatLng> polylineResult;
 
@@ -69,7 +68,9 @@ class _RoutesState extends ConsumerState<Routes> {
       waypoints.add(PolylineWayPoint(
           location: "${coordinates[i].latitude}, ${coordinates[i].longitude}"));
     }
-    var res = await getRoutePolyline(convertLatLngListToJson(coordinates));
+    convertLatLngListToJson(coordinates, widget.places);
+    var res = await getRoutePolyline(
+        convertLatLngListToJson(coordinates, widget.places));
     polylineResult = res['result'];
     var dist = res['distance'];
 
