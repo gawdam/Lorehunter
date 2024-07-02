@@ -134,6 +134,8 @@ class _RoutesState extends ConsumerState<Routes> {
             alignment: Alignment.center,
             child: CircularProgressIndicator());
       return GoogleMap(
+        myLocationButtonEnabled: true,
+        myLocationEnabled: true,
         initialCameraPosition: CameraPosition(
           target: coord, // Default to (0, 0) if no coordinates
           zoom: 14.0,

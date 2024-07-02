@@ -4,8 +4,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 class PlaceCard extends StatefulWidget {
   final PlaceDetails placeDetails;
+  final String icon;
 
-  const PlaceCard({Key? key, required this.placeDetails}) : super(key: key);
+  const PlaceCard({Key? key, required this.placeDetails, required this.icon})
+      : super(key: key);
 
   @override
   State<PlaceCard> createState() => _TourCardState();
@@ -16,6 +18,7 @@ class _TourCardState extends State<PlaceCard> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.icon);
     return Card(
       child: Column(
         children: [
@@ -29,8 +32,9 @@ class _TourCardState extends State<PlaceCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       InkWell(
-                        onTap: () =>
-                            launchUrl(Uri.http(widget.placeDetails.wikiURL!)),
+                        onTap: () => launchUrl(Uri.parse(widget
+                                .placeDetails.wikiURL ??
+                            "https://www.google.com/search?q=${widget.placeDetails.name}")),
                         child: Row(
                           children: [
                             Text(
@@ -41,7 +45,7 @@ class _TourCardState extends State<PlaceCard> {
                               ),
                             ),
                             Text(
-                              widget.placeDetails.name,
+                              widget.icon,
                               style: TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold,
@@ -89,12 +93,14 @@ class _TourCardState extends State<PlaceCard> {
           ),
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            height: _isExpanded ? 400.0 : 0.0,
+            height: _isExpanded ? null : 0.0,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(
-                widget.placeDetails.detailedAudioTour,
-                style: TextStyle(fontSize: 14.0),
+              child: SingleChildScrollView(
+                child: Text(
+                  widget.placeDetails.detailedAudioTour,
+                  style: TextStyle(fontSize: 14.0),
+                ),
               ),
             ),
           ),

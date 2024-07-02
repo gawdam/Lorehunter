@@ -115,19 +115,24 @@ class _ItineraryInformationScreenState
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text(
-                    widget.tour.name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.normal,
-                      fontSize: 16.0,
+                  Container(
+                    width: MediaQuery.sizeOf(context).width * 0.8,
+                    child: Text(
+                      widget.tour.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                      ),
+                      textAlign: TextAlign.center,
+                      softWrap: true,
                     ),
-                    softWrap: true,
                   ),
                 ],
               ),
               SizedBox(
-                height: 36.0,
+                height: 25.0,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -162,16 +167,22 @@ class _ItineraryInformationScreenState
                   : SingleChildScrollView(
                       child: Container(
                         height: 600,
+                        width: 200,
                         child: ListView.builder(
                           itemBuilder: (context, index) {
                             return PlaceCard(
                               placeDetails: _placeDetails[index],
+                              icon: widget.tour.icons[index],
                             );
                           },
                           itemCount: _placeDetails.length,
                         ),
                       ),
                     ),
+              SizedBox(
+                height: 24,
+              ),
+              Divider(),
               SizedBox(
                 height: 24,
               ),

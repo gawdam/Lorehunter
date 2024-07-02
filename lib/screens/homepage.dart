@@ -75,7 +75,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   ? Container()
                   : Container(
                       width: MediaQuery.sizeOf(context).width * 1,
-                      height: MediaQuery.sizeOf(context).height * 1,
+                      height: MediaQuery.sizeOf(context).height * 1 - 190,
                       child: Routes(places: tour!.places)),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,

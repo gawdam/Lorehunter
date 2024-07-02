@@ -35,7 +35,7 @@ class PlacesFinder {
         "places": list<str> [list of places]
         "best_experienced_at": str [best @ time of day, choose between Morning, Afternoon and Evening]
         "types": list<str> [the type of the place - park/monument/museum]
-        "icons": list<str> [an android icon for this place]
+        "icons": list<str> [a list of emojis for these places, one emoji each]
       }
       Do not write any additional details. Make sure the JSON is valid
       """));
