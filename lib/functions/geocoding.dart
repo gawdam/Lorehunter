@@ -44,12 +44,13 @@ Future<Map<String, dynamic>?> getCoordinatesForFree(String placeName) async {
   try {
     coords = locationFromAddress(placeName).then((locations) {
       if (locations.isNotEmpty) {
+        print("locations empty");
         return {'lat': locations[0].latitude, 'lng': locations[0].longitude};
       }
       return null;
-    });
+    }).catchError((error, stackTrace) => null);
   } on Exception catch (e) {
-    print(e);
+    print("EXCEPTION: $e");
   }
   return coords;
 }

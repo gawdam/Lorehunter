@@ -17,6 +17,7 @@ Tour getTourFromJson(String jsonString) {
     types: List<String>.from(jsonMap['types'] as List),
     icons: List<String>.from(jsonMap['icons'] as List),
     time_of_day: jsonMap['best_experienced_at'] as String,
+    updatedPlaces: List<String>.from(jsonMap['places'] as List),
   );
   return tour;
 }

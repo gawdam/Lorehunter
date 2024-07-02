@@ -6,6 +6,7 @@ class Tour {
     required this.icons,
     required this.time_of_day,
     this.distance,
+    this.updatedPlaces,
   });
 
   String name;
@@ -14,4 +15,5 @@ class Tour {
   List<String> places;
   String time_of_day;
   double? distance;
+  List<String>? updatedPlaces;
 }

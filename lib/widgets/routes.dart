@@ -1,8 +1,10 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:lorehunter/algo/nearest_neighbour.dart';
 import 'package:lorehunter/functions/geocoding.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -17,13 +19,6 @@ LatLng convertCoordinates(Map<String, dynamic> coordinate) {
   return (LatLng(lat, lng));
 }
 
-String convertLatLngListToJson(List<LatLng> coordinates, List<String> places) {
-  final List<List<double>> latLngList =
-      coordinates.map((latLng) => [latLng.longitude, latLng.latitude]).toList();
-  latLngList.sort((a, b) => a[0].compareTo(b[0]));
-  return jsonEncode({'coordinates': latLngList});
-}
-
 class Routes extends ConsumerStatefulWidget {
   final List<String> places;
 
@@ -36,13 +31,49 @@ class Routes extends ConsumerStatefulWidget {
 class _RoutesState extends ConsumerState<Routes> {
   final Set<Marker> _markers = {};
   LatLng coord = LatLng(0, 0);
-  List<LatLng> coordinates = [];
+  List<LatLng> _coordinates = [];
   Map<PolylineId, Polyline> _polylines = {};
+  List<String> _updatedAndSortedPlaces = [];
 
   @override
   void initState() {
     super.initState();
+
     _createRoute();
+  }
+
+  Map<String, dynamic> optimizeWaypoints(
+      List<LatLng> coordinates, List<String> places) {
+    List<Map> sortedByCoord = List.generate(coordinates.length,
+        (index) => {'coord': coordinates[index], 'place': places[index]});
+    sortedByCoord
+        .sort((a, b) => a['coord'].latitude.compareTo(b['coord'].latitude));
+    print("UNOPTIMZED WAYPOINTS - ${places}");
+    print(
+        "ORDERED WAYPOINTS: ${List.generate(coordinates.length, (index) => sortedByCoord[index]['place'])}");
+    List result = optimizePathNearestNeighbor(
+      List.generate(
+          coordinates.length, (index) => sortedByCoord[index]['coord']),
+      List.generate(
+          coordinates.length, (index) => sortedByCoord[index]['place']),
+    );
+    print("OPTIMZED WAYPOINTS - ${result[1]}");
+    List<LatLng> optimizedCoordinates = result[0];
+    List<String> optimizedPlaces = result[1];
+
+    // Create a map to maintain order
+
+    // Convert sorted map to a sorted list of places
+    return {'coordinates': optimizedCoordinates, 'places': optimizedPlaces};
+  }
+
+  String convertLatLngListToJson(
+      List<LatLng> coordinates, List<String> places) {
+    final List<List<double>> latLngList = coordinates
+        .map((latLng) => [latLng.longitude, latLng.latitude])
+        .toList();
+
+    return jsonEncode({'coordinates': latLngList});
   }
 
   Future<void> generatePolylineFromPoints() async {
@@ -52,7 +83,7 @@ class _RoutesState extends ConsumerState<Routes> {
     Polyline polyline = Polyline(
         polylineId: id,
         points: polylineCoordinates,
-        color: Colors.black,
+        color: Colors.blue[800]!,
         width: 8);
     setState(() {
       _polylines[id] = polyline;
@@ -64,13 +95,18 @@ class _RoutesState extends ConsumerState<Routes> {
     List<PointLatLng> polylineResult;
 
     List<PolylineWayPoint> waypoints = [];
-    for (var i = 1; i < coordinates.length - 1; i++) {
+    Map result = optimizeWaypoints(_coordinates, _updatedAndSortedPlaces);
+    setState(() {
+      _updatedAndSortedPlaces = result['places'];
+    });
+    List<LatLng> optimizedCoordinates = result['coordinates'];
+    for (var i = 1; i < optimizedCoordinates.length - 1; i++) {
       waypoints.add(PolylineWayPoint(
-          location: "${coordinates[i].latitude}, ${coordinates[i].longitude}"));
+          location:
+              "${optimizedCoordinates[i].latitude}, ${optimizedCoordinates[i].longitude}"));
     }
-    convertLatLngListToJson(coordinates, widget.places);
     var res = await getRoutePolyline(
-        convertLatLngListToJson(coordinates, widget.places));
+        convertLatLngListToJson(optimizedCoordinates, _updatedAndSortedPlaces));
     polylineResult = res['result'];
     var dist = res['distance'];
 
@@ -83,6 +119,7 @@ class _RoutesState extends ConsumerState<Routes> {
     }
     Tour? tour = ref.read(tourProvider.notifier).state;
     tour!.distance = dist;
+    tour.updatedPlaces = _updatedAndSortedPlaces;
     ref.read(tourProvider.notifier).state = tour;
 
     setState(() {});
@@ -98,7 +135,8 @@ class _RoutesState extends ConsumerState<Routes> {
         LatLng latLng = convertCoordinates(coordinate);
         setState(() {
           coord = latLng;
-          coordinates.add(coord);
+          _coordinates.add(coord);
+          _updatedAndSortedPlaces.add(element);
         });
 
         _markers.add(
@@ -113,9 +151,6 @@ class _RoutesState extends ConsumerState<Routes> {
         await Future.delayed(Duration(seconds: 1));
       }
     }
-
-    // Update UI after coordinates are retrieved
-    setState(() {});
   }
 
   Future<Map<String, dynamic>> _createRoute() async {

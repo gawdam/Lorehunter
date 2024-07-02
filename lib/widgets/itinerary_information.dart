@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lorehunter/functions/get_place_details.dart';
 import 'package:lorehunter/interns/audio_guide_intern.dart';
 import 'package:lorehunter/models/place_details.dart';
 import 'package:lorehunter/models/tour_details.dart';
 import 'package:lorehunter/providers/place_details_provider.dart';
+import 'package:lorehunter/providers/tour_provider.dart';
 import 'package:lorehunter/widgets/place_cards.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -31,7 +31,7 @@ class _ItineraryInformationScreenState
     // TODO: implement initState
     _places = widget.tour.places;
     print("list of places${_places}");
-    getPlaceDetails(_places!);
+    getPlaceDetails(_places);
   }
 
   Future<List<PlaceDetails>> getPlaceDetails(List<String> places) async {
@@ -62,7 +62,9 @@ class _ItineraryInformationScreenState
   Widget build(BuildContext context) {
     int duration = ((widget.tour.distance ?? 0) / 1000 / 6 * 60).round() +
         _timeSpentAtPlaces;
-    final _placeDetailsProvider = ref.watch(placeDetailsProvider);
+    final _tour = ref.watch(tourProvider);
+    print("PLaces: ${_tour!.places.toString()}");
+    print("Updated Places: ${_tour!.updatedPlaces.toString()}");
     Widget _button(String label, IconData icon, Color color) {
       return Column(
         children: <Widget>[
@@ -170,9 +172,19 @@ class _ItineraryInformationScreenState
                         width: 200,
                         child: ListView.builder(
                           itemBuilder: (context, index) {
+                            if (_tour!.updatedPlaces!.length <= index) {
+                              return Container();
+                            }
+                            if (_tour.places[index] !=
+                                _tour.updatedPlaces![index]) {
+                              return PlaceCard(
+                                  placeDetails: _placeDetails[_tour.places
+                                      .indexOf(_tour.updatedPlaces![index])],
+                                  icon: "");
+                            }
                             return PlaceCard(
                               placeDetails: _placeDetails[index],
-                              icon: widget.tour.icons[index],
+                              icon: "",
                             );
                           },
                           itemCount: _placeDetails.length,
