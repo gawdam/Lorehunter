@@ -92,19 +92,37 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       SizedBox(
                         width: MediaQuery.sizeOf(context).width * 0.02,
                       ),
-                      Container(
-                        width: MediaQuery.sizeOf(context).width * 0.15,
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey[100]),
-                            onPressed: placesFinder.initialized
-                                ? () {
-                                    getPlaces("$cityValue, $countryValue");
-                                  }
-                                : null,
-                            child: Icon(Icons.star)),
-                      ),
                     ],
+                  ),
+                  Container(
+                    width: MediaQuery.sizeOf(context).width * 0.85,
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey[100],
+                            padding: EdgeInsets.all(5)),
+                        onPressed: placesFinder.initialized
+                            ? () {
+                                getPlaces("$cityValue, $countryValue");
+                              }
+                            : null,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Generate walking tour",
+                              style: TextStyle(
+                                  color: Colors.black, fontFamily: "Roboto"),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Image.asset(
+                              'assets/images/gemini.png',
+                              width: 25,
+                              // height: 50,
+                            ),
+                          ],
+                        )),
                   ),
                   const SizedBox(
                       // height: MediaQuery.sizeOf(context).height * 0.03,

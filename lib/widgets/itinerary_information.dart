@@ -9,6 +9,7 @@ import 'package:lorehunter/providers/location_provider.dart';
 import 'package:lorehunter/providers/place_details_provider.dart';
 import 'package:lorehunter/providers/tour_provider.dart';
 import 'package:lorehunter/widgets/place_cards.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class ItineraryInformationScreen extends ConsumerStatefulWidget {
@@ -27,6 +28,7 @@ class _ItineraryInformationScreenState
   List<PlaceDetails> _placeDetails = [];
   int _timeSpentAtPlaces = 0;
   String? _city;
+  Tour? _previousTour; // Store the previous tour
 
   @override
   void initState() {
@@ -35,6 +37,27 @@ class _ItineraryInformationScreenState
     print("list of places${_places}");
     getPlaceDetails(_places);
     // _city = ref.watch(selectedCityProvider);
+  }
+
+  @override
+  void didUpdateWidget(covariant ItineraryInformationScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Check if tour has changed
+    if (widget.tour != _previousTour) {
+      _previousTour = widget.tour; // Update previous tour
+      _updatePlacesAndDetails(widget.tour); // Update places and details
+    }
+  }
+
+  void _updatePlacesAndDetails(Tour tour) {
+    _places = tour.places;
+    getPlaceDetails(_places).then((listOfPlaceDetails) {
+      setState(() {
+        _placeDetails = listOfPlaceDetails;
+        _timeSpentAtPlaces = _placeDetails.fold(
+            0, (sum, placeDetails) => sum + placeDetails.tourDuration);
+      });
+    });
   }
 
   Future<List<PlaceDetails>> getPlaceDetails(List<String> places) async {
@@ -66,24 +89,28 @@ class _ItineraryInformationScreenState
     int duration = ((widget.tour.distance ?? 0) / 1000 / 6 * 60).round() +
         _timeSpentAtPlaces;
     final _tour = ref.watch(tourProvider);
-    print("PLaces: ${_tour!.places.toString()}");
-    print("Updated Places: ${_tour!.updatedPlaces.toString()}");
-    Widget _button(String label, IconData icon, Color color) {
+
+    Widget _button(String labelName, String label, IconData icon, Color color) {
       return Column(
         children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Icon(
-              icon,
-              color: Colors.white,
+          Tooltip(
+            message: labelName,
+            child: Container(
+              padding: const EdgeInsets.all(14.0),
+              child: Icon(
+                icon,
+                color: Colors.white,
+              ),
+              decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.15),
+                      blurRadius: 8.0,
+                    )
+                  ]),
             ),
-            decoration:
-                BoxDecoration(color: color, shape: BoxShape.circle, boxShadow: [
-              BoxShadow(
-                color: Color.fromRGBO(0, 0, 0, 0.15),
-                blurRadius: 8.0,
-              )
-            ]),
           ),
           SizedBox(
             height: 12.0,
@@ -142,14 +169,30 @@ class _ItineraryInformationScreenState
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  _button("${widget.tour.places.length} places",
-                      Icons.account_balance, Colors.blue),
-                  _button("${((widget.tour.distance ?? 0) / 1000).round()} km",
-                      Icons.directions_walk, Colors.red),
-                  _button("${(duration / 60).round()} hrs",
-                      Icons.timer_outlined, Colors.green),
-                  _button(widget.tour.time_of_day, Icons.sunny,
-                      Colors.yellow[700]!),
+                  _button(
+                    "# Places",
+                    "${widget.tour.places.length} places",
+                    Icons.account_balance,
+                    Colors.blue,
+                  ),
+                  _button(
+                    "Distance covered",
+                    "${((widget.tour.distance ?? 0) / 1000).round()} km",
+                    Icons.directions_walk,
+                    Colors.red,
+                  ),
+                  _button(
+                    "Tour duration",
+                    "${(duration / 60).round()} hrs",
+                    Icons.timer_outlined,
+                    Colors.green,
+                  ),
+                  _button(
+                    "Best time to visit",
+                    widget.tour.time_of_day,
+                    Icons.sunny,
+                    Colors.yellow[700]!,
+                  ),
                 ],
               ),
               SizedBox(
@@ -166,34 +209,38 @@ class _ItineraryInformationScreenState
 //     return PlaceCard(placeDetails: item);
 //   },
 // ),
-              _placeDetails.isEmpty
-                  ? Container(
-                      width: 50, height: 50, child: CircularProgressIndicator())
-                  : SingleChildScrollView(
-                      child: Container(
-                        height: 600,
-                        width: 200,
-                        child: ListView.builder(
-                          itemBuilder: (context, index) {
-                            if (_tour!.updatedPlaces!.length <= index) {
-                              return Container();
-                            }
-                            if (_tour.places[index] !=
-                                _tour.updatedPlaces![index]) {
-                              return PlaceCard(
-                                  placeDetails: _placeDetails[_tour.places
-                                      .indexOf(_tour.updatedPlaces![index])],
-                                  icon: "");
-                            }
+              SingleChildScrollView(
+                child: Container(
+                  height: 600,
+                  width: 200,
+                  child: Skeletonizer(
+                    enabled: _placeDetails.length != _tour!.places.length,
+                    child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        if (_tour!.updatedPlaces!.length <= index) {
+                          return Container();
+                        }
+                        if (_placeDetails.length >=
+                            _tour!.places
+                                .indexOf(_tour.updatedPlaces![index])) {
+                          if (_tour.places[index] !=
+                              _tour.updatedPlaces![index]) {
                             return PlaceCard(
-                              placeDetails: _placeDetails[index],
-                              icon: "",
-                            );
-                          },
-                          itemCount: _placeDetails.length,
-                        ),
-                      ),
+                                placeDetails: _placeDetails[_tour.places
+                                    .indexOf(_tour.updatedPlaces![index])],
+                                icon: "");
+                          }
+                        }
+                        return PlaceCard(
+                          placeDetails: _placeDetails[index],
+                          icon: "",
+                        );
+                      },
+                      itemCount: _placeDetails.length,
                     ),
+                  ),
+                ),
+              ),
               SizedBox(
                 height: 24,
               ),

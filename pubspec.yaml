@@ -49,6 +49,7 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
   url_launcher: ^6.3.0
   latlong2: ^0.9.1
+  skeletonizer: ^1.3.0
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +78,7 @@ flutter:
   assets:
     - .env
     - assets/cities/cities.json
+    - assets/images/gemini.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

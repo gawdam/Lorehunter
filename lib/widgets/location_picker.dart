@@ -36,7 +36,7 @@ class LocationPicker extends ConsumerWidget {
     });
 
     return Container(
-      width: MediaQuery.sizeOf(context).width * 0.75,
+      width: MediaQuery.sizeOf(context).width * 0.9,
       height: 55,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -45,7 +45,7 @@ class LocationPicker extends ConsumerWidget {
           Container(
             width: 48,
             height: 35,
-            color: Colors.grey[100],
+            color: Colors.grey[200],
             child: DropdownSearch<String>(
               dropdownButtonProps: DropdownButtonProps(
                   icon: Icon(
@@ -109,57 +109,51 @@ class LocationPicker extends ConsumerWidget {
             width: 10,
           ),
           SearchAnchor(
-              viewBackgroundColor: Colors.grey[100],
+              // viewBackgroundColor: Colors.grey[100],
               viewOnSubmitted: (city) {
-                ref.read(selectedCityProvider.notifier).state = city;
-              },
-              builder: (BuildContext context, SearchController controller) {
-                // controller.text = selectedCity!;
+            ref.read(selectedCityProvider.notifier).state = city;
+          }, builder: (BuildContext context, SearchController controller) {
+            // controller.text = selectedCity!;
 
-                // print(controller.value.text);
-                // controller.text ??= "Amsterdam";
-                return SearchBar(
-                  backgroundColor: MaterialStateProperty.resolveWith((states) {
-                    // If the button is pressed, return green, otherwise blue
-
-                    return Colors.grey[100];
-                  }),
-                  hintText: "City",
-                  controller: controller,
-                  onSubmitted: (value) {
-                    ref.read(selectedCityProvider.notifier).state = value;
-                  },
-                  onTap: () {
-                    controller.openView();
-                  },
-                  leading: const Icon(Icons.location_on_outlined),
-                  constraints: BoxConstraints(
-                      maxWidth:
-                          MediaQuery.sizeOf(context).width * 0.75 - 48 - 10,
-                      minHeight: 40),
-                );
-              },
-              suggestionsBuilder:
-                  (BuildContext context, SearchController controller) {
-                List<String> filteredCities = [];
-                cities.forEach((element) {
-                  if (element
-                      .toLowerCase()
-                      .contains(controller.text.toLowerCase())) {
-                    filteredCities.add(element);
-                  }
-                });
-                return List<ListTile>.generate(filteredCities.length,
-                    (int index) {
-                  final String item = filteredCities[index];
-                  return ListTile(
-                    title: Text(item),
-                    onTap: () {
-                      controller.closeView(item);
-                    },
-                  );
-                });
+            // print(controller.value.text);
+            // controller.text ??= "Amsterdam";
+            return SearchBar(
+              backgroundColor: MaterialStateProperty.resolveWith((states) {
+                return Colors.grey[100];
               }),
+              hintText: "City",
+              controller: controller,
+              onSubmitted: (value) {
+                ref.read(selectedCityProvider.notifier).state = value;
+              },
+              onTap: () {
+                controller.openView();
+              },
+              leading: const Icon(Icons.location_on_outlined),
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.sizeOf(context).width * 0.85 - 10 - 48,
+                  minHeight: 40),
+            );
+          }, suggestionsBuilder:
+                  (BuildContext context, SearchController controller) {
+            List<String> filteredCities = [];
+            cities.forEach((element) {
+              if (element
+                  .toLowerCase()
+                  .contains(controller.text.toLowerCase())) {
+                filteredCities.add(element);
+              }
+            });
+            return List<ListTile>.generate(filteredCities.length, (int index) {
+              final String item = filteredCities[index];
+              return ListTile(
+                title: Text(item),
+                onTap: () {
+                  controller.closeView(item);
+                },
+              );
+            });
+          }),
 
           // Container(
           //   width: MediaQuery.sizeOf(context).width * 0.7,
