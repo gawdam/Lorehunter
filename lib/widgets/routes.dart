@@ -35,11 +35,33 @@ class _RoutesState extends ConsumerState<Routes> {
   Map<PolylineId, Polyline> _polylines = {};
   List<String> _updatedAndSortedPlaces = [];
 
+  List<String> _previousPlaces = [];
+
   @override
   void initState() {
     super.initState();
-
+    _previousPlaces = widget.places;
     _createRoute();
+  }
+
+  @override
+  void didUpdateWidget(covariant Routes oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Check if places list has changed
+    if (widget.places != _previousPlaces) {
+      _previousPlaces = widget.places; // Update previous places
+      _clearMapData(); // Clear existing markers, polylines, etc.
+      _createRoute(); // Re-create route with updated places
+    }
+  }
+
+  void _clearMapData() {
+    setState(() {
+      _markers.clear();
+      _coordinates.clear();
+      _polylines.clear();
+      _updatedAndSortedPlaces.clear();
+    });
   }
 
   Map<String, dynamic> optimizeWaypoints(
@@ -161,6 +183,8 @@ class _RoutesState extends ConsumerState<Routes> {
 
   @override
   Widget build(BuildContext context) {
+    Tour? tour = ref.watch(tourProvider.select((value) => value));
+
     return Builder(builder: (context) {
       if (_markers.isEmpty)
         return Container(
@@ -168,6 +192,7 @@ class _RoutesState extends ConsumerState<Routes> {
             width: 50,
             alignment: Alignment.center,
             child: CircularProgressIndicator());
+
       return GoogleMap(
         myLocationButtonEnabled: true,
         myLocationEnabled: true,

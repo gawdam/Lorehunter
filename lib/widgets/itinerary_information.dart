@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lorehunter/interns/audio_guide_intern.dart';
 import 'package:lorehunter/models/place_details.dart';
 import 'package:lorehunter/models/tour_details.dart';
+import 'package:lorehunter/providers/location_provider.dart';
 import 'package:lorehunter/providers/place_details_provider.dart';
 import 'package:lorehunter/providers/tour_provider.dart';
 import 'package:lorehunter/widgets/place_cards.dart';
@@ -25,6 +26,7 @@ class _ItineraryInformationScreenState
   List<String> _places = [];
   List<PlaceDetails> _placeDetails = [];
   int _timeSpentAtPlaces = 0;
+  String? _city;
 
   @override
   void initState() {
@@ -32,6 +34,7 @@ class _ItineraryInformationScreenState
     _places = widget.tour.places;
     print("list of places${_places}");
     getPlaceDetails(_places);
+    // _city = ref.watch(selectedCityProvider);
   }
 
   Future<List<PlaceDetails>> getPlaceDetails(List<String> places) async {
@@ -39,7 +42,7 @@ class _ItineraryInformationScreenState
     await audioGuide.initAI();
     List<PlaceDetails> listOfPlaceDetails = [];
     for (String place in places) {
-      var response = await audioGuide.gemini(place);
+      var response = await audioGuide.gemini("$place");
       PlaceDetails placeDetails = await getPlaceDetailsFromJson(response);
       listOfPlaceDetails.add(placeDetails);
       ref.read(placeDetailsProvider.notifier).state = listOfPlaceDetails;
