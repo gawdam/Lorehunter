@@ -94,12 +94,24 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       ),
                     ],
                   ),
+
                   Container(
                     width: MediaQuery.sizeOf(context).width * 0.85,
                     child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[100],
-                            padding: EdgeInsets.all(5)),
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateColor.resolveWith(
+                                (states) => Colors.grey[100]!),
+                            elevation: MaterialStateProperty.resolveWith(
+                                (states) => 10),
+                            shadowColor: MaterialStateColor.resolveWith(
+                                (states) => Color.fromARGB(20, 155, 39, 176)!),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                              side: BorderSide(
+                                  color: Colors.purple[500]!, width: 1),
+                            ))),
                         onPressed: placesFinder.initialized
                             ? () {
                                 getPlaces("$cityValue, $countryValue");
@@ -111,7 +123,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                             Text(
                               "Generate walking tour",
                               style: TextStyle(
-                                  color: Colors.black, fontFamily: "Roboto"),
+                                color: Colors.black,
+                                // fontFamily: "Open Sans",
+                              ),
                             ),
                             SizedBox(
                               width: 5,
@@ -153,7 +167,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       bottom: 0,
                       width: MediaQuery.sizeOf(context).width,
                       height: MediaQuery.sizeOf(context).height,
-                      child: ItineraryInformationScreen(tour: tour!)),
+                      child: ItineraryInformationScreen(
+                        tour: tour!,
+                        city: cityValue!,
+                      )),
             ],
           ),
         ),

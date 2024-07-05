@@ -29,7 +29,7 @@ class AudioGuide {
       All your responses should be in plain text, no markdowns, no formatting. Do not use quotes or special characters in your transcript. Only allowable characters are alphabets, commas, periods, apostrophe and hyphens.
       Sample output:
       { 
-        "name": <str> [place name]
+        "name": <str> [place name, without the city name]
         "brief": <str> [A one liner about the place less than 20 words]
         "detailedAudioTour": <str> [Audio tour transcript. 500 words]
         "wikiURL": <str> [URL of the wikipedia page for this place]

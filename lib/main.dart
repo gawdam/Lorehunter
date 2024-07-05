@@ -17,9 +17,10 @@ class MyApp extends StatelessWidget {
     return ProviderScope(
       child: MaterialApp(
         title: 'Flutter Demo',
-        theme: ThemeData(
-          useMaterial3: true,
-        ),
+        // theme: ThemeData(
+        //   useMaterial3: true,
+
+        // ),
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
     );

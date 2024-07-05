@@ -13,9 +13,10 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class ItineraryInformationScreen extends ConsumerStatefulWidget {
-  ItineraryInformationScreen({required this.tour});
+  ItineraryInformationScreen({required this.tour, required this.city});
 
   Tour tour;
+  String city;
   @override
   ConsumerState<ItineraryInformationScreen> createState() =>
       _ItineraryInformationScreenState();
@@ -27,7 +28,6 @@ class _ItineraryInformationScreenState
   List<String> _places = [];
   List<PlaceDetails> _placeDetails = [];
   int _timeSpentAtPlaces = 0;
-  String? _city;
   Tour? _previousTour; // Store the previous tour
 
   @override
@@ -35,7 +35,7 @@ class _ItineraryInformationScreenState
     // TODO: implement initState
     _places = widget.tour.places;
     print("list of places${_places}");
-    getPlaceDetails(_places);
+    getPlaceDetails(_places, widget.city);
     // _city = ref.watch(selectedCityProvider);
   }
 
@@ -51,7 +51,7 @@ class _ItineraryInformationScreenState
 
   void _updatePlacesAndDetails(Tour tour) {
     _places = tour.places;
-    getPlaceDetails(_places).then((listOfPlaceDetails) {
+    getPlaceDetails(_places, widget.city).then((listOfPlaceDetails) {
       setState(() {
         _placeDetails = listOfPlaceDetails;
         _timeSpentAtPlaces = _placeDetails.fold(
@@ -60,12 +60,13 @@ class _ItineraryInformationScreenState
     });
   }
 
-  Future<List<PlaceDetails>> getPlaceDetails(List<String> places) async {
+  Future<List<PlaceDetails>> getPlaceDetails(
+      List<String> places, String city) async {
     AudioGuide audioGuide = AudioGuide(theme: "The last of us tv series");
     await audioGuide.initAI();
     List<PlaceDetails> listOfPlaceDetails = [];
     for (String place in places) {
-      var response = await audioGuide.gemini("$place");
+      var response = await audioGuide.gemini("$place, $city");
       PlaceDetails placeDetails = await getPlaceDetailsFromJson(response);
       listOfPlaceDetails.add(placeDetails);
       ref.read(placeDetailsProvider.notifier).state = listOfPlaceDetails;

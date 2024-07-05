@@ -52,7 +52,7 @@ final countryListProvider = StateProvider<List<String>>((ref) {
 });
 
 // State provider for selected city
-final selectedCityProvider = StateProvider<String?>((ref) => "New York");
+final selectedCityProvider = StateProvider<String?>((ref) => "London");
 
 // State provider for selected country
-final selectedCountryProvider = StateProvider<String?>((ref) => "US");
+final selectedCountryProvider = StateProvider<String?>((ref) => "GB");

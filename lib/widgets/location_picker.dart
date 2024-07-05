@@ -37,21 +37,51 @@ class LocationPicker extends ConsumerWidget {
 
     return Container(
       width: MediaQuery.sizeOf(context).width * 0.9,
-      height: 55,
+      height: 43,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             width: 48,
-            height: 35,
-            color: Colors.grey[200],
+            height: 40,
+            decoration: BoxDecoration(
+              // color: Colors.grey[100],
+              boxShadow: [
+                BoxShadow(
+                  color: Color.fromARGB(36, 155, 39, 176)!,
+                  blurRadius: 10,
+                ),
+              ],
+            ),
+
             child: DropdownSearch<String>(
               dropdownButtonProps: DropdownButtonProps(
                   icon: Icon(
                 null,
                 size: 14,
               )),
+              dropdownDecoratorProps: DropDownDecoratorProps(
+                textAlign: TextAlign.center,
+                dropdownSearchDecoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      borderSide: BorderSide(
+                        color: Colors.purple[500]!,
+                        width: 1,
+                      )),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      borderSide: BorderSide(
+                        color: Colors.purple[500]!,
+                        width: 2,
+                      )),
+                  filled: true,
+                  fillColor: Colors.grey[300]!,
+                  contentPadding: EdgeInsets.only(
+                      bottom: 10.0, left: 10.0, right: 10.0, top: 5),
+                ),
+              ),
               // dropdownDecoratorProps: DropDownDecoratorProps(
               //     dropdownSearchDecoration:
               //         InputDecoration(fillColor: Colors.grey[100])),
@@ -60,10 +90,13 @@ class LocationPicker extends ConsumerWidget {
                 showSelectedItems: true,
                 searchDelay: Duration.zero,
                 listViewProps: ListViewProps(),
+                menuProps:
+                    MenuProps(elevation: 10, backgroundColor: Colors.grey[100]),
                 // favoriteItemProps: FavoriteItemProps(),
                 // scrollbarProps: ScrollbarProps(
                 //     thumbVisibility: false, trackVisibility: false),
                 searchFieldProps: TextFieldProps(
+                    cursorHeight: 16,
                     strutStyle: StrutStyle(),
                     autofocus: true,
                     textAlign: TextAlign.center,
@@ -109,6 +142,7 @@ class LocationPicker extends ConsumerWidget {
             width: 10,
           ),
           SearchAnchor(
+
               // viewBackgroundColor: Colors.grey[100],
               viewOnSubmitted: (city) {
             ref.read(selectedCityProvider.notifier).state = city;
@@ -118,6 +152,15 @@ class LocationPicker extends ConsumerWidget {
             // print(controller.value.text);
             // controller.text ??= "Amsterdam";
             return SearchBar(
+              overlayColor:
+                  MaterialStateColor.resolveWith((states) => Colors.purple),
+              elevation: MaterialStateProperty.resolveWith((states) => 10),
+              shadowColor: MaterialStateColor.resolveWith(
+                  (states) => Color.fromARGB(36, 155, 39, 176)!),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      side: BorderSide(color: Colors.purple[500]!, width: 1))),
               backgroundColor: MaterialStateProperty.resolveWith((states) {
                 return Colors.grey[100];
               }),
