@@ -90,8 +90,10 @@ class LocationPicker extends ConsumerWidget {
                 showSelectedItems: true,
                 searchDelay: Duration.zero,
                 listViewProps: ListViewProps(),
-                menuProps:
-                    MenuProps(elevation: 10, backgroundColor: Colors.grey[100]),
+                menuProps: MenuProps(
+                  elevation: 10,
+                  backgroundColor: Colors.grey[200],
+                ),
                 // favoriteItemProps: FavoriteItemProps(),
                 // scrollbarProps: ScrollbarProps(
                 //     thumbVisibility: false, trackVisibility: false),
@@ -100,7 +102,7 @@ class LocationPicker extends ConsumerWidget {
                     strutStyle: StrutStyle(),
                     autofocus: true,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, height: 1),
+                    style: TextStyle(fontSize: 16, height: 1, fontFamily: null),
                     padding: EdgeInsets.all(5)),
                 itemBuilder: (context, item, isSelected) => Column(
                   children: [
@@ -152,6 +154,8 @@ class LocationPicker extends ConsumerWidget {
             // print(controller.value.text);
             // controller.text ??= "Amsterdam";
             return SearchBar(
+              textStyle: MaterialStateProperty.resolveWith(
+                  (states) => TextStyle(fontFamily: null)),
               overlayColor:
                   MaterialStateColor.resolveWith((states) => Colors.purple),
               elevation: MaterialStateProperty.resolveWith((states) => 10),
@@ -168,6 +172,8 @@ class LocationPicker extends ConsumerWidget {
               controller: controller,
               onChanged: (value) {
                 ref.read(selectedCityProvider.notifier).state = value;
+                setState() {}
+                ;
               },
               onTap: () {
                 controller.openView();
@@ -190,7 +196,10 @@ class LocationPicker extends ConsumerWidget {
             return List<ListTile>.generate(filteredCities.length, (int index) {
               final String item = filteredCities[index];
               return ListTile(
-                title: Text(item),
+                title: Text(
+                  item,
+                  style: TextStyle(fontFamily: null),
+                ),
                 onTap: () {
                   controller.closeView(item);
                 },

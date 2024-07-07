@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lorehunter/screens/homepage.dart';
@@ -17,10 +18,10 @@ class MyApp extends StatelessWidget {
     return ProviderScope(
       child: MaterialApp(
         title: 'Flutter Demo',
-        // theme: ThemeData(
-        //   useMaterial3: true,
-
-        // ),
+        theme: ThemeData(
+          fontFamily: GoogleFonts.firaSans().fontFamily,
+          useMaterial3: true,
+        ),
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
     );

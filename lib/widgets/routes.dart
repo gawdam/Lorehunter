@@ -21,8 +21,10 @@ LatLng convertCoordinates(Map<String, dynamic> coordinate) {
 
 class Routes extends ConsumerStatefulWidget {
   final List<String> places;
+  final String city;
 
-  const Routes({Key? key, required this.places}) : super(key: key);
+  const Routes({Key? key, required this.places, required this.city})
+      : super(key: key);
 
   @override
   ConsumerState<Routes> createState() => _RoutesState();
@@ -151,7 +153,7 @@ class _RoutesState extends ConsumerState<Routes> {
   Future<void> _createMarkers() async {
     print(widget.places);
     for (final element in widget.places) {
-      final coordinate = await getCoordinatesForFree(element);
+      final coordinate = await getCoordinatesForFree(element, widget.city);
 
       if (coordinate != null) {
         LatLng latLng = convertCoordinates(coordinate);

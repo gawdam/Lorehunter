@@ -134,6 +134,7 @@ class _ItineraryInformationScreenState
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Container(
                     width: 30,
@@ -153,6 +154,7 @@ class _ItineraryInformationScreenState
                 children: <Widget>[
                   Container(
                     width: MediaQuery.sizeOf(context).width * 0.8,
+                    alignment: Alignment.center,
                     height: 35,
                     child: willTextOverflow(
                       text: widget.tour.name,

@@ -57,7 +57,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
     return ProviderScope(
       child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        // backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         resizeToAvoidBottomInset: false,
         // appBar: AppBar(
         //   title: Text(
@@ -78,7 +78,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         children: [
                           Image.asset(
                             'assets/images/fastWalkman.gif',
-                            scale: 5,
+                            scale: 4,
                           ),
                           SizedBox(
                             height: 20,
@@ -90,7 +90,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   : Container(
                       width: MediaQuery.sizeOf(context).width * 1,
                       height: MediaQuery.sizeOf(context).height * 1 - 190,
-                      child: Routes(places: tour!.places)),
+                      child: Routes(
+                        places: tour!.places,
+                        city: cityValue!,
+                      )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -114,7 +117,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                     child: ElevatedButton(
                         style: ButtonStyle(
                             backgroundColor: MaterialStateColor.resolveWith(
-                                (states) => Colors.grey[100]!),
+                                (states) => Colors.purple[100]!),
                             elevation: MaterialStateProperty.resolveWith(
                                 (states) => 10),
                             shadowColor: MaterialStateColor.resolveWith(
@@ -137,7 +140,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                             Text(
                               "Generate walking tour",
                               style: TextStyle(
-                                color: Colors.black,
+                                color: const Color.fromARGB(255, 0, 0, 0),
                                 // fontFamily: "Open Sans",
                               ),
                             ),
