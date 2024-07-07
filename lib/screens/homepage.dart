@@ -133,7 +133,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                             ? () {
                                 getPlaces("$cityValue, $countryValue");
                               }
-                            : null,
+                            : () {
+                                getPlaces("$cityValue, $countryValue");
+                              },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

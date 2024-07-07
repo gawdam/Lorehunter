@@ -1,4 +1,4 @@
-package com.example.lorehunter
+package com.pixelify.lorehunter
 
 import io.flutter.embedding.android.FlutterActivity
 

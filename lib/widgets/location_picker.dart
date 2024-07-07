@@ -146,7 +146,7 @@ class LocationPicker extends ConsumerWidget {
           SearchAnchor(
 
               // viewBackgroundColor: Colors.grey[100],
-              viewOnSubmitted: (city) {
+              viewOnChanged: (city) {
             ref.read(selectedCityProvider.notifier).state = city;
           }, builder: (BuildContext context, SearchController controller) {
             // controller.text = selectedCity!;
