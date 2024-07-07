@@ -72,7 +72,21 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           child: Stack(
             children: [
               tour == null
-                  ? Container()
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/fastWalkman.gif',
+                            scale: 5,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Text("Pick a city. Generate a walking tour!"),
+                        ],
+                      ),
+                    )
                   : Container(
                       width: MediaQuery.sizeOf(context).width * 1,
                       height: MediaQuery.sizeOf(context).height * 1 - 190,

@@ -139,7 +139,7 @@ class LocationPicker extends ConsumerWidget {
             // ),
           ),
           SizedBox(
-            width: 10,
+            width: 5,
           ),
           SearchAnchor(
 
@@ -166,7 +166,7 @@ class LocationPicker extends ConsumerWidget {
               }),
               hintText: "City",
               controller: controller,
-              onSubmitted: (value) {
+              onChanged: (value) {
                 ref.read(selectedCityProvider.notifier).state = value;
               },
               onTap: () {
@@ -174,7 +174,7 @@ class LocationPicker extends ConsumerWidget {
               },
               leading: const Icon(Icons.location_on_outlined),
               constraints: BoxConstraints(
-                  maxWidth: MediaQuery.sizeOf(context).width * 0.85 - 10 - 48,
+                  maxWidth: MediaQuery.sizeOf(context).width * 0.85 - 5 - 48,
                   minHeight: 40),
             );
           }, suggestionsBuilder:

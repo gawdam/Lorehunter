@@ -9,6 +9,7 @@ import 'package:lorehunter/providers/location_provider.dart';
 import 'package:lorehunter/providers/place_details_provider.dart';
 import 'package:lorehunter/providers/tour_provider.dart';
 import 'package:lorehunter/widgets/place_cards.dart';
+import 'package:marquee/marquee.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -152,15 +153,39 @@ class _ItineraryInformationScreenState
                 children: <Widget>[
                   Container(
                     width: MediaQuery.sizeOf(context).width * 0.8,
-                    child: Text(
-                      widget.tour.name,
+                    height: 35,
+                    child: willTextOverflow(
+                      text: widget.tour.name,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16.0,
+                        fontSize: 24.0,
                       ),
-                      textAlign: TextAlign.center,
-                      softWrap: true,
-                    ),
+                      maxWidth: MediaQuery.sizeOf(context).width * 0.8,
+                    )
+                        ? Marquee(
+                            text: widget.tour.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24.0,
+                            ),
+                            scrollAxis: Axis.horizontal,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            blankSpace: 20.0,
+                            velocity: 100.0,
+                            pauseAfterRound: Duration(seconds: 1),
+                            startPadding: 10.0,
+                            accelerationDuration: Duration(seconds: 1),
+                            accelerationCurve: Curves.linear,
+                            decelerationDuration: Duration(milliseconds: 500),
+                            decelerationCurve: Curves.easeOut,
+                          )
+                        : Text(
+                            widget.tour.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24.0,
+                            ),
+                          ),
                   ),
                 ],
               ),

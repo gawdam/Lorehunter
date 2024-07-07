@@ -4,9 +4,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lorehunter/models/place_details.dart';
+import 'package:marquee/marquee.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
+
+bool willTextOverflow({
+  required String text,
+  required TextStyle style,
+  required double maxWidth,
+}) {
+  final TextPainter textPainter = TextPainter(
+    text: TextSpan(text: text, style: style),
+    maxLines: 1,
+    textDirection: TextDirection.ltr,
+  )..layout(minWidth: 0, maxWidth: maxWidth);
+
+  return textPainter.didExceedMaxLines;
+}
 
 class PlaceCard extends StatefulWidget {
   final PlaceDetails placeDetails;
@@ -135,15 +150,43 @@ class _TourCardState extends State<PlaceCard> {
                               "https://www.google.com/search?q=${widget.placeDetails.name}")),
                           child: Row(
                             children: [
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Text(
-                                  widget.placeDetails.name,
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                              Container(
+                                height: 20,
+                                width: 170,
+                                child: willTextOverflow(
+                                        text: widget.placeDetails.name,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.0,
+                                        ),
+                                        maxWidth: 170)
+                                    ? Marquee(
+                                        text: widget.placeDetails.name,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.0,
+                                        ),
+                                        scrollAxis: Axis.horizontal,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        blankSpace: 20.0,
+                                        velocity: 100.0,
+                                        pauseAfterRound: Duration(seconds: 1),
+                                        startPadding: 10.0,
+                                        accelerationDuration:
+                                            Duration(seconds: 1),
+                                        accelerationCurve: Curves.linear,
+                                        decelerationDuration:
+                                            Duration(milliseconds: 500),
+                                        decelerationCurve: Curves.easeOut,
+                                      )
+                                    : Text(
+                                        widget.placeDetails.name,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.0,
+                                        ),
+                                      ),
                               ),
                               Text(
                                 widget.icon,
