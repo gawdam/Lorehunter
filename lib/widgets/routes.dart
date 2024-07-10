@@ -32,6 +32,7 @@ class Routes extends ConsumerStatefulWidget {
 
 class _RoutesState extends ConsumerState<Routes> {
   final Set<Marker> _markers = {};
+
   LatLng coord = LatLng(0, 0);
   List<LatLng> _coordinates = [];
   Map<PolylineId, Polyline> _polylines = {};
@@ -170,6 +171,8 @@ class _RoutesState extends ConsumerState<Routes> {
             infoWindow: InfoWindow(
               title: element,
             ),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueGreen),
           ),
         );
         await Future.delayed(Duration(seconds: 1));

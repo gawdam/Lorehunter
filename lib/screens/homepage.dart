@@ -98,7 +98,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: MediaQuery.sizeOf(context).height * 0.035,
+                    height: MediaQuery.sizeOf(context).height * 0.045,
                   ),
                   Row(
                     children: [

@@ -12,7 +12,7 @@ Future<Map<String, dynamic>?> getCoordinatesForFree(
   print(placeName);
   var coords = null;
   try {
-    coords = locationFromAddress(placeName).then((locations) {
+    coords = locationFromAddress("$placeName, $city").then((locations) {
       if (locations.isNotEmpty) {
         print("locations empty");
         return {'lat': locations[0].latitude, 'lng': locations[0].longitude};

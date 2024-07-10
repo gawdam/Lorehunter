@@ -11,33 +11,39 @@ class PlacesFinder {
 
   Future<void> initAI() async {
     await dotenv.load(fileName: ".env");
+    final generationConfig = GenerationConfig(
+        temperature: 1.8,
+        maxOutputTokens: 1000,
+        topP: 1.0,
+        topK: 40,
+        stopSequences: []);
 
     model = GenerativeModel(
-      model: 'gemini-1.5-flash-latest',
-      apiKey: dotenv.env['gemini_api_key']!,
-    );
+        model: 'gemini-1.5-flash-latest',
+        apiKey: dotenv.env['gemini_api_key']!,
+        generationConfig: generationConfig);
     await initSession();
   }
 
   Future<void> initSession() async {
     chatBot = model!.startChat();
     await chatBot!.sendMessage(Content.text("""
-      I will type the location that I'm in and you will generate a walking tour of that location for me.
-      Give the tour a very cool name.
-      There should be a total of 5 places
-      All places must within a 5km radius. 
-      The order of locations should be chained in such a way that the total distance is minimum. 
-      All your responses should be in plain text, no markdowns, no formatting.
-      Your response should be of the following format- 
-      Sample output:
-      { 
-        "name": <str> [tour name]
-        "places": list<str> [list of places]
-        "best_experienced_at": str [best @ time of day, choose between Morning, Afternoon and Evening]
-        "types": list<str> [the type of the place - park/monument/museum]
-        "icons": list<str> [a list of emojis for these places, one emoji each]
-      }
-      Do not write any additional details. Make sure the JSON is valid
+I will type the location that I'm in and you will generate a walking tour of that location for me.
+Give the tour a very cool name.
+There should be a total of 5 places
+All places must within a 5km radius. 
+The order of locations should be chained in such a way that the total distance is minimum. 
+All your responses should be in plain text, no markdowns, no formatting.
+Your response should be of the following format- 
+Sample output:
+{ 
+  "name": <str> [tour name]
+  "places": list<str> [list of places]
+  "best_experienced_at": str [best @ time of day, choose between Morning, Afternoon and Evening]
+  "types": list<str> [the type of the place - park/monument/museum]
+  "icons": list<str> [a list of emojis for these places, one emoji each]
+}
+Do not write any additional details. Make sure the JSON is valid
       """));
     initialized = true;
   }
