@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lorehunter/interns/audio_guide_intern.dart';
 import 'package:lorehunter/models/place_details.dart';
 import 'package:lorehunter/models/tour_details.dart';
@@ -13,18 +14,16 @@ import 'package:marquee/marquee.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-class ItineraryInformationScreen extends ConsumerStatefulWidget {
-  ItineraryInformationScreen({required this.tour, required this.city});
+class TourPanelSlideUp extends ConsumerStatefulWidget {
+  TourPanelSlideUp({required this.tour, required this.city});
 
   Tour tour;
   String city;
   @override
-  ConsumerState<ItineraryInformationScreen> createState() =>
-      _ItineraryInformationScreenState();
+  ConsumerState<TourPanelSlideUp> createState() => _TourPanelSlideUpState();
 }
 
-class _ItineraryInformationScreenState
-    extends ConsumerState<ItineraryInformationScreen> {
+class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
   final double _initFabHeight = 120.0;
   List<String> _places = [];
   List<PlaceDetails> _placeDetails = [];
@@ -41,7 +40,7 @@ class _ItineraryInformationScreenState
   }
 
   @override
-  void didUpdateWidget(covariant ItineraryInformationScreen oldWidget) {
+  void didUpdateWidget(covariant TourPanelSlideUp oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Check if tour has changed
     if (widget.tour != _previousTour) {
@@ -136,18 +135,27 @@ class _ItineraryInformationScreenState
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Container(
-                    width: 30,
-                    height: 5,
-                    decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.all(Radius.circular(12.0))),
-                  ),
+                  AnimatedContainer(
+                      duration: Duration(seconds: 1),
+                      child: _placeDetails.length != _tour!.places.length
+                          ? LoadingAnimationWidget.staggeredDotsWave(
+                              color: Colors.purple[500]!, size: 40)
+                          : Container(
+                              width: 30,
+                              height: 5,
+                              // padding: EdgeInsets.all(18),
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(12.0))),
+                            )),
                 ],
               ),
-              SizedBox(
-                height: 18.0,
-              ),
+              _placeDetails.length != _tour!.places.length
+                  ? Container()
+                  : SizedBox(
+                      height: 25.0,
+                    ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -224,7 +232,7 @@ class _ItineraryInformationScreenState
                 ],
               ),
               SizedBox(
-                height: 36.0,
+                height: 30.0,
               ),
 //               ListView.builder(
 //   // Let the ListView know how many items it needs to build.
@@ -237,42 +245,60 @@ class _ItineraryInformationScreenState
 //     return PlaceCard(placeDetails: item);
 //   },
 // ),
-              SingleChildScrollView(
-                child: Container(
-                  height: 600,
-                  width: 200,
-                  child: Skeletonizer(
-                    enabled: _placeDetails.length != _tour!.places.length,
-                    child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        if (_tour!.updatedPlaces!.length <= index) {
-                          return Container();
+              Container(
+                height: 500,
+                width: 200,
+                child: Skeletonizer(
+                  enabled: _placeDetails.length != _tour!.places.length,
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      if (_tour!.updatedPlaces!.length <= index) {
+                        return Container();
+                      }
+                      if (_placeDetails.length >=
+                          _tour!.places.indexOf(_tour.updatedPlaces![index])) {
+                        if (_tour.places[index] !=
+                            _tour.updatedPlaces![index]) {
+                          return PlaceCard(
+                              placeDetails: _placeDetails[_tour.places
+                                  .indexOf(_tour.updatedPlaces![index])],
+                              icon: "");
                         }
-                        if (_placeDetails.length >=
-                            _tour!.places
-                                .indexOf(_tour.updatedPlaces![index])) {
-                          if (_tour.places[index] !=
-                              _tour.updatedPlaces![index]) {
-                            return PlaceCard(
-                                placeDetails: _placeDetails[_tour.places
-                                    .indexOf(_tour.updatedPlaces![index])],
-                                icon: "");
-                          }
-                        }
-                        return PlaceCard(
-                          placeDetails: _placeDetails[index],
-                          icon: "",
-                        );
-                      },
-                      itemCount: _placeDetails.length,
-                    ),
+                      }
+                      return PlaceCard(
+                        placeDetails: _placeDetails[index],
+                        icon: "",
+                      );
+                    },
+                    itemCount: _placeDetails.length,
                   ),
                 ),
               ),
               SizedBox(
                 height: 24,
               ),
-              Divider(),
+              Container(
+                width: 200,
+                padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.sizeOf(context).width * 0.05),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(0))),
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    side: BorderSide(color: Colors.purple),
+                    elevation: 5,
+                    backgroundColor: Colors.purple[100],
+                  ),
+                  child: Text(
+                    "Go to itinerary",
+                    style: TextStyle(color: Colors.black, fontSize: 16),
+                  ),
+                ),
+              ),
               SizedBox(
                 height: 24,
               ),
@@ -283,6 +309,7 @@ class _ItineraryInformationScreenState
     return SlidingUpPanel(
       maxHeight: _panelHeightOpen,
       minHeight: _panelHeightClosed,
+      isDraggable: _placeDetails.length == _tour!.places.length,
       parallaxEnabled: true,
       parallaxOffset: .5,
       panelBuilder: (sc) => _panel(sc),

@@ -35,7 +35,6 @@ class PlaceCard extends StatefulWidget {
 }
 
 class _TourCardState extends State<PlaceCard> {
-  bool _isExpanded = false;
   String? _imageURL;
 
   Future<String?> getWikiImageURL(String? wikiURL) async {
@@ -76,13 +75,12 @@ class _TourCardState extends State<PlaceCard> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: Duration(seconds: 1),
+    return Container(
       // color: Colors.black,
       width: 200, //not working!
       padding: EdgeInsets.symmetric(
         horizontal: MediaQuery.sizeOf(context).width * 0.05,
-        vertical: 5,
+        // vertical: 2.5,
       ),
       child: Card(
         child: Column(
@@ -93,50 +91,46 @@ class _TourCardState extends State<PlaceCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _isExpanded
-                      ? Container()
-                      : FutureBuilder(
-                          future: getWikiImageURL(widget.placeDetails.wikiURL),
-                          builder: (context, snapshot) {
-                            return Hero(
-                              tag: "image-${widget.placeDetails.name}",
-                              child: Skeletonizer(
-                                  enabled: _imageURL == null,
-                                  child: _imageURL != null
-                                      ? Container(
-                                          width: 80,
-                                          height: 80,
-                                          decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: Color.fromARGB(
-                                                      20, 155, 39, 176)!,
-                                                  blurRadius: 0)
-                                            ],
-                                            borderRadius: BorderRadius.circular(
-                                                11.0), // Set the desired radius
-                                            border: Border.all(
-                                              color: Colors.purple[
-                                                  500]!, // Set the border color
-                                              width:
-                                                  1.0, // Set the border width
-                                            ),
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            child: Image.network(
-                                              _imageURL!,
-                                              scale: 2,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ))
-                                      : Container(
-                                          width: 80,
-                                          height: 80,
-                                        )),
-                            );
-                          }),
+                  FutureBuilder(
+                      future: getWikiImageURL(widget.placeDetails.wikiURL),
+                      builder: (context, snapshot) {
+                        return Hero(
+                          tag: "image-${widget.placeDetails.name}",
+                          child: Skeletonizer(
+                              enabled: _imageURL == null,
+                              child: _imageURL != null
+                                  ? Container(
+                                      width: 80,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: Color.fromARGB(
+                                                  20, 155, 39, 176)!,
+                                              blurRadius: 0)
+                                        ],
+                                        borderRadius: BorderRadius.circular(
+                                            11.0), // Set the desired radius
+                                        border: Border.all(
+                                          color: Colors.purple[
+                                              500]!, // Set the border color
+                                          width: 1.0, // Set the border width
+                                        ),
+                                      ),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(
+                                          _imageURL!,
+                                          scale: 2,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ))
+                                  : Container(
+                                      width: 80,
+                                      height: 80,
+                                    )),
+                        );
+                      }),
                   SizedBox(
                     width: 10,
                   ),
@@ -198,33 +192,11 @@ class _TourCardState extends State<PlaceCard> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 8.0),
-                        _isExpanded
-                            ? Container(
-                                alignment: Alignment.topLeft,
-                                child: Hero(
-                                  tag: "image-${widget.placeDetails.name}",
-                                  child: Skeletonizer(
-                                      enabled: _imageURL == null,
-                                      child: _imageURL != null
-                                          ? Container(
-                                              width: 500,
-                                              height: 200,
-                                              child: Image.network(
-                                                _imageURL!,
-                                                scale: 2,
-                                                fit: BoxFit.fitWidth,
-                                              ))
-                                          : Container(
-                                              width: 100,
-                                              height: 100,
-                                            )),
-                                ),
-                              )
-                            : Text(
-                                widget.placeDetails.brief,
-                                style: TextStyle(fontSize: 11.0),
-                              ),
+                        const SizedBox(height: 5.0),
+                        Text(
+                          widget.placeDetails.brief,
+                          style: TextStyle(fontSize: 11.0),
+                        ),
                       ],
                     ),
                   ),
@@ -242,30 +214,9 @@ class _TourCardState extends State<PlaceCard> {
                           style: TextStyle(fontSize: 12.0),
                         ),
                       ),
-                      IconButton(
-                        icon: Icon(
-                          _isExpanded ? Icons.expand_less : Icons.expand_more,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () =>
-                            setState(() => _isExpanded = !_isExpanded),
-                      ),
                     ],
                   ),
                 ],
-              ),
-            ),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              height: _isExpanded ? null : 0.0,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
-                  child: Text(
-                    widget.placeDetails.detailedAudioTour,
-                    style: TextStyle(fontSize: 11.0),
-                  ),
-                ),
               ),
             ),
           ],

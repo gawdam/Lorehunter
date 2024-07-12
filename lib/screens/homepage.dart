@@ -13,8 +13,7 @@ import 'package:lorehunter/providers/location_provider.dart';
 import 'package:lorehunter/functions/geocoding.dart';
 import 'package:lorehunter/providers/tour_provider.dart';
 import 'package:lorehunter/widgets/routes.dart';
-import 'package:lorehunter/widgets/itinerary_information.dart';
-import 'package:lorehunter/widgets/itinerary.dart';
+import 'package:lorehunter/widgets/tour_panel_slide_up.dart';
 import 'package:lorehunter/widgets/location_picker.dart';
 
 class MyHomePage extends ConsumerStatefulWidget {
@@ -186,7 +185,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       bottom: 0,
                       width: MediaQuery.sizeOf(context).width,
                       height: MediaQuery.sizeOf(context).height,
-                      child: ItineraryInformationScreen(
+                      child: TourPanelSlideUp(
                         tour: tour!,
                         city: cityValue!,
                       )),

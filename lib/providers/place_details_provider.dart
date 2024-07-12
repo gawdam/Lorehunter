@@ -14,10 +14,15 @@ PlaceDetails getPlaceDetailsFromJson(String jsonString) {
 
 // Create a Tour object from the JSON data
   final placeDetails = PlaceDetails(
-      name: jsonMap['name'],
-      brief: jsonMap['brief'],
-      detailedAudioTour: jsonMap['detailedAudioTour'],
-      wikiURL: jsonMap['wikiURL'],
-      tourDuration: jsonMap['duration']);
+    name: jsonMap['name'],
+    brief: jsonMap['brief'],
+    wikiURL: jsonMap['wikiURL'],
+    tourDuration: jsonMap['duration'],
+    audioTourHeaders: List<String>.from(jsonMap['audioTourHeaders'] as List),
+    audioTourDescriptions:
+        List<String>.from(jsonMap['audioTourDescriptions'] as List),
+    audioTourGreeting: jsonMap['audioTourGreeting'],
+    audioTourOutro: jsonMap['audioTourOutro'],
+  );
   return placeDetails;
 }

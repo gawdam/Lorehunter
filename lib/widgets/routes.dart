@@ -108,7 +108,7 @@ class _RoutesState extends ConsumerState<Routes> {
     Polyline polyline = Polyline(
         polylineId: id,
         points: polylineCoordinates,
-        color: Colors.blue[800]!,
+        color: Color.fromARGB(255, 17, 65, 224)!,
         width: 8);
     setState(() {
       _polylines[id] = polyline;
@@ -171,8 +171,8 @@ class _RoutesState extends ConsumerState<Routes> {
             infoWindow: InfoWindow(
               title: element,
             ),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueGreen),
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
           ),
         );
         await Future.delayed(Duration(seconds: 1));
@@ -205,6 +205,8 @@ class _RoutesState extends ConsumerState<Routes> {
           target: coord, // Default to (0, 0) if no coordinates
           zoom: 14.0,
         ),
+        // cameraTargetBounds:
+        //     CameraTargetBounds(LatLngBounds.fromList(_coordinates)),
         markers: _markers,
         polylines: Set<Polyline>.of(_polylines.values),
       );

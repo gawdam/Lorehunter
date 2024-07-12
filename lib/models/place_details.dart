@@ -4,14 +4,22 @@ class PlaceDetails {
   PlaceDetails({
     required this.name,
     required this.brief,
-    required this.detailedAudioTour,
     required this.wikiURL,
     required this.tourDuration,
+    required this.audioTourHeaders,
+    required this.audioTourDescriptions,
+    required this.audioTourGreeting,
+    required this.audioTourOutro,
   });
   String name;
 
   String brief;
-  String detailedAudioTour;
+
   String? wikiURL;
   int tourDuration;
+
+  List<String> audioTourHeaders;
+  List<String> audioTourDescriptions;
+  String audioTourGreeting;
+  String audioTourOutro;
 }
