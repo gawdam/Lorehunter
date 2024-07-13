@@ -141,9 +141,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                             Text(
                               "Generate walking tour",
                               style: TextStyle(
-                                color: const Color.fromARGB(255, 0, 0, 0),
-                                // fontFamily: "Open Sans",
-                              ),
+                                  color: const Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 14
+                                  // fontFamily: "Open Sans",
+                                  ),
                             ),
                             SizedBox(
                               width: 5,

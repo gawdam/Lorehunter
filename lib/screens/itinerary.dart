@@ -1,25 +1,64 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lorehunter/functions/places_image.dart';
+import 'package:lorehunter/providers/place_details_provider.dart';
+import 'package:lorehunter/widgets/audio_player.dart';
 import 'package:lorehunter/widgets/image_carousel.dart';
 
-class Itinerary extends StatefulWidget {
-  final List<String> places;
-
-  const Itinerary({Key? key, required this.places}) : super(key: key);
+class Itinerary extends ConsumerStatefulWidget {
+  const Itinerary({Key? key}) : super(key: key);
 
   @override
-  State<Itinerary> createState() => _ItineraryState();
+  ConsumerState<Itinerary> createState() => _ItineraryState();
 }
 
-class _ItineraryState extends State<Itinerary> {
+class _ItineraryState extends ConsumerState<Itinerary> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [Text("Hello!")],
+    final placeDetails = ref.watch(placeDetailsProvider);
+
+    return Scaffold(
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.sizeOf(context).height * 0.8,
+              child: Column(
+                children: [
+                  // Display each audioTourHeader
+                  for (int i = 0;
+                      i < placeDetails![0]!.audioTourHeaders.length;
+                      i++)
+                    Column(
+                      children: [
+                        Text(
+                          placeDetails[0]!.audioTourHeaders[i],
+                          style: const TextStyle(
+                              fontSize: 16.0, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 5.0),
+                        Text(
+                          placeDetails[0]!.audioTourDescriptions[i],
+                          style: const TextStyle(fontSize: 14.0),
+                        ),
+                        const SizedBox(height: 10.0),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+            Container(
+              child: AudioPlayer(placeDetails[0]!),
+            )
+          ],
+        ),
+      ), // Show loading indicator if placeDetails not yet available
     );
   }
 }
+
 
 // AnimatedContainer(
 //               duration: const Duration(milliseconds: 200),
@@ -32,9 +71,7 @@ class _ItineraryState extends State<Itinerary> {
 //                         CrossAxisAlignment.start, // Left-align content
 //                     children: [
 //                       // Loop through elements in pairs
-//                       for (int i = 0;
-//                           i < widget.placeDetails.audioTourHeaders.length;
-//                           i++)
+                      
 //                         if (i <
 //                             widget.placeDetails.audioTourDescriptions.length)
 //                           Row(

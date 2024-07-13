@@ -9,6 +9,7 @@ import 'package:lorehunter/models/tour_details.dart';
 import 'package:lorehunter/providers/location_provider.dart';
 import 'package:lorehunter/providers/place_details_provider.dart';
 import 'package:lorehunter/providers/tour_provider.dart';
+import 'package:lorehunter/screens/itinerary.dart';
 import 'package:lorehunter/widgets/place_cards.dart';
 import 'package:marquee/marquee.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -24,7 +25,7 @@ class TourPanelSlideUp extends ConsumerStatefulWidget {
 }
 
 class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
-  final double _initFabHeight = 120.0;
+  final double _initFabHeight = 200.0;
   List<String> _places = [];
   List<PlaceDetails> _placeDetails = [];
   int _timeSpentAtPlaces = 0;
@@ -81,7 +82,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
 
   double _fabHeight = 0;
 
-  final double _panelHeightOpen = 800;
+  final double _panelHeightOpen = 850;
 
   final double _panelHeightClosed = 200.0;
 
@@ -139,7 +140,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                       duration: Duration(seconds: 1),
                       child: _placeDetails.length != _tour!.places.length
                           ? LoadingAnimationWidget.staggeredDotsWave(
-                              color: Colors.purple[500]!, size: 40)
+                              color: Colors.grey, size: 30)
                           : Container(
                               width: 30,
                               height: 5,
@@ -232,7 +233,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                 ],
               ),
               SizedBox(
-                height: 30.0,
+                height: 25.0,
               ),
 //               ListView.builder(
 //   // Let the ListView know how many items it needs to build.
@@ -246,7 +247,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
 //   },
 // ),
               Container(
-                height: 500,
+                height: 490,
                 width: 200,
                 child: Skeletonizer(
                   enabled: _placeDetails.length != _tour!.places.length,
@@ -282,9 +283,16 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                 padding: EdgeInsets.symmetric(
                     horizontal: MediaQuery.sizeOf(context).width * 0.05),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(0))),
+                  borderRadius: BorderRadius.all(Radius.circular(0)),
+                ),
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) => Itinerary(),
+                        ));
+                  },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
@@ -293,14 +301,26 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                     elevation: 5,
                     backgroundColor: Colors.purple[100],
                   ),
-                  child: Text(
-                    "Go to itinerary",
-                    style: TextStyle(color: Colors.black, fontSize: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Go to itinerary",
+                        style: TextStyle(color: Colors.black, fontSize: 16),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Icon(
+                        Icons.arrow_circle_right_outlined,
+                        color: Colors.black,
+                      )
+                    ],
                   ),
                 ),
               ),
               SizedBox(
-                height: 24,
+                height: 30,
               ),
             ],
           ));
