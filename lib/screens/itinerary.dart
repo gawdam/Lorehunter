@@ -23,34 +23,33 @@ class _ItineraryState extends ConsumerState<Itinerary> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            // Container(
+            //   height: MediaQuery.sizeOf(context).height * 0.8,
+            //   child: Column(
+            //     children: [
+            //       for (int i = 0;
+            //           i < placeDetails![0]!.audioTourHeaders.length;
+            //           i++)
+            //         Column(
+            //           children: [
+            //             Text(
+            //               placeDetails[0]!.audioTourHeaders[i],
+            //               style: const TextStyle(
+            //                   fontSize: 16.0, fontWeight: FontWeight.bold),
+            //             ),
+            //             const SizedBox(height: 5.0),
+            //             Text(
+            //               placeDetails[0]!.audioTourDescriptions[i],
+            //               style: const TextStyle(fontSize: 14.0),
+            //             ),
+            //             const SizedBox(height: 10.0),
+            //           ],
+            //         ),
+            //     ],
+            //   ),
+            // ),
             Container(
-              height: MediaQuery.sizeOf(context).height * 0.8,
-              child: Column(
-                children: [
-                  // Display each audioTourHeader
-                  for (int i = 0;
-                      i < placeDetails![0]!.audioTourHeaders.length;
-                      i++)
-                    Column(
-                      children: [
-                        Text(
-                          placeDetails[0]!.audioTourHeaders[i],
-                          style: const TextStyle(
-                              fontSize: 16.0, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 5.0),
-                        Text(
-                          placeDetails[0]!.audioTourDescriptions[i],
-                          style: const TextStyle(fontSize: 14.0),
-                        ),
-                        const SizedBox(height: 10.0),
-                      ],
-                    ),
-                ],
-              ),
-            ),
-            Container(
-              child: AudioPlayer(placeDetails[0]!),
+              child: AudioPlayer(placeDetails![0]!),
             )
           ],
         ),
