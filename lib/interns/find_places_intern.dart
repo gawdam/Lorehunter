@@ -12,11 +12,7 @@ class PlacesFinder {
   Future<void> initAI() async {
     await dotenv.load(fileName: ".env");
     final generationConfig = GenerationConfig(
-        temperature: 1.8,
-        maxOutputTokens: 1000,
-        topP: 1.0,
-        topK: 40,
-        stopSequences: []);
+        temperature: 1, maxOutputTokens: 1500, topK: 40, stopSequences: []);
 
     model = GenerativeModel(
         model: 'gemini-1.5-flash-latest',
@@ -30,18 +26,29 @@ class PlacesFinder {
     await chatBot!.sendMessage(Content.text("""
 I will type the location that I'm in and you will generate a walking tour of that location for me.
 Give the tour a very cool name.
-There should be a total of 2 places
-All places must within a 5km radius. 
-The order of locations should be chained in such a way that the total distance is minimum. 
+There should be a total of 5 places
+All places must within 5km radius of each other. 
 All your responses should be in plain text, no markdowns, no formatting.
 Your response should be of the following format- 
 Sample output:
 { 
-  "name": <str> [tour name]
-  "places": list<str> [list of places]
-  "best_experienced_at": str [best @ time of day, choose between Morning, Afternoon and Evening]
-  "types": list<str> [the type of the place - park/monument/museum]
-  "icons": list<str> [a list of emojis for these places, one emoji each]
+  "name": <str> [tour name],
+  "brief": <str> [A one liner about the tour less than 20 words],
+  "best_experienced_at": <str> [best @ time of day, choose between Morning, Afternoon and Evening],
+  "greetings": <str> [the greeting to be played as an audio, describing the tour <100 words],
+  "outro": <str> [an outro for the tour < 100 words]
+
+  "places": [
+        {
+          "place_name": <str> [name of the place],
+          "place_type": <str> [the type of the place - park/monument/museum etc.],
+          "place_brief": <str> [A one liner about the place less than 20 words],
+          "place_wikiURL": <str> [URL of the wikipedia page for this place],
+          "place_duration":<int> [ideal amount of time to be spent at the location in mins, should be between 15,30,45,60]
+        },
+        ... [generate same format for all places]
+  
+  ]
 }
 Do not write any additional details. Make sure the JSON is valid
       """));

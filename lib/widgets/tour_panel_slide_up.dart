@@ -34,9 +34,11 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
   @override
   void initState() {
     // TODO: implement initState
-    _places = widget.tour.places;
-    print("list of places${_places}");
-    getPlaceDetails(_places, widget.city);
+    _placeDetails = widget.tour.places;
+    for (var place in _placeDetails) {
+      _places.add(place.name);
+    }
+    // getPlaceDetails(_places, widget.city);
     // _city = ref.watch(selectedCityProvider);
   }
 
@@ -51,33 +53,11 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
   }
 
   void _updatePlacesAndDetails(Tour tour) {
-    _places = tour.places;
-    getPlaceDetails(_places, widget.city).then((listOfPlaceDetails) {
-      setState(() {
-        _placeDetails = listOfPlaceDetails;
-        _timeSpentAtPlaces = _placeDetails.fold(
-            0, (sum, placeDetails) => sum + placeDetails.tourDuration);
-      });
+    setState(() {
+      _placeDetails = tour.places;
+      _timeSpentAtPlaces = _placeDetails.fold(
+          0, (sum, placeDetails) => sum + placeDetails.tourDuration);
     });
-  }
-
-  Future<List<PlaceDetails>> getPlaceDetails(
-      List<String> places, String city) async {
-    AudioGuide audioGuide = AudioGuide(theme: "The last of us tv series");
-    await audioGuide.initAI();
-    List<PlaceDetails> listOfPlaceDetails = [];
-    for (String place in places) {
-      var response = await audioGuide.gemini("$place, $city");
-      PlaceDetails placeDetails = await getPlaceDetailsFromJson(response);
-      listOfPlaceDetails.add(placeDetails);
-      ref.read(placeDetailsProvider.notifier).state = listOfPlaceDetails;
-      setState(() {
-        _placeDetails = listOfPlaceDetails;
-        _timeSpentAtPlaces += placeDetails.tourDuration;
-      });
-    }
-
-    return listOfPlaceDetails;
   }
 
   double _fabHeight = 0;
@@ -226,7 +206,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                   ),
                   _button(
                     "Best time to visit",
-                    widget.tour.time_of_day,
+                    widget.tour.bestExperiencedAt,
                     Icons.sunny,
                     Colors.yellow[700]!,
                   ),
@@ -257,12 +237,12 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                         return Container();
                       }
                       if (_placeDetails.length >=
-                          _tour!.places.indexOf(_tour.updatedPlaces![index])) {
+                          _places.indexOf(_tour.updatedPlaces![index])) {
                         if (_tour.places[index] !=
                             _tour.updatedPlaces![index]) {
                           return PlaceCard(
-                              placeDetails: _placeDetails[_tour.places
-                                  .indexOf(_tour.updatedPlaces![index])],
+                              placeDetails: _placeDetails[
+                                  _places.indexOf(_tour.updatedPlaces![index])],
                               icon: "");
                         }
                       }

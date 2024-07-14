@@ -90,7 +90,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       width: MediaQuery.sizeOf(context).width * 1,
                       height: MediaQuery.sizeOf(context).height * 1 - 190,
                       child: Routes(
-                        places: tour!.places,
+                        places: [for (var place in tour!.places) place.name],
                         city: cityValue!,
                       )),
               Column(
