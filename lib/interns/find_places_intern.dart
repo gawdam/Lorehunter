@@ -12,7 +12,7 @@ class PlacesFinder {
   Future<void> initAI() async {
     await dotenv.load(fileName: ".env");
     final generationConfig = GenerationConfig(
-        temperature: 1, maxOutputTokens: 1500, topK: 40, stopSequences: []);
+        temperature: 0.6, maxOutputTokens: 1500, topK: 40, stopSequences: []);
 
     model = GenerativeModel(
         model: 'gemini-1.5-flash-latest',

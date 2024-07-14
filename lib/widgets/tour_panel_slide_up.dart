@@ -55,6 +55,10 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
   void _updatePlacesAndDetails(Tour tour) {
     setState(() {
       _placeDetails = tour.places;
+      _places = [];
+      for (var place in _placeDetails) {
+        _places.add(place.name);
+      }
       _timeSpentAtPlaces = _placeDetails.fold(
           0, (sum, placeDetails) => sum + placeDetails.tourDuration);
     });
