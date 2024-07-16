@@ -29,6 +29,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   String apiKey = '';
   late GenerativeModel model;
   Tour? tour;
+  bool _isGeneratingTour = false;
 
   PlacesFinder placesFinder = PlacesFinder();
 
@@ -75,14 +76,19 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            'assets/images/fastWalkman.gif',
-                            scale: 4,
-                          ),
+                          _isGeneratingTour
+                              ? Image.asset(
+                                  'assets/images/fastWalkman.gif',
+                                  scale: 4,
+                                )
+                              : Text(
+                                  "Pick a country \nPick a city \nGenerate a walking tour!",
+                                  style: TextStyle(fontSize: 16),
+                                  textAlign: TextAlign.center,
+                                ),
                           SizedBox(
                             height: 20,
                           ),
-                          Text("Pick a city. Generate a walking tour!"),
                         ],
                       ),
                     )
@@ -128,12 +134,16 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                               side: BorderSide(
                                   color: Colors.purple[500]!, width: 1),
                             ))),
-                        onPressed: placesFinder.initialized
-                            ? () {
-                                getPlaces("$cityValue, $countryValue");
-                              }
-                            : () {
-                                getPlaces("$cityValue, $countryValue");
+                        onPressed: _isGeneratingTour
+                            ? null
+                            : () async {
+                                setState(() {
+                                  _isGeneratingTour = true;
+                                });
+                                await getPlaces("$cityValue, $countryValue");
+                                setState(() {
+                                  _isGeneratingTour = false;
+                                });
                               },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,

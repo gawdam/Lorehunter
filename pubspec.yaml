@@ -54,6 +54,7 @@ dependencies:
   google_fonts: ^6.2.1
   loading_animation_widget: ^1.2.1
   flutter_tts: ^4.0.2
+  flutter_html: ^3.0.0-beta.2
 
 dev_dependencies:
   flutter_test:

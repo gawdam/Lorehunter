@@ -9,6 +9,7 @@ import 'package:lorehunter/models/tour_details.dart';
 import 'package:lorehunter/providers/location_provider.dart';
 import 'package:lorehunter/providers/place_details_provider.dart';
 import 'package:lorehunter/providers/tour_provider.dart';
+import 'package:lorehunter/screens/audio_tour.dart';
 import 'package:lorehunter/screens/itinerary.dart';
 import 'package:lorehunter/widgets/place_cards.dart';
 import 'package:marquee/marquee.dart';
@@ -192,7 +193,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                 children: <Widget>[
                   _button(
                     "# Places",
-                    "${widget.tour.places.length} places",
+                    "${widget.tour.updatedPlaces?.length ?? widget.tour.places.length} places",
                     Icons.account_balance,
                     Colors.blue,
                   ),
@@ -231,8 +232,8 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
 //   },
 // ),
               Container(
-                height: 490,
-                width: 200,
+                height: MediaQuery.sizeOf(context).height * 0.6,
+                width: MediaQuery.sizeOf(context).width * 0.9,
                 child: Skeletonizer(
                   enabled: _placeDetails.length != _tour!.places.length,
                   child: ListView.builder(
@@ -274,7 +275,8 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (BuildContext context) => Itinerary(),
+                          builder: (BuildContext context) => AudioTour(
+                              places: _tour.updatedPlaces!, city: widget.city),
                         ));
                   },
                   style: ElevatedButton.styleFrom(
@@ -289,14 +291,14 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Go to itinerary",
+                        "Generate audio tour",
                         style: TextStyle(color: Colors.black, fontSize: 16),
                       ),
                       SizedBox(
                         width: 5,
                       ),
                       Icon(
-                        Icons.arrow_circle_right_outlined,
+                        Icons.headphones,
                         color: Colors.black,
                       )
                     ],

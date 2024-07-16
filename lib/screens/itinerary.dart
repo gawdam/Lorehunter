@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lorehunter/functions/places_image.dart';
 import 'package:lorehunter/providers/place_details_provider.dart';
 import 'package:lorehunter/widgets/audio_player.dart';
 import 'package:lorehunter/widgets/image_carousel.dart';
