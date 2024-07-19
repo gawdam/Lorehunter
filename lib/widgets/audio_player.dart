@@ -5,9 +5,9 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:lorehunter/models/place_details.dart';
 
 class AudioPlayer extends ConsumerStatefulWidget {
-  PlaceDetails placeDetails;
+  String transcript;
 
-  AudioPlayer(this.placeDetails);
+  AudioPlayer(this.transcript);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -101,7 +101,7 @@ class _AudioPlayer extends ConsumerState<AudioPlayer> {
           onPressed: () {
             _isPlaying = !_isPlaying;
             if (_isPlaying) {
-              _flutterTts.speak(widget.placeDetails.brief);
+              _flutterTts.speak(widget.transcript);
             } else {
               _flutterTts.pause();
             }

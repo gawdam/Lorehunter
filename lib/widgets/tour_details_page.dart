@@ -1,16 +1,35 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart'; // Import for rich text display
+import 'package:flutter_html/flutter_html.dart';
+import 'package:lorehunter/widgets/audio_player.dart'; // Import for rich text display
 
 class TourDetailsPage extends StatelessWidget {
   final Map<String, dynamic> tourData;
 
   const TourDetailsPage({Key? key, required this.tourData}) : super(key: key);
 
+  String tourToString() {
+    // Convert sections and trivia options to JSON-compatible lists
+    final sections = tourData['sections'] as List<dynamic>;
+
+    // Create a string builder for efficient concatenation
+    final StringBuffer buffer = StringBuffer();
+
+    for (var section in sections) {
+      buffer.writeln(section['header']);
+      buffer.writeln(section['tourAudio']);
+      buffer.writeln(); // Add a newline for separation
+    }
+
+    return buffer.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(tourData['name']),
+        title: Text("Audio tour"),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -74,6 +93,7 @@ class TourDetailsPage extends StatelessWidget {
             Html(
               data: tourData['trivia']['correct_answer_response'],
             ),
+            AudioPlayer(tourToString())
           ],
         ),
       ),

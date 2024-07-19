@@ -25,7 +25,8 @@ class AudioGuide {
     final response = await chatBot!.sendMessage(Content.text("""
 I am going for a walking tour in $city. You will act as my tour guide. 
 I am visiting the following places - $commaSeparatedPlaces
-Cover important folklore about the places, add facts and information in the context of history and present.
+The theme of this tour is the last of us. At the end of the audio tour for each place, include a section "After the outbreak", where you detail on what happened to the place after the fungal outbreak.
+Along the lines of - Did the infected take over? was it bombed? was it used as a camp by rebels? or by fireflies? 
 Make the tour interesting, like a story.
 
 All your responses should be in plain text, no markdowns, no formatting. 
@@ -39,9 +40,9 @@ tour:
   "sections": [
         {
           "header": <str> [Topics covered in the audio tour (keep it simple). There should be atleast 5 topics eg.history, architecture],
-          "tourAudio": <str> [Audio tour transcript. Should be atleast 300 words in each topic except intro and outro],
+          "tourAudio": <str> [Audio tour transcript. Should be atleast 300 words in each topic except intro and outro. After the outbreak section needs to be atleast 500 words],
         },
-        ... [generate same format for all sections. intro and outro are mandatory sections]
+        ... [generate same format for all sections. intro, after the outbreak and outro are mandatory sections]
   
   ],
 

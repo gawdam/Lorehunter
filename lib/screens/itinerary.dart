@@ -47,9 +47,9 @@ class _ItineraryState extends ConsumerState<Itinerary> {
             //     ],
             //   ),
             // ),
-            Container(
-              child: AudioPlayer(placeDetails![0]!),
-            )
+            // Container(
+            //   child: AudioPlayer(placeDetails![0]!),
+            // )
           ],
         ),
       ), // Show loading indicator if placeDetails not yet available
