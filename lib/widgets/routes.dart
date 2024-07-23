@@ -143,8 +143,14 @@ class _RoutesState extends ConsumerState<Routes> {
       print("some random error: ${polylineResult}");
     }
     Tour? tour = ref.read(tourProvider.notifier).state;
+
     tour!.distance = dist;
+    for (int i = 0; i < _coordinates.length; i++) {
+      tour.places[i].coordinates = _coordinates[i];
+    }
     tour.updatedPlaces = _updatedAndSortedPlaces;
+    tour.routeCoordinates = polylineCoordinates;
+    await tour.toJsonFile(widget.city);
     ref.read(tourProvider.notifier).state = tour;
 
     setState(() {});
@@ -153,15 +159,16 @@ class _RoutesState extends ConsumerState<Routes> {
 
   Future<void> _createMarkers() async {
     print(widget.places);
-    for (final element in widget.places) {
-      final coordinate = await getCoordinatesForFree(element, widget.city);
+    for (final place in widget.places) {
+      final coordinate = await getCoordinatesForFree(place, widget.city);
 
       if (coordinate != null) {
         LatLng latLng = convertCoordinates(coordinate);
         setState(() {
           coord = latLng;
           _coordinates.add(coord);
-          _updatedAndSortedPlaces.add(element);
+
+          _updatedAndSortedPlaces.add(place);
         });
 
         _markers.add(
@@ -169,7 +176,7 @@ class _RoutesState extends ConsumerState<Routes> {
             markerId: MarkerId(coordinate.toString()),
             position: latLng,
             infoWindow: InfoWindow(
-              title: element,
+              title: place,
             ),
             icon:
                 BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),

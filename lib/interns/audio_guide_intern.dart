@@ -14,7 +14,7 @@ class AudioGuide {
   Future<String> initSession(String commaSeparatedPlaces, String city) async {
     await dotenv.load(fileName: ".env");
     final generationConfig = GenerationConfig(
-        temperature: 0.8, maxOutputTokens: 25000, topK: 40, stopSequences: []);
+        temperature: 0.9, maxOutputTokens: 25000, topK: 40, stopSequences: []);
 
     model = GenerativeModel(
       model: 'gemini-1.5-flash-latest',

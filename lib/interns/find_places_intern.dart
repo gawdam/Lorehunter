@@ -18,21 +18,19 @@ class PlacesFinder {
         model: 'gemini-1.5-flash-latest',
         apiKey: dotenv.env['gemini_api_key']!,
         generationConfig: generationConfig);
-    await initSession();
+    initialized = true;
   }
 
-  Future<void> initSession() async {
+  Future<String> askGemini(String city) async {
     chatBot = model!.startChat();
-    await chatBot!.sendMessage(Content.text("""
-I will type the location that I'm in and you will generate a walking tour of that location for me.
-Give the tour a very cool name.
-There should be a total of 5 places
+    final response = await chatBot!.sendMessage(Content.text("""
+Generate a walking tour for me in the city of $city.
 All places must within 5km radius of each other. 
 All your responses should be in plain text, no markdowns, no formatting.
 Your response should be of the following format- 
 Sample output:
 { 
-  "name": <str> [tour name],
+  "name": <str> [a name for the tour],
   "brief": <str> [A one liner about the tour less than 20 words],
   "best_experienced_at": <str> [best @ time of day, choose between Morning, Afternoon and Evening],
   "greetings": <str> [the greeting to be played as an audio, describing the tour <100 words],
@@ -52,13 +50,7 @@ Sample output:
 }
 Do not write any additional details. Make sure the JSON is valid
       """));
-    initialized = true;
-  }
 
-  Future<String> gemini(String prompt) async {
-    final content = Content.text(prompt);
-    final response = await chatBot!.sendMessage(content);
-    print(response.text);
     return response.text!;
   }
 }

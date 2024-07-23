@@ -15,4 +15,15 @@ class PlaceDetails {
 
   String? wikiURL;
   int tourDuration;
+
+  LatLng? coordinates;
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'brief': brief,
+        'type': type,
+        'wikiURL': wikiURL,
+        'tourDuration': tourDuration,
+        'coordinates': coordinates?.toJson(),
+      };
 }

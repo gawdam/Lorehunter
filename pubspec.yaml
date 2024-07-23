@@ -55,6 +55,7 @@ dependencies:
   loading_animation_widget: ^1.2.1
   flutter_tts: ^4.0.2
   flutter_html: ^3.0.0-beta.2
+  path_provider: ^2.1.3
 
 dev_dependencies:
   flutter_test:
