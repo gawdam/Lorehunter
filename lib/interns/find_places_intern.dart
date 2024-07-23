@@ -32,8 +32,8 @@ Sample output:
 { 
   "name": <str> [a name for the tour],
   "brief": <str> [A one liner about the tour less than 20 words],
-  "best_experienced_at": <str> [best @ time of day, choose between Morning, Afternoon and Evening],
-  "greetings": <str> [the greeting to be played as an audio, describing the tour <100 words],
+  "bestExperiencedAt": <str> [best @ time of day, choose between Morning, Afternoon and Evening],
+  "greeting": <str> [the greeting to be played as an audio, describing the tour <100 words],
   "outro": <str> [an outro for the tour < 100 words],
 
   "places": [

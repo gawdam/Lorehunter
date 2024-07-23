@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lorehunter/models/place_details.dart';
 import 'package:lorehunter/models/tour_details.dart';
 import 'package:lorehunter/widgets/routes.dart';
@@ -17,6 +18,10 @@ PlaceDetails getPlaceDetailsFromJson(Map jsonMap) {
     wikiURL: jsonMap['place_wikiURL'],
     tourDuration: jsonMap['place_duration'],
     type: jsonMap['place_type'],
+    coordinates: jsonMap.containsKey('coordinates')
+        ? LatLng(jsonMap['coordinates'][0] as double,
+            jsonMap['coordinates'][1] as double)
+        : null,
   );
   return placeDetails;
 }

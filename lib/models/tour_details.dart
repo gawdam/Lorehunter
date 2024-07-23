@@ -50,17 +50,18 @@ class Tour {
         'updatedPlaces': updatedPlaces,
         'routeCoordinates':
             routeCoordinates?.map((point) => point.toJson()).toList(),
-        'updateTime': DateTime.now(),
+        'updateTime': DateTime.now().toString(),
       };
   Future<void> toJsonFile(String filename) async {
     try {
       final directory = await getApplicationDocumentsDirectory();
       final file = File('${directory.path}/$filename.json');
       final jsonData = jsonEncode(toJson());
+      print(jsonData);
       await file.writeAsString(jsonData);
       print('JSON file saved successfully!');
     } catch (error) {
-      print(error.toString());
+      print("JSON save error - ${error.toString()}");
     }
   }
 

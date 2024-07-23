@@ -14,6 +14,7 @@ import 'package:lorehunter/functions/geocoding.dart';
 import 'package:lorehunter/providers/tour_provider.dart';
 import 'package:lorehunter/screens/itinerary.dart';
 import 'package:lorehunter/widgets/routes.dart';
+import 'package:lorehunter/widgets/tour_cards.dart';
 import 'package:lorehunter/widgets/tour_panel_slide_up.dart';
 import 'package:lorehunter/widgets/location_picker.dart';
 
@@ -66,42 +67,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Center(
-          child: Stack(
+          child: Column(
             children: [
-              Center(
-                child: _isGeneratingTour
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/fastWalkman.gif',
-                            scale: 4,
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            "Generating tour...",
-                            style: TextStyle(fontSize: 16),
-                            textAlign: TextAlign.center,
-                          )
-                        ],
-                      )
-                    : FutureBuilder(
-                        future: getToursFromFiles(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            if (snapshot.data != null) {
-                              return Text(snapshot.data!.first.name);
-                            }
-                          }
-                          return Text(
-                            "Pick a country \nPick a city \nGenerate a walking tour!",
-                            style: TextStyle(fontSize: 16),
-                            textAlign: TextAlign.center,
-                          );
-                        }),
-              ),
               !_isGeneratingTour
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -174,6 +141,57 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       ],
                     )
                   : Container(),
+              // SizedBox(
+              //   height: 30,
+              // ),
+              Center(
+                child: _isGeneratingTour
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/fastWalkman.gif',
+                            scale: 4,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Text(
+                            "Generating tour...",
+                            style: TextStyle(fontSize: 16),
+                            textAlign: TextAlign.center,
+                          )
+                        ],
+                      )
+                    : FutureBuilder(
+                        future: getToursFromFiles(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data != null &&
+                                snapshot.data!.isNotEmpty) {
+                              return Container(
+                                width: MediaQuery.sizeOf(context).width,
+                                height: MediaQuery.sizeOf(context).height * 0.8,
+                                alignment: Alignment.topCenter,
+                                child: ListView.builder(
+                                  itemBuilder: (context, index) {
+                                    return TourCard(
+                                        tour: snapshot.data![index]);
+                                  },
+                                  itemCount: snapshot.data!.length,
+                                ),
+                              );
+                            } else {
+                              print("no json tours data found.");
+                            }
+                          }
+                          return Text(
+                            "Pick a country \nPick a city \nGenerate a walking tour!",
+                            style: TextStyle(fontSize: 16),
+                            textAlign: TextAlign.center,
+                          );
+                        }),
+              ),
             ],
           ),
         ),

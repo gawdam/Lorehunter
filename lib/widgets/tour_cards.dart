@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lorehunter/models/place_details.dart';
+import 'package:lorehunter/models/tour_details.dart';
 import 'package:marquee/marquee.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,18 +24,16 @@ bool willTextOverflow({
   return textPainter.didExceedMaxLines;
 }
 
-class PlaceCard extends StatefulWidget {
-  final PlaceDetails placeDetails;
-  final String icon;
+class TourCard extends StatefulWidget {
+  final Tour tour;
 
-  const PlaceCard({Key? key, required this.placeDetails, required this.icon})
-      : super(key: key);
+  const TourCard({Key? key, required this.tour}) : super(key: key);
 
   @override
-  State<PlaceCard> createState() => _PlaceCardState();
+  State<TourCard> createState() => _TourCardState();
 }
 
-class _PlaceCardState extends State<PlaceCard> {
+class _TourCardState extends State<TourCard> {
   String? _imageURL;
 
   Future<String?> getWikiImageURL(String? wikiURL) async {
@@ -77,7 +76,8 @@ class _PlaceCardState extends State<PlaceCard> {
   Widget build(BuildContext context) {
     return Container(
       // color: Colors.black,
-      width: 200, //not working!
+      // width: 200, //not working!
+      height: 120,
       padding: EdgeInsets.symmetric(
         horizontal: MediaQuery.sizeOf(context).width * 0.05,
         // vertical: 2.5,
@@ -92,10 +92,10 @@ class _PlaceCardState extends State<PlaceCard> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   FutureBuilder(
-                      future: getWikiImageURL(widget.placeDetails.wikiURL),
+                      future: getWikiImageURL(widget.tour.places.first.wikiURL),
                       builder: (context, snapshot) {
                         return Hero(
-                          tag: "image-${widget.placeDetails.name}",
+                          tag: "image-${widget.tour.name}",
                           child: Skeletonizer(
                               enabled: _imageURL == null,
                               child: _imageURL != null
@@ -138,63 +138,51 @@ class _PlaceCardState extends State<PlaceCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        InkWell(
-                          onTap: () => launchUrl(Uri.parse(widget
-                                  .placeDetails.wikiURL ??
-                              "https://www.google.com/search?q=${widget.placeDetails.name}")),
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 20,
-                                width: 170,
-                                child: willTextOverflow(
-                                        text: widget.placeDetails.name,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16.0,
-                                        ),
-                                        maxWidth: 170)
-                                    ? Marquee(
-                                        text: widget.placeDetails.name,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16.0,
-                                        ),
-                                        scrollAxis: Axis.horizontal,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        blankSpace: 20.0,
-                                        velocity: 100.0,
-                                        pauseAfterRound: Duration(seconds: 1),
-                                        startPadding: 10.0,
-                                        accelerationDuration:
-                                            Duration(seconds: 1),
-                                        accelerationCurve: Curves.linear,
-                                        decelerationDuration:
-                                            Duration(milliseconds: 500),
-                                        decelerationCurve: Curves.easeOut,
-                                      )
-                                    : Text(
-                                        widget.placeDetails.name,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16.0,
-                                        ),
+                        Row(
+                          children: [
+                            Container(
+                              height: 20,
+                              width: 160,
+                              child: willTextOverflow(
+                                      text: widget.tour.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16.0,
                                       ),
-                              ),
-                              Text(
-                                widget.icon,
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
+                                      maxWidth: 170)
+                                  ? Marquee(
+                                      text: widget.tour.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16.0,
+                                      ),
+                                      scrollAxis: Axis.horizontal,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      blankSpace: 20.0,
+                                      velocity: 100.0,
+                                      pauseAfterRound: Duration(seconds: 1),
+                                      startPadding: 10.0,
+                                      accelerationDuration:
+                                          Duration(seconds: 1),
+                                      accelerationCurve: Curves.linear,
+                                      decelerationDuration:
+                                          Duration(milliseconds: 500),
+                                      decelerationCurve: Curves.easeOut,
+                                    )
+                                  : Text(
+                                      widget.tour.name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16.0,
+                                      ),
+                                    ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 5.0),
                         Text(
-                          widget.placeDetails.brief,
+                          widget.tour.brief,
                           style: TextStyle(fontSize: 11.0),
                         ),
                       ],
@@ -210,7 +198,7 @@ class _PlaceCardState extends State<PlaceCard> {
                           borderRadius: BorderRadius.circular(4.0),
                         ),
                         child: Text(
-                          "${widget.placeDetails.tourDuration} mins",
+                          "${widget.tour.city}",
                           style: TextStyle(fontSize: 12.0),
                         ),
                       ),

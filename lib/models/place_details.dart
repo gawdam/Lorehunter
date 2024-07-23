@@ -7,6 +7,7 @@ class PlaceDetails {
     required this.type,
     required this.wikiURL,
     required this.tourDuration,
+    this.coordinates,
   });
   String name;
 
@@ -19,11 +20,11 @@ class PlaceDetails {
   LatLng? coordinates;
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'brief': brief,
-        'type': type,
-        'wikiURL': wikiURL,
-        'tourDuration': tourDuration,
+        'place_name': name,
+        'place_brief': brief,
+        'place_type': type,
+        'place_wikiURL': wikiURL,
+        'place_duration': tourDuration,
         'coordinates': coordinates?.toJson(),
       };
 }
