@@ -94,42 +94,39 @@ class _TourCardState extends State<TourCard> {
                   FutureBuilder(
                       future: getWikiImageURL(widget.tour.places.first.wikiURL),
                       builder: (context, snapshot) {
-                        return Hero(
-                          tag: "image-${widget.tour.name}",
-                          child: Skeletonizer(
-                              enabled: _imageURL == null,
-                              child: _imageURL != null
-                                  ? Container(
-                                      width: 80,
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: Color.fromARGB(
-                                                  20, 155, 39, 176)!,
-                                              blurRadius: 0)
-                                        ],
-                                        borderRadius: BorderRadius.circular(
-                                            11.0), // Set the desired radius
-                                        border: Border.all(
-                                          color: Colors.purple[
-                                              500]!, // Set the border color
-                                          width: 1.0, // Set the border width
-                                        ),
+                        return Skeletonizer(
+                            enabled: _imageURL == null,
+                            child: _imageURL != null
+                                ? Container(
+                                    width: 80,
+                                    height: 80,
+                                    decoration: BoxDecoration(
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Color.fromARGB(
+                                                20, 155, 39, 176)!,
+                                            blurRadius: 0)
+                                      ],
+                                      borderRadius: BorderRadius.circular(
+                                          11.0), // Set the desired radius
+                                      border: Border.all(
+                                        color: Colors.purple[
+                                            500]!, // Set the border color
+                                        width: 1.0, // Set the border width
                                       ),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: Image.network(
-                                          _imageURL!,
-                                          scale: 2,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ))
-                                  : Container(
-                                      width: 80,
-                                      height: 80,
-                                    )),
-                        );
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        _imageURL!,
+                                        scale: 2,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ))
+                                : Container(
+                                    width: 80,
+                                    height: 80,
+                                  ));
                       }),
                   SizedBox(
                     width: 10,

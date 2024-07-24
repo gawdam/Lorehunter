@@ -20,11 +20,9 @@ LatLng convertCoordinates(Map<String, dynamic> coordinate) {
 }
 
 class Routes extends ConsumerStatefulWidget {
-  final List<String> places;
-  final String city;
+  final Tour tour;
 
-  const Routes({Key? key, required this.places, required this.city})
-      : super(key: key);
+  const Routes({Key? key, required this.tour}) : super(key: key);
 
   @override
   ConsumerState<Routes> createState() => _RoutesState();
@@ -40,10 +38,12 @@ class _RoutesState extends ConsumerState<Routes> {
 
   List<String> _previousPlaces = [];
 
+  GoogleMapController? mapController;
+
   @override
   void initState() {
     super.initState();
-    _previousPlaces = widget.places;
+    _previousPlaces = List<String>.from(widget.tour.places.map((e) => e.name));
     _createRoute();
   }
 
@@ -51,8 +51,10 @@ class _RoutesState extends ConsumerState<Routes> {
   void didUpdateWidget(covariant Routes oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Check if places list has changed
-    if (widget.places != _previousPlaces) {
-      _previousPlaces = widget.places; // Update previous places
+    if (List<String>.from(widget.tour.places.map((e) => e.name)) !=
+        _previousPlaces) {
+      _previousPlaces = List<String>.from(
+          widget.tour.places.map((e) => e.name)); // Update previous places
       _clearMapData(); // Clear existing markers, polylines, etc.
       _createRoute(); // Re-create route with updated places
     }
@@ -102,7 +104,8 @@ class _RoutesState extends ConsumerState<Routes> {
   }
 
   Future<void> generatePolylineFromPoints() async {
-    List<LatLng> polylineCoordinates = await getPolyLinePoints();
+    List<LatLng> polylineCoordinates =
+        widget.tour.routeCoordinates ?? await getPolyLinePoints();
 
     PolylineId id = PolylineId("poly");
     Polyline polyline = Polyline(
@@ -113,6 +116,25 @@ class _RoutesState extends ConsumerState<Routes> {
     setState(() {
       _polylines[id] = polyline;
     });
+  }
+
+  LatLng calculateAverageLatLng(List<LatLng> latLngs) {
+    if (latLngs.isEmpty) {
+      throw ArgumentError('List of LatLngs cannot be empty');
+    }
+
+    double totalLatitude = 0.0;
+    double totalLongitude = 0.0;
+
+    for (final latLng in latLngs) {
+      totalLatitude += latLng.latitude;
+      totalLongitude += latLng.longitude;
+    }
+
+    double averageLatitude = totalLatitude / latLngs.length;
+    double averageLongitude = totalLongitude / latLngs.length;
+
+    return LatLng(averageLatitude, averageLongitude);
   }
 
   Future<List<LatLng>> getPolyLinePoints() async {
@@ -150,7 +172,7 @@ class _RoutesState extends ConsumerState<Routes> {
     }
     tour.updatedPlaces = _updatedAndSortedPlaces;
     tour.routeCoordinates = polylineCoordinates;
-    await tour.toJsonFile(widget.city);
+    await tour.toJsonFile(widget.tour.name);
     ref.read(tourProvider.notifier).state = tour;
 
     setState(() {});
@@ -158,33 +180,59 @@ class _RoutesState extends ConsumerState<Routes> {
   }
 
   Future<void> _createMarkers() async {
-    print(widget.places);
-    for (final place in widget.places) {
-      final coordinate = await getCoordinatesForFree(place, widget.city);
+    for (final place in widget.tour.places) {
+      LatLng latLng;
+      if (place.coordinates == null) {
+        final coordinate =
+            await getCoordinatesForFree(place.name, widget.tour.city);
+        if (coordinate != null) {
+          LatLng latLng = convertCoordinates(coordinate);
 
-      if (coordinate != null) {
-        LatLng latLng = convertCoordinates(coordinate);
+          setState(() {
+            _coordinates.add(latLng);
+            coord = calculateAverageLatLng(_coordinates);
+            mapController?.animateCamera(CameraUpdate.newCameraPosition(
+                CameraPosition(target: coord, zoom: 13)));
+          });
+
+          _updatedAndSortedPlaces.add(place.name);
+
+          _markers.add(
+            Marker(
+              markerId: MarkerId(coordinate.toString()),
+              position: latLng,
+              infoWindow: InfoWindow(
+                title: place.name,
+              ),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueRed),
+            ),
+          );
+          await Future.delayed(Duration(seconds: 1));
+        }
+      } else {
+        latLng = place.coordinates!;
         setState(() {
-          coord = latLng;
-          _coordinates.add(coord);
-
-          _updatedAndSortedPlaces.add(place);
+          _coordinates.add(latLng);
+          coord = calculateAverageLatLng(_coordinates);
         });
 
         _markers.add(
           Marker(
-            markerId: MarkerId(coordinate.toString()),
+            markerId: MarkerId(latLng.toString()),
             position: latLng,
             infoWindow: InfoWindow(
-              title: place,
+              title: place.name,
             ),
             icon:
                 BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
           ),
         );
-        await Future.delayed(Duration(seconds: 1));
       }
     }
+    // await mapController!.animateCamera(CameraUpdate.newCameraPosition(
+    //     CameraPosition(target: coord, zoom: 13)));
+    setState(() {});
   }
 
   Future<Map<String, dynamic>> _createRoute() async {
@@ -193,10 +241,23 @@ class _RoutesState extends ConsumerState<Routes> {
     return {'markers': _markers, 'polyline': _polylines};
   }
 
+  void _onMapCreated(GoogleMapController controller) async {
+    setState(() {
+      mapController = controller;
+    });
+    coord = calculateAverageLatLng(_coordinates);
+    // Update camera position with averageLatLng
+    final cameraPosition = CameraPosition(
+      target: coord,
+      zoom: 13.0, // Adjust zoom level if needed
+    );
+
+    // await mapController!
+    //     .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  }
+
   @override
   Widget build(BuildContext context) {
-    Tour? tour = ref.watch(tourProvider.select((value) => value));
-
     return Builder(builder: (context) {
       if (_markers.isEmpty)
         return Container(
@@ -206,11 +267,13 @@ class _RoutesState extends ConsumerState<Routes> {
             child: CircularProgressIndicator());
 
       return GoogleMap(
+        onMapCreated: _onMapCreated,
+
         myLocationButtonEnabled: true,
         myLocationEnabled: true,
         initialCameraPosition: CameraPosition(
           target: coord, // Default to (0, 0) if no coordinates
-          zoom: 14.0,
+          zoom: 13.0,
         ),
         // cameraTargetBounds:
         //     CameraTargetBounds(LatLngBounds.fromList(_coordinates)),

@@ -75,7 +75,6 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
   Widget build(BuildContext context) {
     int duration = ((widget.tour.distance ?? 0) / 1000 / 6 * 60).round() +
         _timeSpentAtPlaces;
-    final _tour = ref.watch(tourProvider);
 
     Widget _button(String labelName, String label, IconData icon, Color color) {
       return Column(
@@ -123,25 +122,20 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                 children: <Widget>[
                   AnimatedContainer(
                       duration: Duration(seconds: 1),
-                      child: _placeDetails.length != _tour!.places.length
-                          ? LoadingAnimationWidget.staggeredDotsWave(
-                              color: Colors.grey, size: 30)
-                          : Container(
-                              width: 30,
-                              height: 5,
-                              // padding: EdgeInsets.all(18),
-                              decoration: BoxDecoration(
-                                  color: Colors.grey[300],
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(12.0))),
-                            )),
+                      child: Container(
+                        width: 30,
+                        height: 5,
+                        // padding: EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(12.0))),
+                      )),
                 ],
               ),
-              _placeDetails.length != _tour!.places.length
-                  ? Container()
-                  : SizedBox(
-                      height: 25.0,
-                    ),
+              SizedBox(
+                height: 25.0,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -235,19 +229,19 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                 height: MediaQuery.sizeOf(context).height * 0.6,
                 width: MediaQuery.sizeOf(context).width * 0.9,
                 child: Skeletonizer(
-                  enabled: _placeDetails.length != _tour!.places.length,
+                  enabled: _placeDetails.length != widget.tour.places.length,
                   child: ListView.builder(
                     itemBuilder: (context, index) {
-                      if (_tour!.updatedPlaces!.length <= index) {
+                      if (widget.tour.updatedPlaces!.length <= index) {
                         return Container();
                       }
                       if (_placeDetails.length >=
-                          _places.indexOf(_tour.updatedPlaces![index])) {
-                        if (_tour.places[index] !=
-                            _tour.updatedPlaces![index]) {
+                          _places.indexOf(widget.tour.updatedPlaces![index])) {
+                        if (widget.tour.places[index].name !=
+                            widget.tour.updatedPlaces![index]) {
                           return PlaceCard(
-                              placeDetails: _placeDetails[
-                                  _places.indexOf(_tour.updatedPlaces![index])],
+                              placeDetails: _placeDetails[_places
+                                  .indexOf(widget.tour.updatedPlaces![index])],
                               icon: "");
                         }
                       }
@@ -276,7 +270,8 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                         context,
                         MaterialPageRoute(
                           builder: (BuildContext context) => AudioTour(
-                              places: _tour.updatedPlaces!, city: widget.city),
+                              places: widget.tour.updatedPlaces!,
+                              city: widget.city),
                         ));
                   },
                   style: ElevatedButton.styleFrom(
@@ -315,7 +310,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
     return SlidingUpPanel(
       maxHeight: _panelHeightOpen,
       minHeight: _panelHeightClosed,
-      isDraggable: _placeDetails.length == _tour!.places.length,
+      isDraggable: true,
       parallaxEnabled: true,
       parallaxOffset: .5,
       panelBuilder: (sc) => _panel(sc),

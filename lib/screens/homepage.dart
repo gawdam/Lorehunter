@@ -175,8 +175,22 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                 alignment: Alignment.topCenter,
                                 child: ListView.builder(
                                   itemBuilder: (context, index) {
-                                    return TourCard(
-                                        tour: snapshot.data![index]);
+                                    return GestureDetector(
+                                      onTap: () {
+                                        // Handle click action here (e.g., navigate to tour details screen)
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ItineraryPage(
+                                                      tour: snapshot
+                                                          .data![index])),
+                                        );
+                                      },
+                                      child: TourCard(
+                                        tour: snapshot.data![index],
+                                      ),
+                                    );
                                   },
                                   itemCount: snapshot.data!.length,
                                 ),
