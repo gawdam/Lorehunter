@@ -31,7 +31,6 @@ class _AudioTourState extends State<AudioTour> {
     final jsonString =
         await _audioGuide.initSession(widget.places.join(", "), widget.city);
     final audioTourScript = await jsonDecode(jsonString);
-    print(audioTourScript['tour'][0]);
     return audioTourScript;
   }
 
