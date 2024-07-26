@@ -20,6 +20,7 @@ class TourAudioTranscript {
 
   factory TourAudioTranscript.fromJson(
       Map<String, dynamic> json, String tourID) {
+    print(json.toString());
     return TourAudioTranscript(
       tourID: tourID,
       tourName: json['tourName'],
@@ -82,7 +83,7 @@ class PlaceAudioTranscript {
   }
 
   Map<String, dynamic> toJson() => {
-        'name': placeName,
+        'placeName': placeName,
         'sections': sections.map((section) => section.toJson()).toList(),
         'trivia': trivia.toJson(),
       };
@@ -136,7 +137,7 @@ class Trivia {
         'question': question,
         'options': options,
         'correctAnswer': correctAnswer,
-        'correctAnswerResponse': feedback,
+        'feedback': feedback,
       };
 }
 
@@ -150,6 +151,7 @@ Future<TourAudioTranscript?> getAudioTranscriptForTour(String tourID) async {
     if (await file.exists()) {
       print("json file exists, read issue");
       final jsonData = await file.readAsString();
+      print(jsonData);
       return TourAudioTranscript.fromJson(jsonDecode(jsonData), tourID);
     } else {
       print('Audio transcript file not found for tour ID: $tourID');
