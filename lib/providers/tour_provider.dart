@@ -17,8 +17,6 @@ Tour getTourFromJson(String jsonString, String city) {
     city: jsonMap.containsKey('city') ? jsonMap['city'] : city,
     brief: jsonMap['brief'] as String,
     bestExperiencedAt: jsonMap['bestExperiencedAt'] as String,
-    greeting: jsonMap['greeting'] as String,
-    outro: jsonMap['outro'] as String,
     places: (jsonMap['places'] as List)
         .map((placeJson) => getPlaceDetailsFromJson(placeJson))
         .toList(),

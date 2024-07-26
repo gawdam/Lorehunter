@@ -14,8 +14,6 @@ class Tour {
     required this.places,
     required this.brief,
     required this.bestExperiencedAt,
-    required this.greeting,
-    required this.outro,
     this.distance,
     this.updatedPlaces,
     this.routeCoordinates,
@@ -30,9 +28,6 @@ class Tour {
 
   List<PlaceDetails> places;
 
-  String greeting;
-  String outro;
-
   double? distance;
   List<String>? updatedPlaces;
   List<LatLng>? routeCoordinates;
@@ -45,20 +40,22 @@ class Tour {
         'brief': brief,
         'bestExperiencedAt': bestExperiencedAt,
         'places': places.map((place) => place.toJson()).toList(),
-        'greeting': greeting,
-        'outro': outro,
         'distance': distance,
         'updatedPlaces': updatedPlaces,
         'routeCoordinates':
             routeCoordinates?.map((point) => point.toJson()).toList(),
         'updateTime': DateTime.now().toString(),
       };
+
   Future<void> toJsonFile() async {
     try {
       final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/tours/$id.json');
+      final toursDirectory = Directory('${directory.path}/tours');
+      if (!await toursDirectory.exists()) {
+        await toursDirectory.create(recursive: true);
+      }
+      final file = File('${toursDirectory.path}/$id.json');
       final jsonData = jsonEncode(toJson());
-      print(jsonData);
       await file.writeAsString(jsonData);
       print('JSON file saved successfully!');
     } catch (error) {

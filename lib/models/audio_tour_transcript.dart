@@ -35,11 +35,15 @@ class TourAudioTranscript {
   Future<void> toJsonFile() async {
     try {
       final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/audioTranscripts/$tourID.json');
+      final toursDirectory = Directory('${directory.path}/audioTranscripts');
+      if (!await toursDirectory.exists()) {
+        await toursDirectory.create(recursive: true);
+      }
+      final file = File('${toursDirectory.path}/$tourID.json');
 
       final jsonData = jsonEncode(toJson());
       await file.writeAsString(jsonData);
-      print('JSON file saved successfully!');
+      print('JSON file saved successfully! - $tourID');
     } catch (error) {
       print(error.toString());
     }
@@ -141,8 +145,10 @@ Future<TourAudioTranscript?> getAudioTranscriptForTour(String tourID) async {
   final directory = Directory("${baseDirectory.path}/audioTranscripts");
 
   try {
-    final file = File('$directory/$tourID.json');
+    final file = File('${directory.path}/$tourID.json');
+    // print(file.readAsString());
     if (await file.exists()) {
+      print("json file exists, read issue");
       final jsonData = await file.readAsString();
       return TourAudioTranscript.fromJson(jsonDecode(jsonData), tourID);
     } else {
