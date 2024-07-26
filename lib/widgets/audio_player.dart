@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:lorehunter/models/place_details.dart';
 
 class AudioPlayer extends ConsumerStatefulWidget {
   String transcript;

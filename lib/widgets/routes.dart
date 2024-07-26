@@ -172,7 +172,7 @@ class _RoutesState extends ConsumerState<Routes> {
     }
     tour.updatedPlaces = _updatedAndSortedPlaces;
     tour.routeCoordinates = polylineCoordinates;
-    await tour.toJsonFile(widget.tour.name);
+    await tour.toJsonFile();
     ref.read(tourProvider.notifier).state = tour;
 
     setState(() {});

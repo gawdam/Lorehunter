@@ -4,11 +4,11 @@ import 'package:lorehunter/providers/tour_provider.dart';
 import 'package:path/path.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:lorehunter/models/place_details.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Tour {
   Tour({
+    required this.id,
     required this.name,
     required this.city,
     required this.places,
@@ -22,6 +22,7 @@ class Tour {
     this.updateTime,
   });
 
+  String id;
   String name;
   String city;
   String brief;
@@ -52,10 +53,10 @@ class Tour {
             routeCoordinates?.map((point) => point.toJson()).toList(),
         'updateTime': DateTime.now().toString(),
       };
-  Future<void> toJsonFile(String filename) async {
+  Future<void> toJsonFile() async {
     try {
       final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/$filename.json');
+      final file = File('${directory.path}/$id.json');
       final jsonData = jsonEncode(toJson());
       print(jsonData);
       await file.writeAsString(jsonData);
@@ -90,4 +91,33 @@ Future<List<Tour>> getToursFromFiles() async {
   }
 
   return tours;
+}
+
+class PlaceDetails {
+  PlaceDetails({
+    required this.name,
+    required this.brief,
+    required this.type,
+    required this.wikiURL,
+    required this.tourDuration,
+    this.coordinates,
+  });
+  String name;
+
+  String brief;
+  String type;
+
+  String? wikiURL;
+  int tourDuration;
+
+  LatLng? coordinates;
+
+  Map<String, dynamic> toJson() => {
+        'place_name': name,
+        'place_brief': brief,
+        'place_type': type,
+        'place_wikiURL': wikiURL,
+        'place_duration': tourDuration,
+        'coordinates': coordinates?.toJson(),
+      };
 }

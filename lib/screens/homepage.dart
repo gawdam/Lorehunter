@@ -48,7 +48,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   Future<void> getPlaces(String city) async {
     String jsonString = await placesFinder.askGemini(city);
     tour = getTourFromJson(jsonString, city);
-    await tour?.toJsonFile(city);
+    await tour?.toJsonFile();
     ref.read(tourProvider.notifier).state = tour;
     Navigator.push(
         context,

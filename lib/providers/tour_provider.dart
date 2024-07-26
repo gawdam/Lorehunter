@@ -1,16 +1,18 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lorehunter/models/tour_details.dart';
-import 'package:lorehunter/providers/place_details_provider.dart';
 import 'dart:convert';
-
+import 'package:uuid/uuid.dart';
 import 'package:riverpod/riverpod.dart';
 
 final tourProvider = StateProvider<Tour?>((ref) => null);
 
 Tour getTourFromJson(String jsonString, String city) {
+  var uuid = Uuid();
+
   Map jsonMap = jsonDecode(jsonString);
 
   final tour = Tour(
+    id: jsonMap.containsKey('id') ? jsonMap['id'] : uuid.v1(),
     name: jsonMap['name'] as String,
     city: jsonMap.containsKey('city') ? jsonMap['city'] : city,
     brief: jsonMap['brief'] as String,
@@ -36,4 +38,22 @@ Tour getTourFromJson(String jsonString, String city) {
   );
 
   return tour;
+}
+
+final placeDetailsProvider = StateProvider<List<PlaceDetails?>?>((ref) => null);
+
+PlaceDetails getPlaceDetailsFromJson(Map jsonMap) {
+// Create a Tour object from the JSON data
+  final placeDetails = PlaceDetails(
+    name: jsonMap['place_name'],
+    brief: jsonMap['place_brief'],
+    wikiURL: jsonMap['place_wikiURL'],
+    tourDuration: jsonMap['place_duration'],
+    type: jsonMap['place_type'],
+    coordinates: jsonMap.containsKey('coordinates')
+        ? LatLng(jsonMap['coordinates'][0] as double,
+            jsonMap['coordinates'][1] as double)
+        : null,
+  );
+  return placeDetails;
 }
