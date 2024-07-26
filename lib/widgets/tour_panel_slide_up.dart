@@ -263,8 +263,8 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                         context,
                         MaterialPageRoute(
                           builder: (BuildContext context) => AudioTour(
-                              places: widget.tour.updatedPlaces!,
-                              city: widget.city),
+                            tour: widget.tour,
+                          ),
                         ));
                   },
                   style: ElevatedButton.styleFrom(

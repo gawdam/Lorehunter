@@ -11,7 +11,8 @@ class AudioGuide {
   bool initialized = false;
   String theme;
 
-  Future<String> initSession(String commaSeparatedPlaces, String city) async {
+  Future<String> initSession(
+      String commaSeparatedPlaces, String city, String tour) async {
     await dotenv.load(fileName: ".env");
     final generationConfig = GenerationConfig(
         temperature: 0.9, maxOutputTokens: 25000, topK: 40, stopSequences: []);
@@ -23,7 +24,7 @@ class AudioGuide {
     );
     chatBot = model!.startChat();
     final response = await chatBot!.sendMessage(Content.text("""
-I am going for a walking tour in $city. You will act as my tour guide. 
+I am going for a walking tour named "$tour" in $city. You will act as my tour guide. 
 I am visiting the following places - $commaSeparatedPlaces
 The theme of this tour is the last of us. At the end of the audio tour for each place, include a section "After the outbreak", where you detail on what happened to the place after the fungal outbreak.
 Along the lines of - Did the infected take over? was it bombed? was it used as a camp by rebels? or by fireflies? 
@@ -33,10 +34,13 @@ All your responses should be in plain text, no markdowns, no formatting.
 Do not use quotes or special characters in your transcript. No quotes as well.
 Only allowable characters are alphabets, commas, periods, apostrophe and hyphens.
 Sample output:
-{ 
-tour:
+{
+"tourName": <str> [name of the tour]
+"greeting": <str> [the greeting to be played as an audio, describing the tour and hint at whats to come],
+"placeAudioTranscripts":
   [
-  "name": <str> [place name, without the city name],
+  "placeName": <str> [place name, without the city name],
+  
   "sections": [
         {
           "header": <str> [Topics covered in the audio tour (keep it simple). There should be atleast 5 topics eg.history, architecture],
@@ -49,11 +53,12 @@ tour:
   "trivia": {
       "question": <str> [the question posed about the place. make it about an interesting fact or folklore],
       "options" : list<str> [4 options containing the possible answers to the question],
-      "correct_answer": <str> [one among a,b,c or d for the 4 options],
-      "correct_answer_response": <str> [an explanation for selecting the correct answer. elaborate on the answer],
+      "correctAnswer": <str> [one among a,b,c or d for the 4 options],
+      "feedback": <str> [an explanation for selecting the correct answer. elaborate on the answer],
   }
   ]
-  ...[generate same format for all places]
+...[generate same format for all places]
+"outro": <str> [an outro for the tour. At the end of the outro, ask them to rate the app in google play and consider donating to support], 
 }
 Do not write any additional details. Make sure the JSON is valid
       """));

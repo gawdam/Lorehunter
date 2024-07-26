@@ -1,21 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:csc_picker/csc_picker.dart';
 import 'package:lorehunter/interns/find_places_intern.dart';
 import 'package:lorehunter/models/tour_details.dart';
 import 'package:lorehunter/providers/location_provider.dart';
-import 'package:lorehunter/functions/geocoding.dart';
 import 'package:lorehunter/providers/tour_provider.dart';
 import 'package:lorehunter/screens/itinerary.dart';
-import 'package:lorehunter/widgets/routes.dart';
 import 'package:lorehunter/widgets/tour_cards.dart';
-import 'package:lorehunter/widgets/tour_panel_slide_up.dart';
 import 'package:lorehunter/widgets/location_picker.dart';
 
 class MyHomePage extends ConsumerStatefulWidget {
@@ -146,65 +139,78 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               // ),
               Center(
                 child: _isGeneratingTour
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/fastWalkman.gif',
-                            scale: 4,
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            "Generating tour...",
-                            style: TextStyle(fontSize: 16),
-                            textAlign: TextAlign.center,
-                          )
-                        ],
+                    ? Container(
+                        width: MediaQuery.sizeOf(context).width,
+                        height: MediaQuery.sizeOf(context).height,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Image.asset(
+                              'assets/images/fastWalkman.gif',
+                              scale: 4,
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              "Generating tour...",
+                              style: TextStyle(fontSize: 16),
+                              textAlign: TextAlign.center,
+                            )
+                          ],
+                        ),
                       )
-                    : FutureBuilder(
-                        future: getToursFromFiles(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            if (snapshot.data != null &&
-                                snapshot.data!.isNotEmpty) {
+                    : Center(
+                        child: FutureBuilder(
+                            future: getToursFromFiles(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                if (snapshot.data != null &&
+                                    snapshot.data!.isNotEmpty) {
+                                  return Container(
+                                    width: MediaQuery.sizeOf(context).width,
+                                    height:
+                                        MediaQuery.sizeOf(context).height * 0.8,
+                                    alignment: Alignment.topCenter,
+                                    child: ListView.builder(
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ItineraryPage(
+                                                          tour: snapshot
+                                                              .data![index])),
+                                            );
+                                          },
+                                          child: TourCard(
+                                            tour: snapshot.data![index],
+                                          ),
+                                        );
+                                      },
+                                      itemCount: snapshot.data!.length,
+                                    ),
+                                  );
+                                } else {
+                                  print("no json tours data found.");
+                                }
+                              }
                               return Container(
                                 width: MediaQuery.sizeOf(context).width,
                                 height: MediaQuery.sizeOf(context).height * 0.8,
-                                alignment: Alignment.topCenter,
-                                child: ListView.builder(
-                                  itemBuilder: (context, index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        // Handle click action here (e.g., navigate to tour details screen)
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ItineraryPage(
-                                                      tour: snapshot
-                                                          .data![index])),
-                                        );
-                                      },
-                                      child: TourCard(
-                                        tour: snapshot.data![index],
-                                      ),
-                                    );
-                                  },
-                                  itemCount: snapshot.data!.length,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "Your saved tours will show up here\n\n\nPick a country \nPick a city \nGenerate a walking tour!\n\n",
+                                  style: TextStyle(fontSize: 16),
+                                  textAlign: TextAlign.center,
                                 ),
                               );
-                            } else {
-                              print("no json tours data found.");
-                            }
-                          }
-                          return Text(
-                            "Pick a country \nPick a city \nGenerate a walking tour!",
-                            style: TextStyle(fontSize: 16),
-                            textAlign: TextAlign.center,
-                          );
-                        }),
+                            }),
+                      ),
               ),
             ],
           ),

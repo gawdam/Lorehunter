@@ -56,7 +56,7 @@ class Tour {
   Future<void> toJsonFile() async {
     try {
       final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/$id.json');
+      final file = File('${directory.path}/tours/$id.json');
       final jsonData = jsonEncode(toJson());
       print(jsonData);
       await file.writeAsString(jsonData);
@@ -70,7 +70,8 @@ class Tour {
 }
 
 Future<List<Tour>> getToursFromFiles() async {
-  final directory = await getApplicationDocumentsDirectory();
+  final baseDirectory = await getApplicationDocumentsDirectory();
+  final directory = Directory("${baseDirectory.path}/tours");
   final tours = <Tour>[];
 
   final files = await directory

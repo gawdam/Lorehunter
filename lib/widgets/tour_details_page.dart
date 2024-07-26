@@ -2,23 +2,24 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:lorehunter/models/audio_tour_transcript.dart';
 import 'package:lorehunter/widgets/audio_player.dart'; // Import for rich text display
 
 class TourDetailsPage extends StatelessWidget {
-  final Map<String, dynamic> tourData;
+  final PlaceAudioTranscript tourData;
 
   const TourDetailsPage({Key? key, required this.tourData}) : super(key: key);
 
   String tourToString() {
     // Convert sections and trivia options to JSON-compatible lists
-    final sections = tourData['sections'] as List<dynamic>;
+    final sections = tourData.sections;
 
     // Create a string builder for efficient concatenation
     final StringBuffer buffer = StringBuffer();
 
     for (var section in sections) {
-      buffer.writeln(section['header']);
-      buffer.writeln(section['tourAudio']);
+      buffer.writeln(section.header);
+      buffer.writeln(section.tourAudio);
       buffer.writeln(); // Add a newline for separation
     }
 
@@ -38,26 +39,26 @@ class TourDetailsPage extends StatelessWidget {
           children: [
             // Display tour name as a heading
             Text(
-              tourData['name'],
+              tourData.placeName,
               style:
                   const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16.0),
 
             // Loop through sections and display headers and descriptions
-            for (final section in tourData['sections'])
+            for (final section in tourData.sections)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    section['header'],
+                    section.header,
                     style: const TextStyle(
                         fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8.0),
                   Html(
-                    data: section[
-                        'tourAudio'], // Use Html widget for rich text display
+                    data: section
+                        .tourAudio, // Use Html widget for rich text display
                   ),
                 ],
               ),
@@ -65,7 +66,7 @@ class TourDetailsPage extends StatelessWidget {
 
             // Display trivia question and options
             Text(
-              tourData['trivia']['question'],
+              tourData.trivia.question,
               style:
                   const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
             ),
@@ -73,7 +74,7 @@ class TourDetailsPage extends StatelessWidget {
             Wrap(
               spacing: 8.0,
               children: [
-                for (final option in tourData['trivia']['options'])
+                for (final option in tourData.trivia.options)
                   ChoiceChip(
                     label: Text(option),
                     selected:
@@ -85,13 +86,13 @@ class TourDetailsPage extends StatelessWidget {
 
             // Display trivia answer and explanation
             Text(
-              'Correct Answer: ${tourData['trivia']['correct_answer']}',
+              'Correct Answer: ${tourData.trivia.correctAnswer}',
               style:
                   const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8.0),
             Html(
-              data: tourData['trivia']['correct_answer_response'],
+              data: tourData.trivia.feedback,
             ),
             AudioPlayer(tourToString())
           ],

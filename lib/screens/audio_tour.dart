@@ -1,24 +1,27 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lorehunter/interns/audio_guide_intern.dart';
+import 'package:lorehunter/models/audio_tour_transcript.dart';
+import 'package:lorehunter/models/tour_details.dart';
 import 'package:lorehunter/widgets/audio_player.dart';
 import 'package:lorehunter/widgets/tour_details_page.dart';
 
-class AudioTour extends StatefulWidget {
-  String city;
-  List<String> places;
+class AudioTour extends ConsumerStatefulWidget {
+  Tour tour;
 
-  AudioTour({required this.places, required this.city});
+  AudioTour({required this.tour});
   @override
-  State<AudioTour> createState() {
+  ConsumerState<AudioTour> createState() {
     return _AudioTourState();
   }
 }
 
-class _AudioTourState extends State<AudioTour> {
+class _AudioTourState extends ConsumerState<AudioTour> {
   AudioGuide _audioGuide = AudioGuide(theme: "the last of us");
   PageController _pageController = PageController(initialPage: 1);
+  late TourAudioTranscript audioTourTranscript;
 
   @override
   initState() {
@@ -27,11 +30,21 @@ class _AudioTourState extends State<AudioTour> {
     //
   }
 
-  Future<Map> getScript() async {
-    final jsonString =
-        await _audioGuide.initSession(widget.places.join(", "), widget.city);
+  Future<TourAudioTranscript> getScript() async {
+    final cachedTranscript = await getAudioTranscriptForTour(widget.tour.id);
+    if (cachedTranscript != null) {
+      return cachedTranscript;
+    }
+    final jsonString = await _audioGuide.initSession(
+        widget.tour.updatedPlaces!.join(", "),
+        widget.tour.city,
+        widget.tour.name);
     final audioTourScript = await jsonDecode(jsonString);
-    return audioTourScript;
+    audioTourTranscript =
+        TourAudioTranscript.fromJson(audioTourScript, widget.tour.id);
+
+    await audioTourTranscript.toJsonFile();
+    return audioTourTranscript;
   }
 
   @override
@@ -48,7 +61,7 @@ class _AudioTourState extends State<AudioTour> {
               return Text('Error fetching audio tour script.');
             } else {
               return PageView(controller: _pageController, children: [
-                for (var i in (snapshot.data!['tour']))
+                for (var i in (snapshot.data!.placeAudioTranscripts))
                   TourDetailsPage(
                     tourData: i,
                   ),
