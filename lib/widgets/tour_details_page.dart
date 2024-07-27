@@ -94,7 +94,7 @@ class TourDetailsPage extends StatelessWidget {
             Html(
               data: tourData.trivia.feedback,
             ),
-            AudioPlayer(tourToString())
+            AudioPlayer(tourData.sections)
           ],
         ),
       ),

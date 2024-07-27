@@ -36,6 +36,7 @@ class Tour {
 
   Map<String, dynamic> toJson() => {
         'name': name,
+        'id': id,
         'city': city,
         'brief': brief,
         'bestExperiencedAt': bestExperiencedAt,
@@ -96,17 +97,19 @@ class PlaceDetails {
     required this.name,
     required this.brief,
     required this.type,
-    required this.wikiURL,
     required this.tourDuration,
+    required this.wikiURL,
+    this.imageURL,
     this.coordinates,
   });
   String name;
 
   String brief;
   String type;
+  int tourDuration;
 
   String? wikiURL;
-  int tourDuration;
+  String? imageURL;
 
   LatLng? coordinates;
 

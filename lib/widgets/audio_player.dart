@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:lorehunter/models/audio_tour_transcript.dart';
 
 class AudioPlayer extends ConsumerStatefulWidget {
-  String transcript;
+  List<Section> sections;
 
-  AudioPlayer(this.transcript);
+  AudioPlayer(this.sections);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -17,6 +18,7 @@ class AudioPlayer extends ConsumerStatefulWidget {
 class _AudioPlayer extends ConsumerState<AudioPlayer> {
   FlutterTts _flutterTts = FlutterTts();
   bool _isPlaying = false;
+  Map? _headerVoice, _contentVoice;
   List<String> _filteredListofVoices = [
     'en-us-x-tpd-network',
     'en-gb-x-gbb-local',
@@ -56,9 +58,33 @@ class _AudioPlayer extends ConsumerState<AudioPlayer> {
         setState(() {
           _currentVoice = value!;
         });
-        setVoice(value!);
+        setVoice(value!, "content");
       },
     );
+  }
+
+  Future<void> playSection(int index) async {
+    if (index >= widget.sections.length) return;
+    await _flutterTts.awaitSpeakCompletion(true);
+
+    // Play section header
+    setVoice(_headerVoice!, "header");
+
+    await _flutterTts.speak(widget.sections[index].header);
+
+    await _flutterTts.setSilence(1);
+
+    // Play tour audio
+    setVoice(_currentVoice!, "content");
+    await _flutterTts.speak(widget.sections[index].tourAudio);
+
+    // Pause for 2 seconds
+    await _flutterTts.setSilence(1);
+
+    // Play the next section
+    if (index + 1 < widget.sections.length) {
+      await playSection(index + 1);
+    }
   }
 
   void initTTS() {
@@ -76,7 +102,11 @@ class _AudioPlayer extends ConsumerState<AudioPlayer> {
               .where((voice) => _filteredListofVoices.contains(voice['name']))
               .toList();
           _currentVoice = _voices.first;
-          setVoice(_currentVoice!);
+          setVoice(_currentVoice!, "content");
+          _headerVoice = _voices
+              .firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-local');
+          _contentVoice = _voices
+              .firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-local');
         });
       } catch (e) {
         print(e);
@@ -84,10 +114,15 @@ class _AudioPlayer extends ConsumerState<AudioPlayer> {
     });
   }
 
-  void setVoice(Map voice) {
+  void setVoice(Map voice, String type) {
     _flutterTts.setVoice({"name": voice["name"], "locale": voice["locale"]});
-    _flutterTts.setSpeechRate(0.5);
-    _flutterTts.setPitch(1);
+    if (type == "header") {
+      _flutterTts.setSpeechRate(0.4);
+      _flutterTts.setPitch(1);
+    } else {
+      _flutterTts.setSpeechRate(0.5);
+      _flutterTts.setPitch(1.2);
+    }
     // _flutterTts.synthesizeToFile(text, fileName)
   }
 
@@ -98,14 +133,16 @@ class _AudioPlayer extends ConsumerState<AudioPlayer> {
         _speakerSelector(),
         ElevatedButton(
           onPressed: () {
-            _isPlaying = !_isPlaying;
+            setState(() {
+              _isPlaying = !_isPlaying;
+            });
             if (_isPlaying) {
-              _flutterTts.speak(widget.transcript);
+              playSection(0);
             } else {
               _flutterTts.pause();
             }
           },
-          child: Icon(_isPlaying ? Icons.play_arrow : Icons.pause),
+          child: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
         ),
       ],
     );

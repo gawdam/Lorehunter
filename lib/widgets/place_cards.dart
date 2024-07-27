@@ -58,7 +58,6 @@ class _PlaceCardState extends State<PlaceCard> {
           });
           return thumbnail['source'];
         } else {
-          print('No image found for $title');
           return null;
         }
       } else {

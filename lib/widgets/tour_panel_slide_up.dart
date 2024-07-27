@@ -9,6 +9,36 @@ import 'package:marquee/marquee.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
+Widget Button(String labelName, String label, IconData icon, Color color) {
+  return Column(
+    children: <Widget>[
+      Tooltip(
+        message: labelName,
+        child: Container(
+          padding: const EdgeInsets.all(14.0),
+          child: Icon(
+            icon,
+            color: Colors.white,
+          ),
+          decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              boxShadow: const [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.15),
+                  blurRadius: 8.0,
+                )
+              ]),
+        ),
+      ),
+      SizedBox(
+        height: 12.0,
+      ),
+      Text(label),
+    ],
+  );
+}
+
 class TourPanelSlideUp extends ConsumerStatefulWidget {
   TourPanelSlideUp({required this.tour, required this.city});
 
@@ -68,36 +98,6 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
   Widget build(BuildContext context) {
     int duration = ((widget.tour.distance ?? 0) / 1000 / 6 * 60).round() +
         _timeSpentAtPlaces;
-
-    Widget _button(String labelName, String label, IconData icon, Color color) {
-      return Column(
-        children: <Widget>[
-          Tooltip(
-            message: labelName,
-            child: Container(
-              padding: const EdgeInsets.all(14.0),
-              child: Icon(
-                icon,
-                color: Colors.white,
-              ),
-              decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color.fromRGBO(0, 0, 0, 0.15),
-                      blurRadius: 8.0,
-                    )
-                  ]),
-            ),
-          ),
-          SizedBox(
-            height: 12.0,
-          ),
-          Text(label),
-        ],
-      );
-    }
 
     Widget _panel(ScrollController sc) {
       return MediaQuery.removePadding(
@@ -178,28 +178,28 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  _button(
+                  Button(
                     "# Places",
                     "${widget.tour.updatedPlaces?.length ?? widget.tour.places.length} places",
                     Icons.account_balance,
                     Colors.blue,
                   ),
-                  _button(
+                  Button(
                     "Distance covered",
                     "${((widget.tour.distance ?? 0) / 1000).round()} km",
                     Icons.directions_walk,
                     Colors.red,
                   ),
-                  _button(
+                  Button(
                     "Tour duration",
                     "${(duration / 60).round()} hrs",
                     Icons.timer_outlined,
                     Colors.green,
                   ),
-                  _button(
+                  Button(
                     "Best time to visit",
                     widget.tour.bestExperiencedAt,
-                    Icons.sunny,
+                    Icons.watch_outlined,
                     Colors.yellow[700]!,
                   ),
                 ],
