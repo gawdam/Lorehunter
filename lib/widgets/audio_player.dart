@@ -28,7 +28,14 @@ class _AudioPlayer extends ConsumerState<AudioTranscriptPlayer> {
         future: savePlaceAudio(widget.sections, "sample"),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return CircularProgressIndicator(
+              color: Colors.amber,
+            );
+          }
+          if (snapshot.data == null) {
+            return CircularProgressIndicator(
+              color: Colors.black,
+            );
           }
           _player.setFilePath(snapshot.data!);
           return Column(

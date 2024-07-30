@@ -113,6 +113,7 @@ Uint8List _adjustVolume(Uint8List audioBytes, double volumeRatio) {
 }
 
 Future<String> savePlaceAudio(List<Section> sections, String filename) async {
+  print(sections);
   Uint8List header;
   Uint8List body;
   Uint8List headerBackground = Uint8List.fromList(
@@ -121,7 +122,10 @@ Future<String> savePlaceAudio(List<Section> sections, String filename) async {
       Uint8List.fromList(File("assets/music/music_body.mp3").readAsBytesSync());
 
   Uint8List audio = Uint8List(0);
+  int count = 0;
   for (var section in sections) {
+    print("Count : $count");
+    count += 1;
     header = await saveTTSAudio(section.header, "header");
 
     header = mixAudio(header, headerBackground);

@@ -9,7 +9,6 @@ import 'package:lorehunter/providers/location_provider.dart';
 
 Future<Map<String, dynamic>?> getCoordinatesForFree(
     String placeName, String city) async {
-  print(placeName);
   var coords = null;
   try {
     coords = locationFromAddress("$placeName, $city").then((locations) {

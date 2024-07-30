@@ -75,16 +75,12 @@ class _RoutesState extends ConsumerState<Routes> {
         (index) => {'coord': coordinates[index], 'place': places[index]});
     sortedByCoord
         .sort((a, b) => a['coord'].latitude.compareTo(b['coord'].latitude));
-    print("UNOPTIMZED WAYPOINTS - ${places}");
-    print(
-        "ORDERED WAYPOINTS: ${List.generate(coordinates.length, (index) => sortedByCoord[index]['place'])}");
     List result = optimizePathNearestNeighbor(
       List.generate(
           coordinates.length, (index) => sortedByCoord[index]['coord']),
       List.generate(
           coordinates.length, (index) => sortedByCoord[index]['place']),
     );
-    print("OPTIMZED WAYPOINTS - ${result[1]}");
     List<LatLng> optimizedCoordinates = result[0];
     List<String> optimizedPlaces = result[1];
 

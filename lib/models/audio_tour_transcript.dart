@@ -20,7 +20,6 @@ class TourAudioTranscript {
 
   factory TourAudioTranscript.fromJson(
       Map<String, dynamic> json, String tourID) {
-    print(json.toString());
     return TourAudioTranscript(
       tourID: tourID,
       tourName: json['tourName'],
