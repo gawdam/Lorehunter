@@ -7,38 +7,80 @@ import 'package:lorehunter/models/audio_tour_transcript.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:just_audio/just_audio.dart';
 
+double value = 1000000065;
+
 //step 1: save the audio
 Future<Uint8List> saveTTSAudio(String script, String type) async {
+  value += 1;
   final flutterTts = FlutterTts();
+  print("checkpoint 1");
+  var headerVoice;
+  var contentVoice;
+  flutterTts.getVoices.then((data) {
+    try {
+      List<Map> voices = List<Map>.from(data);
+
+      headerVoice =
+          voices.firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-local');
+      contentVoice =
+          voices.firstWhere((voice) => voice['name'] == 'en-gb-x-gbb-local');
+    } catch (e) {
+      print(e);
+    }
+  });
+  print("checkpoint 2");
 
   // Set voice, pitch, and speed based on type
-  if (type == 'header') {
-    await flutterTts.setVoice({
-      "name": "en-gb-x-gbd-local",
-      "locale": "en-US"
-    }); // Replace with desired header voice
-    await flutterTts.setSpeechRate(0.5); // Adjust speech rate as needed
-    await flutterTts.setPitch(1.0); // Adjust pitch as needed
-  } else if (type == 'body') {
-    await flutterTts.setVoice({
-      "name": "en-in-x-ahp-local",
-      "locale": "en-GB"
-    }); // Replace with desired body voice
-    await flutterTts.setSpeechRate(0.6); // Adjust speech rate as needed
-    await flutterTts.setPitch(0.9); // Adjust pitch as needed
-  } else {
-    throw ArgumentError('Invalid type: $type');
+  // if (type == 'header') {
+  //   await flutterTts.setVoice(headerVoice); // Replace with desired header voice
+  //   await flutterTts.setSpeechRate(0.5); // Adjust speech rate as needed
+  //   await flutterTts.setPitch(1.0); // Adjust pitch as needed
+  // } else if (type == 'body') {
+  //   await flutterTts.setVoice(contentVoice); // Replace with desired body voice
+  //   await flutterTts.setSpeechRate(0.6); // Adjust speech rate as needed
+  //   await flutterTts.setPitch(0.9); // Adjust pitch as needed
+  // } else {
+  //   throw ArgumentError('Invalid type: $type');
+  // }
+  print("checkpoint 3");
+  final externalDirectory = Directory("/storage/emulated/0");
+
+  try {
+    final files = externalDirectory.listSync();
+    print(externalDirectory.path);
+    for (final file in files) {
+      print(file.path);
+    }
+  } catch (e) {
+    print('Error listing files: $e');
   }
 
-  final tempDir = await getTemporaryDirectory();
-  final filePath =
-      '${tempDir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.wav';
+  final fileName =
+      'lorehunterAudio_${DateTime.now().millisecondsSinceEpoch}.wav';
+  final filePath = '${externalDirectory.path}/$fileName';
+  print(filePath);
+  print("checkpoint 4");
+  var bytes = Uint8List(0);
+  try {
+    await flutterTts.awaitSynthCompletion(true);
+    var d = await flutterTts.synthesizeToFile(script, fileName);
+    print("d: $d");
+    // Introduce a small delay to ensure file creation
+    await Future.delayed(const Duration(milliseconds: 500));
 
-  await flutterTts.synthesizeToFile(script, filePath);
+    if (await File(filePath).exists()) {
+      print("exists");
+      bytes = File(filePath).readAsBytesSync();
+    } else {
+      throw Exception('File not created: ' + filePath);
+    }
+  } catch (e) {
+    print('Error saving audio file: $e');
+    rethrow; // Rethrow the error for handling in the calling function
+  }
 
-  Uint8List uint8list = Uint8List.fromList(File(filePath).readAsBytesSync());
-
-  return uint8list;
+  print("bytes");
+  return bytes;
 }
 
 /// Mixes two byte arrays representing audio data (simple averaging).
@@ -112,14 +154,20 @@ Uint8List _adjustVolume(Uint8List audioBytes, double volumeRatio) {
   return adjustedAudioBytes;
 }
 
+Future<Uint8List> getBytes(String filePath) async {
+  ByteData byteData = await rootBundle.load(filePath);
+
+  Uint8List bytes = byteData.buffer.asUint8List();
+  return bytes;
+}
+
 Future<String> savePlaceAudio(List<Section> sections, String filename) async {
-  print(sections);
   Uint8List header;
   Uint8List body;
-  Uint8List headerBackground = Uint8List.fromList(
-      File("assets/music/music_header.mp3").readAsBytesSync());
-  Uint8List bodyBackground =
-      Uint8List.fromList(File("assets/music/music_body.mp3").readAsBytesSync());
+  print("generatingBackgroundHeader");
+  Uint8List headerBackground = await getBytes("assets/music/music_header.mp3");
+  print("generatingBackgroundBody");
+  Uint8List bodyBackground = await getBytes("assets/music/music_body.mp3");
 
   Uint8List audio = Uint8List(0);
   int count = 0;
@@ -127,11 +175,15 @@ Future<String> savePlaceAudio(List<Section> sections, String filename) async {
     print("Count : $count");
     count += 1;
     header = await saveTTSAudio(section.header, "header");
-
+    print("saved header");
     header = mixAudio(header, headerBackground);
+    print("mixed header audio");
 
     body = await saveTTSAudio(section.tourAudio, "body");
+    print("saved body");
+
     body = mixAudio(header, bodyBackground);
+    print("mixed body audio");
 
     audio = concatenateAudio([audio, header, body]);
   }
