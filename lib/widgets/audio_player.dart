@@ -21,11 +21,17 @@ class AudioTranscriptPlayer extends ConsumerStatefulWidget {
 class _AudioPlayer extends ConsumerState<AudioTranscriptPlayer> {
   bool _isPlaying = false;
   final _player = AudioPlayer();
+  String placeName = "sample";
+  @override
+  initState() {
+    super.initState();
+    placeName = widget.sections[2].header;
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: savePlaceAudio(widget.sections, "sample"),
+        future: savePlaceAudio(widget.sections, placeName),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator(
