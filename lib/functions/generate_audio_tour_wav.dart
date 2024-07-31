@@ -39,18 +39,28 @@ Future<String> saveTTSAudio(String script, String type) async {
   // } else {
   //   throw ArgumentError('Invalid type: $type');
   // }
-  final externalDirectory = Directory("/storage/emulated/0/Music");
+  final externalDirectory = Directory("/storage/emulated/0/Music/");
 
   final fileName =
       'lorehunterAudio_${DateTime.now().millisecondsSinceEpoch}.wav';
-  final filePath = '${externalDirectory.path}/$fileName';
+  final filePath = '${externalDirectory.path}$fileName';
   print(filePath);
-  print("checkpoint 4");
+
+  try {
+    final files = await externalDirectory.list().toList();
+    for (final file in files) {
+      if (file is Directory) {
+        print("files" + file.path);
+      }
+    }
+  } catch (e) {
+    print('Error listing files: $e');
+  }
   var bytes = Uint8List(0);
   try {
     await flutterTts.awaitSynthCompletion(true);
     await flutterTts.synthesizeToFile(script, fileName);
-    // Introduce a small delay to ensure file creation
+    await Future.delayed(Durations.extralong1);
     bool doesFileExist = await File(filePath).exists();
     if (doesFileExist) {
       print("exists");
@@ -67,11 +77,11 @@ Future<String> saveTTSAudio(String script, String type) async {
 }
 
 /// Mixes two byte arrays representing audio data (simple averaging).
-String mixAudio(String background, String audio, String outputFilePath,
-    {double backgroundVolume = 0.3, double taper = 1.0}) {
+Future<String> mixAudio(String background, String audio, String outputFilePath,
+    {double backgroundVolume = 0.3, double taper = 1.0}) async {
   print("mixiing audio");
-  FFmpegKit.execute(
-          'ffmpeg -i $audio -i $background -filter_complex "[1:a]volume=$backgroundVolume[a1];[0:a][a1]amix=inputs=2:duration=first:dropout_transition=2[out]" -map "[out]" $outputFilePath')
+  await FFmpegKit.execute(
+          'ffmpeg -y -i $audio -i $background -filter_complex "[1:a]volume=$backgroundVolume[a1];[0:a][a1]amix=inputs=2:duration=first:dropout_transition=2[out]" -map "[out]" $outputFilePath')
       .then((session) async {
     final returnCode = await session.getReturnCode();
 
@@ -79,9 +89,9 @@ String mixAudio(String background, String audio, String outputFilePath,
       print("success");
       // SUCCESS
     } else if (ReturnCode.isCancel(returnCode)) {
-      // CANCEL
+      print('cancel');
     } else {
-      // ERROR
+      print('error mixing audio');
     }
   });
   return outputFilePath;
@@ -89,35 +99,31 @@ String mixAudio(String background, String audio, String outputFilePath,
 
 Future<String> concatenateAudio(List<String> audioList, String outputFilePath,
     {int pause = 1}) async {
-  // Generate input files string
-  final inputFiles = audioList.map((audio) => '-i $audio').join(' ');
+  // Create the input file list for ffmpeg
+  final inputFiles = audioList.join('|');
 
-  // Generate filters for each input
-  final filters = audioList.asMap().entries.map((entry) {
-    final index = entry.key;
-    final audio = entry.value;
-    return '[$index:a]';
-  }).join('');
+  // Create the ffmpeg command with pause between audios
+  final command =
+      'ffmpeg -i "concat:$inputFiles|${List.filled(audioList.length - 1, "pause=$pause:c:a").join('|')}"\' -acodec copy $outputFilePath';
 
-  // Construct the filter_complex string
-  final concatFilter = 'concat=n=${audioList.length}:v=0:a=1[out]';
+  // Execute the ffmpeg command
+  final session = await FFmpegKit.executeAsync(command);
 
-  print(
-      'ffmpeg $inputFiles -filter_complex "$filters$concatFilter" -map "[out]" $outputFilePath');
-
-  // Execute the command
-  final session = await FFmpegKit.execute(
-      'ffmpeg $inputFiles -filter_complex "$filters$concatFilter" -map "[out]" $outputFilePath');
-
-  // Handle session result (you can expand this part based on your needs)
   final returnCode = await session.getReturnCode();
+  final output = await session.getOutput();
+  final failStackTrace = await session.getFailStackTrace();
+
+  // Handle the result
   if (ReturnCode.isSuccess(returnCode)) {
     print('Audio concatenation successful.');
+    return outputFilePath;
   } else {
+    // Handle error, e.g., log error message, throw an exception
     print('Audio concatenation failed.');
+    print('FFmpeg output: $output');
+    print('FFmpeg error: $failStackTrace');
+    return '';
   }
-
-  return outputFilePath;
 }
 
 Uint8List _adjustVolume(Uint8List audioBytes, double volumeRatio) {
@@ -135,10 +141,11 @@ Future<Uint8List> getBytes(String filePath) async {
   return bytes;
 }
 
-Future<void> writeToFile(ByteData data, String path) {
+Future<void> writeToFile(ByteData data, String path) async {
   final buffer = data.buffer;
-  return new File(path)
+  await File(path)
       .writeAsBytes(buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+  print("saved assets");
 }
 
 Future<String> savePlaceAudio(List<Section> sections, String filename) async {
@@ -163,15 +170,15 @@ Future<String> savePlaceAudio(List<Section> sections, String filename) async {
     headerFile = await saveTTSAudio(section.header, "header");
 
     print("saved header");
-    headerFile = mixAudio(
-        headerFile, file.path + "/headerBG.wav", file.path + '/header.wav');
+    headerFile = await mixAudio(
+        headerFile, file.path + "/headerBG.wav", file.path + '/headerBG.wav');
     print("mixed header audio");
 
     bodyFile = await saveTTSAudio(section.tourAudio, "body");
     print("saved body");
 
-    bodyFile =
-        mixAudio(bodyFile, file.path + "/bodyBG.wav", file.path + '/body.wav');
+    bodyFile = await mixAudio(
+        bodyFile, file.path + "/bodyBG.wav", file.path + '/bodyBG.wav');
     print("mixed body audio");
 
     if (audio == null) {
