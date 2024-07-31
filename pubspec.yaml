@@ -103,7 +103,7 @@ flutter:
     - assets/images/gemini.png
     - assets/images/logo.png
     - assets/images/fastWalkman.gif
-    - assets/music/music_header.mp3
+    - assets/music/music_header.wav
     - assets/music/music_body.mp3
 
 
