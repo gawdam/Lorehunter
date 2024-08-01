@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lorehunter/models/tour_details.dart';
 import 'package:lorehunter/screens/audio_tour.dart';
+import 'package:lorehunter/screens/loading_screen.dart';
 import 'package:lorehunter/widgets/place_cards.dart';
 import 'package:marquee/marquee.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -262,8 +263,10 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (BuildContext context) => AudioTour(
+                          builder: (BuildContext context) =>
+                              TourAudioLoadingScreen(
                             tour: widget.tour,
+                            settings: {"theme": "none"},
                           ),
                         ));
                   },

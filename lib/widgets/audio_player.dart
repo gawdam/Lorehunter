@@ -8,9 +8,9 @@ import 'package:lorehunter/models/audio_tour_transcript.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AudioTranscriptPlayer extends ConsumerStatefulWidget {
-  List<Section> sections;
+  String fileName;
 
-  AudioTranscriptPlayer(this.sections);
+  AudioTranscriptPlayer(this.fileName);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -21,48 +21,34 @@ class AudioTranscriptPlayer extends ConsumerStatefulWidget {
 class _AudioPlayer extends ConsumerState<AudioTranscriptPlayer> {
   bool _isPlaying = false;
   final _player = AudioPlayer();
+  final _processor = AudioProcessor();
   String placeName = "sample";
   @override
   initState() {
     super.initState();
-    placeName = widget.sections[2].header;
+    _player.setFilePath(widget.fileName);
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: savePlaceAudio(widget.sections, placeName),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator(
-              color: Colors.amber,
-            );
-          }
-          if (snapshot.data == null) {
-            return CircularProgressIndicator(
-              color: Colors.black,
-            );
-          }
-          _player.setFilePath(snapshot.data!);
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () async {
-                  setState(() {
-                    _isPlaying = !_isPlaying;
-                  });
-                  if (_isPlaying) {
-                    await _player.play();
-                  } else {
-                    await _player.pause();
-                  }
-                },
-                child: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-              ),
-            ],
-          );
-        });
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed: () async {
+            setState(() {
+              _isPlaying = !_isPlaying;
+            });
+            if (_isPlaying) {
+              await _player.play();
+            } else {
+              await _player.pause();
+            }
+          },
+          child: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
+        ),
+      ],
+    );
   }
 }

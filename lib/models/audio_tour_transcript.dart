@@ -148,9 +148,7 @@ Future<TourAudioTranscript?> getAudioTranscriptForTour(String tourID) async {
     final file = File('${directory.path}/$tourID.json');
     // print(file.readAsString());
     if (await file.exists()) {
-      print("json file exists, read issue");
       final jsonData = await file.readAsString();
-      print(jsonData);
       return TourAudioTranscript.fromJson(jsonDecode(jsonData), tourID);
     } else {
       print('Audio transcript file not found for tour ID: $tourID');
