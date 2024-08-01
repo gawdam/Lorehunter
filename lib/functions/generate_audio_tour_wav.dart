@@ -151,6 +151,15 @@ class AudioProcessor {
     return bytes;
   }
 
+  Future<void> createDirectoryIfNotExists(String finalFilePath) async {
+    final directoryPath =
+        finalFilePath.substring(0, finalFilePath.lastIndexOf('/'));
+    final directory = Directory(directoryPath);
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+  }
+
   Future<void> writeToFile(ByteData data, String path) async {
     tempFiles.add(path);
     final buffer = data.buffer;
@@ -215,19 +224,20 @@ class AudioProcessor {
 
   Future<String> savePlaceAudio(
       List<Section> sections, String filename, String tourName) async {
-    final file = await getApplicationDocumentsDirectory();
-    final filePath = file.path + "/$filename.wav";
-    if (await File(filePath).exists()) {
+    final documentsDirectory = await getApplicationDocumentsDirectory();
+    final finalFilePath = "${documentsDirectory.path}/$tourName/$filename.wav";
+    if (await File(finalFilePath).exists()) {
       print("audio file already exists");
-      return filePath;
+      return finalFilePath;
     }
 
     var headerBackground =
         await rootBundle.load("assets/music/music_header.wav");
     var bodyBackground = await rootBundle.load("assets/music/music_body.mp3");
 
-    await writeToFile(headerBackground, file.path + "/headerBG.wav");
-    await writeToFile(bodyBackground, file.path + "/bodyBG.wav");
+    await writeToFile(
+        headerBackground, documentsDirectory.path + "/headerBG.wav");
+    await writeToFile(bodyBackground, documentsDirectory.path + "/bodyBG.wav");
 
     String? audio;
     int count = 0;
@@ -236,10 +246,12 @@ class AudioProcessor {
       count += 1;
 
       String headerFile = await saveTTSAudio(section.header, "header");
-      headerFile =
-          await addSilence(headerFile, file.path + '/silencedHeader.wav');
+      headerFile = await addSilence(
+          headerFile, documentsDirectory.path + '/silencedHeader.wav');
       headerFile = await mixAudio(
-          headerFile, file.path + "/headerBG.wav", file.path + '/header.wav',
+          headerFile,
+          documentsDirectory.path + "/headerBG.wav",
+          documentsDirectory.path + '/header.wav',
           backgroundVolume: 0.7);
       print("HeaderFile:" + headerFile);
 
@@ -252,15 +264,16 @@ class AudioProcessor {
       }
     }
     var finalAudio = await mixAudio(
-        audio!, file.path + "/bodyBG.wav", file.path + '/finalAudio.wav',
+        audio!,
+        documentsDirectory.path + "/bodyBG.wav",
+        documentsDirectory.path + '/finalAudio.wav',
         backgroundVolume: 0.1);
 
-    final documentsDirectory = await getApplicationDocumentsDirectory();
-    final finalFilePath = "${documentsDirectory.path}/$tourName/$filename.wav";
+    await createDirectoryIfNotExists(finalFilePath);
     await File(finalAudio)
         .copy("${documentsDirectory.path}/$tourName/$filename.wav");
 
-    deleteTempFiles(finalAudioFilePath: finalFilePath);
+    await deleteTempFiles(finalAudioFilePath: finalFilePath);
 
     return finalFilePath;
   }

@@ -91,38 +91,43 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Center(
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            loadingIndicator("Generating Tour Transcript",
-                _transcriptGenerated ? "completed" : "inProgress"),
-            SizedBox(
-              height: 20,
-            ),
-            loadingIndicator(
-                "Generating Audio from Transcript",
-                _progress == 0
-                    ? "notStarted"
-                    : _progress == widget.tour.updatedPlaces!.length
-                        ? "completed"
-                        : "inProgress"),
-            if (_progress > 0)
-              Container(
-                height: 200,
-                child: Expanded(
+      child: Container(
+        width: MediaQuery.sizeOf(context).width * 0.7,
+        height: MediaQuery.sizeOf(context).height * 0.9,
+        alignment: Alignment.center,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              loadingIndicator("Generating Tour Transcript",
+                  _transcriptGenerated ? "completed" : "inProgress"),
+              SizedBox(
+                height: 20,
+              ),
+              loadingIndicator(
+                  "Generating Audio from Transcript",
+                  _progress == 0
+                      ? "notStarted"
+                      : _progress == widget.tour.updatedPlaces!.length
+                          ? "completed"
+                          : "inProgress"),
+              if (_progress > 0)
+                Container(
+                  height: 200,
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  alignment: Alignment.topLeft,
                   child: generatePlacesLoader(
                       widget.tour.updatedPlaces!, _progress),
                 ),
+              SizedBox(
+                height: 80,
               ),
-            SizedBox(
-              height: 80,
-            ),
-            ElevatedButton(
-              child: Text(" press me "),
-              onPressed: () {},
-            )
-          ]),
+              ElevatedButton(
+                child: Text(" press me "),
+                onPressed: () {},
+              )
+            ]),
+      ),
     ));
   }
 }
@@ -159,7 +164,7 @@ Widget loadingIndicator(String text, String state) {
             return const SizedBox.shrink();
           case 'inProgress':
             return Container(
-                width: 10,
+                width: 20,
                 height: 10,
                 child: const CircularProgressIndicator());
           case 'completed':
