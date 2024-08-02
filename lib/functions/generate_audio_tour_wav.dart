@@ -32,11 +32,13 @@ class AudioProcessor {
       flutterTts.setVoice(
           {"name": headerVoice["name"], "locale": headerVoice["locale"]});
       flutterTts.setSpeechRate(0.3);
+      flutterTts.setVolume(1);
       flutterTts.setPitch(1.0);
     } else if (type == 'body') {
       flutterTts.setVoice(
           {"name": contentVoice["name"], "locale": contentVoice["locale"]});
       flutterTts.setSpeechRate(0.6);
+      flutterTts.setVolume(1);
       flutterTts.setPitch(0.9);
     }
 
@@ -68,7 +70,9 @@ class AudioProcessor {
 
   Future<String> mixAudio(
       String audio, String background, String outputFilePath,
-      {double backgroundVolume = 0.3, double taper = 1.0}) async {
+      {double backgroundVolume = 0.3,
+      double taper = 1.0,
+      String bitrate = '320k'}) async {
     final arguments = [
       '-y',
       '-i',
@@ -79,6 +83,8 @@ class AudioProcessor {
       '[1:a]volume=$backgroundVolume[a1];[0:a][a1]amix=inputs=2:duration=first:dropout_transition=2[out]',
       '-map',
       '[out]',
+      '-b:a',
+      bitrate,
       outputFilePath
     ];
 
@@ -99,13 +105,14 @@ class AudioProcessor {
         print('FFmpeg error: $failStackTrace');
       }
     });
+
     tempFiles.add(outputFilePath);
 
     return outputFilePath;
   }
 
   Future<String> concatenateAudio(List<String> audioList, int outputCount,
-      {int pause = 1}) async {
+      {int pause = 1, String bitrate = '320k'}) async {
     final inputFiles = audioList.expand((audio) => ['-i', audio]).toList();
     final outputFile = await getApplicationDocumentsDirectory();
     final outputFilePath =
@@ -121,6 +128,8 @@ class AudioProcessor {
       concatFilter,
       '-map',
       '[out]',
+      '-b:a',
+      bitrate,
       outputFilePath
     ];
 

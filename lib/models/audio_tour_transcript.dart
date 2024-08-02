@@ -6,9 +6,12 @@ class TourAudioTranscript {
   final String tourID;
   final String tourName;
 
-  final List<PlaceAudioTranscript> placeAudioTranscripts;
+  List<PlaceAudioTranscript> placeAudioTranscripts;
   final String greeting;
   final String outro;
+
+  final String? greetingFile;
+  final String? outroFile;
 
   TourAudioTranscript({
     required this.tourID,
@@ -16,6 +19,8 @@ class TourAudioTranscript {
     required this.greeting,
     required this.outro,
     required this.placeAudioTranscripts,
+    this.greetingFile,
+    this.outroFile,
   });
 
   factory TourAudioTranscript.fromJson(
@@ -65,10 +70,13 @@ class PlaceAudioTranscript {
   final List<Section> sections;
   final Trivia trivia;
 
+  String? audioFile;
+
   PlaceAudioTranscript({
     required this.placeName,
     required this.sections,
     required this.trivia,
+    this.audioFile,
   });
 
   factory PlaceAudioTranscript.fromJson(Map<String, dynamic> json) {

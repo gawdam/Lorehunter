@@ -5,6 +5,7 @@ import 'package:lorehunter/functions/generate_audio_tour_wav.dart';
 import 'package:lorehunter/interns/audio_guide_intern.dart';
 import 'package:lorehunter/models/audio_tour_transcript.dart';
 import 'package:lorehunter/models/tour_details.dart';
+import 'package:lorehunter/screens/audio_tour.dart';
 
 class TourAudioLoadingScreen extends StatefulWidget {
   final Tour tour;
@@ -67,18 +68,23 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
   }
 
   Future<List<String>> getAudioFile() async {
+    List<PlaceAudioTranscript> placeAudioTranscripts = [];
     for (var placeAudioTranscript
         in _tourAudioTranscript.placeAudioTranscripts) {
       final file = await _audioProcessor.savePlaceAudio(
           placeAudioTranscript.sections,
           placeAudioTranscript.placeName,
           _tourAudioTranscript.tourName);
+      placeAudioTranscript.audioFile = file;
+      placeAudioTranscripts.add(placeAudioTranscript);
 
       setState(() {
         _audioFiles.add(file);
         _progress += 1;
       });
     }
+    _tourAudioTranscript.placeAudioTranscripts = placeAudioTranscripts;
+    await _tourAudioTranscript.toJsonFile();
     return _audioFiles;
   }
 
@@ -108,7 +114,7 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                   "Generating Audio from Transcript",
                   _progress == 0
                       ? "notStarted"
-                      : _progress == widget.tour.updatedPlaces!.length
+                      : _progress == widget.tour.updatedPlaces!.length + 1
                           ? "completed"
                           : "inProgress"),
               if (_progress > 0)
@@ -123,9 +129,38 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                 height: 80,
               ),
               ElevatedButton(
-                child: Text(" press me "),
-                onPressed: () {},
-              )
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return AudioTour(
+                      tourAudioTranscript: _tourAudioTranscript,
+                    );
+                  }));
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  side: BorderSide(color: Colors.purple),
+                  elevation: 5,
+                  backgroundColor: Colors.purple[100],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Start tour",
+                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      color: Colors.black,
+                    )
+                  ],
+                ),
+              ),
             ]),
       ),
     ));

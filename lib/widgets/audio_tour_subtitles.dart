@@ -65,36 +65,36 @@ class TourDetailsPage extends StatelessWidget {
             const SizedBox(height: 16.0),
 
             // Display trivia question and options
-            Text(
-              tourData.trivia.question,
-              style:
-                  const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8.0),
-            Wrap(
-              spacing: 8.0,
-              children: [
-                for (final option in tourData.trivia.options)
-                  ChoiceChip(
-                    label: Text(option),
-                    selected:
-                        false, // Set to false as we're not showing selection
-                  ),
-              ],
-            ),
-            const SizedBox(height: 16.0),
+            // Text(
+            //   tourData.trivia.question,
+            //   style:
+            //       const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            // ),
+            // const SizedBox(height: 8.0),
+            // Wrap(
+            //   spacing: 8.0,
+            //   children: [
+            //     for (final option in tourData.trivia.options)
+            //       ChoiceChip(
+            //         label: Text(option),
+            //         selected:
+            //             false, // Set to false as we're not showing selection
+            //       ),
+            //   ],
+            // ),
+            // const SizedBox(height: 16.0),
 
-            // Display trivia answer and explanation
-            Text(
-              'Correct Answer: ${tourData.trivia.correctAnswer}',
-              style:
-                  const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8.0),
-            Html(
-              data: tourData.trivia.feedback,
-            ),
-            AudioTranscriptPlayer("tourData.sections")
+            // // Display trivia answer and explanation
+            // Text(
+            //   'Correct Answer: ${tourData.trivia.correctAnswer}',
+            //   style:
+            //       const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+            // ),
+            // const SizedBox(height: 8.0),
+            // Html(
+            //   data: tourData.trivia.feedback,
+            // ),
+            // AudioTranscriptPlayer("tourData.sections")
           ],
         ),
       ),
