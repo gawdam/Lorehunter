@@ -248,8 +248,8 @@ class _RoutesState extends ConsumerState<Routes> {
       zoom: 13.0, // Adjust zoom level if needed
     );
 
-    // await mapController!
-    //     .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    await mapController!
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
 
   @override

@@ -50,46 +50,23 @@ class TourPanelSlideUp extends ConsumerStatefulWidget {
 }
 
 class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
-  final double _initFabHeight = 200.0;
   List<String> _places = [];
   List<PlaceDetails> _placeDetails = [];
-  int _timeSpentAtPlaces = 0;
-  Tour? _previousTour; // Store the previous tour
+  late int _duration;
 
   @override
   void initState() {
+    super.initState();
     // TODO: implement initState
     _placeDetails = widget.tour.places;
     for (var place in _placeDetails) {
       _places.add(place.name);
     }
+    _duration = ((widget.tour.distance ?? 0) / 1000 / 6 * 60).round();
+
     // getPlaceDetails(_places, widget.city);
     // _city = ref.watch(selectedCityProvider);
   }
-
-  @override
-  void didUpdateWidget(covariant TourPanelSlideUp oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Check if tour has changed
-    if (widget.tour != _previousTour) {
-      _previousTour = widget.tour; // Update previous tour
-      _updatePlacesAndDetails(widget.tour); // Update places and details
-    }
-  }
-
-  void _updatePlacesAndDetails(Tour tour) {
-    setState(() {
-      _placeDetails = tour.places;
-      _places = [];
-      for (var place in _placeDetails) {
-        _places.add(place.name);
-      }
-      _timeSpentAtPlaces = _placeDetails.fold(
-          0, (sum, placeDetails) => sum + placeDetails.tourDuration);
-    });
-  }
-
-  double _fabHeight = 0;
 
   final double _panelHeightOpen = 850;
 
@@ -97,9 +74,6 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
 
   @override
   Widget build(BuildContext context) {
-    int duration = ((widget.tour.distance ?? 0) / 1000 / 6 * 60).round() +
-        _timeSpentAtPlaces;
-
     Widget _panel(ScrollController sc) {
       return MediaQuery.removePadding(
           context: context,
@@ -193,7 +167,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                   ),
                   Button(
                     "Tour duration",
-                    "${(duration / 60).round()} hrs",
+                    "${(_duration / 60).round()} hrs",
                     Icons.timer_outlined,
                     Colors.green,
                   ),
@@ -312,10 +286,6 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
       panelBuilder: (sc) => _panel(sc),
       borderRadius: BorderRadius.only(
           topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0)),
-      onPanelSlide: (double pos) => setState(() {
-        _fabHeight =
-            pos * (_panelHeightOpen - _panelHeightClosed) + _initFabHeight;
-      }),
     );
 
     // the fab

@@ -12,8 +12,7 @@ import 'package:lorehunter/widgets/tour_cards.dart';
 import 'package:lorehunter/widgets/location_picker.dart';
 
 class MyHomePage extends ConsumerStatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   ConsumerState<MyHomePage> createState() => _MyHomePageState();

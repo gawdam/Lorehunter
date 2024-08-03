@@ -15,7 +15,7 @@ class AudioGuide {
       String commaSeparatedPlaces, String city, String tour) async {
     await dotenv.load(fileName: ".env");
     final generationConfig = GenerationConfig(
-        temperature: 0.9, maxOutputTokens: 25000, topK: 40, stopSequences: []);
+        temperature: 0.9, maxOutputTokens: 50000, topK: 40, stopSequences: []);
 
     model = GenerativeModel(
       model: 'gemini-1.5-flash-latest',
@@ -60,7 +60,7 @@ Sample output:
 ...[generate same format for all places]
 "outro": <str> [an outro for the tour. At the end of the outro, ask them to rate the app in google play and consider donating to support], 
 }
-Do not write any additional details. Make sure the JSON is valid
+Do not write any additional details. Make sure the JSON is valid.
       """));
     initialized = true;
     // print(response.text!);

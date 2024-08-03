@@ -133,6 +133,7 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return AudioTour(
                       tourAudioTranscript: _tourAudioTranscript,
+                      tour: widget.tour,
                     );
                   }));
                 },

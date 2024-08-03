@@ -20,9 +20,9 @@ class AudioProcessor {
       try {
         List<Map> voices = List<Map>.from(data);
         headerVoice =
-            voices.firstWhere((voice) => voice['name'] == 'en-gb-x-gbb-local');
-        contentVoice =
             voices.firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-local');
+        contentVoice =
+            voices.firstWhere((voice) => voice['name'] == 'en-us-x-tpc-local');
       } catch (e) {
         print(e);
       }
@@ -31,15 +31,15 @@ class AudioProcessor {
     if (type == 'header') {
       flutterTts.setVoice(
           {"name": headerVoice["name"], "locale": headerVoice["locale"]});
-      flutterTts.setSpeechRate(0.3);
+      flutterTts.setSpeechRate(0.5);
       flutterTts.setVolume(1);
       flutterTts.setPitch(1.0);
     } else if (type == 'body') {
       flutterTts.setVoice(
           {"name": contentVoice["name"], "locale": contentVoice["locale"]});
-      flutterTts.setSpeechRate(0.6);
+      flutterTts.setSpeechRate(0.5);
       flutterTts.setVolume(1);
-      flutterTts.setPitch(0.9);
+      flutterTts.setPitch(1.1);
     }
 
     final externalDirectory = Directory("/storage/emulated/0/Music/");
@@ -178,7 +178,7 @@ class AudioProcessor {
   }
 
   Future<String> addSilence(String inputFilePath, String outputFilePath,
-      {double silenceDuration = 1}) async {
+      {double silenceDuration = 1, String bitrate = '320k'}) async {
     final arguments = [
       '-y',
       '-i',
@@ -190,6 +190,8 @@ class AudioProcessor {
           '[s1][s][s2]concat=n=3:v=0:a=1[out]',
       '-map',
       '[out]',
+      '-b:a',
+      bitrate,
       outputFilePath
     ];
     tempFiles.add(outputFilePath);

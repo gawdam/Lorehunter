@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -23,7 +21,7 @@ class MyApp extends StatelessWidget {
           fontFamily: GoogleFonts.firaSans().fontFamily,
           useMaterial3: true,
         ),
-        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        home: const MyHomePage(),
       ),
     );
   }

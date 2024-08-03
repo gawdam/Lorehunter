@@ -89,7 +89,7 @@ class _AudioTranscriptPlayer extends ConsumerState<AudioTranscriptPlayer> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(_formatDuration(_position)),
-            Text(_formatDuration(_duration! - _position)),
+            Text(_formatDuration(_duration ?? Duration.zero - _position)),
           ],
         ),
         Row(
