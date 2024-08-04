@@ -23,9 +23,8 @@ bool willTextOverflow({
 
 class PlaceCard extends StatefulWidget {
   final PlaceDetails placeDetails;
-  final String icon;
 
-  const PlaceCard({Key? key, required this.placeDetails, required this.icon})
+  const PlaceCard({Key? key, required this.placeDetails, required String icon})
       : super(key: key);
 
   @override
@@ -176,13 +175,6 @@ class _PlaceCardState extends State<PlaceCard> {
                                         ),
                                       ),
                               ),
-                              Text(
-                                widget.icon,
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
                             ],
                           ),
                         ),
@@ -195,21 +187,6 @@ class _PlaceCardState extends State<PlaceCard> {
                     ),
                   ),
                   const SizedBox(width: 10.0),
-                  Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(2.0),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                        child: Text(
-                          "${widget.placeDetails.tourDuration} mins",
-                          style: TextStyle(fontSize: 12.0),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),

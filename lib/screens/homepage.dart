@@ -165,6 +165,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         child: FutureBuilder(
                             future: getToursFromFiles(),
                             builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting)
+                                return CircularProgressIndicator();
                               if (snapshot.hasData) {
                                 if (snapshot.data != null &&
                                     snapshot.data!.isNotEmpty) {

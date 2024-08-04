@@ -105,12 +105,13 @@ class _TourCardState extends State<TourCard> {
           return Container(
               // color: Colors.black,
               // width: 200, //not working!
-              height: 420,
+              // height: 420,
               padding: EdgeInsets.symmetric(
                 horizontal: MediaQuery.sizeOf(context).width * 0.05,
                 // vertical: 2.5,
               ),
               child: Card(
+                // color: Color.fromARGB(255, 221, 220, 220),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -120,6 +121,7 @@ class _TourCardState extends State<TourCard> {
                         widget.tour.name,
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8.0),
 
@@ -130,7 +132,7 @@ class _TourCardState extends State<TourCard> {
                                 buildCarouselItem(_imageURL, "London bridge"))
                             .toList(),
                         options: CarouselOptions(
-                          height: 200.0,
+                          height: 150.0,
                           enlargeCenterPage: true,
                           autoPlay: true,
                           autoPlayInterval: const Duration(milliseconds: 1600),

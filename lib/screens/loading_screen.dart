@@ -98,35 +98,59 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
     return Scaffold(
         body: Center(
       child: Container(
-        width: MediaQuery.sizeOf(context).width * 0.7,
+        width: MediaQuery.sizeOf(context).width * 0.8,
         height: MediaQuery.sizeOf(context).height * 0.9,
         alignment: Alignment.center,
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              loadingIndicator("Generating Tour Transcript",
-                  _transcriptGenerated ? "completed" : "inProgress"),
+              SizedBox(
+                height: MediaQuery.sizeOf(context).height * 0.1,
+              ),
+              Text("Step 1"),
+              Card(
+                // elevation: 10,
+                child: Container(
+                  // height: 100,
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+                  child: loadingIndicator("Generating Tour Transcript",
+                      _transcriptGenerated ? "completed" : "inProgress"),
+                ),
+              ),
               SizedBox(
                 height: 20,
               ),
-              loadingIndicator(
-                  "Generating Audio from Transcript",
-                  _progress == 0
-                      ? "notStarted"
-                      : _progress == widget.tour.updatedPlaces!.length + 1
-                          ? "completed"
-                          : "inProgress"),
-              if (_progress > 0)
-                Container(
-                  height: 200,
-                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  alignment: Alignment.topLeft,
-                  child: generatePlacesLoader(
-                      widget.tour.updatedPlaces!, _progress),
+              Text("Step 2"),
+              Card(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      loadingIndicator(
+                          "Generating Audio from Transcript",
+                          _progress == 0
+                              ? "notStarted"
+                              : _progress ==
+                                      widget.tour.updatedPlaces!.length + 1
+                                  ? "completed"
+                                  : "inProgress"),
+                      if (_progress > 0)
+                        Container(
+                          height: 200,
+                          padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                          alignment: Alignment.topLeft,
+                          child: generatePlacesLoader(
+                              widget.tour.updatedPlaces!, _progress),
+                        ),
+                    ],
+                  ),
                 ),
-              SizedBox(
-                height: 80,
+              ),
+              Expanded(
+                child: Container(),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -182,7 +206,7 @@ Widget generatePlacesLoader(List<String> places, int progress) {
       else
         state = "notStarted";
 
-      return loadingIndicator(place, state);
+      return loadingIndicator("- $place", state);
     }),
   );
 }
@@ -192,7 +216,12 @@ Widget loadingIndicator(String text, String state) {
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      Text(text),
+      Container(
+          height: 20,
+          child: Text(
+            text,
+            style: TextStyle(fontSize: 16),
+          )),
       const SizedBox(width: 10),
       Builder(builder: (context) {
         switch (state) {
@@ -201,7 +230,7 @@ Widget loadingIndicator(String text, String state) {
           case 'inProgress':
             return Container(
                 width: 20,
-                height: 10,
+                height: 20,
                 child: const CircularProgressIndicator());
           case 'completed':
             return const Icon(Icons.check, color: Colors.green);

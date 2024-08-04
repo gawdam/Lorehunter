@@ -53,14 +53,22 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                 width: screenWidth * 0.1,
                 alignment: Alignment.bottomCenter,
                 padding: EdgeInsets.only(bottom: 8),
-                child: IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    // Handle back button press
-                    _pageController.previousPage(
-                        duration: Duration(milliseconds: 100),
-                        curve: Curves.easeIn);
-                  },
+                child: Column(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: () {
+                        // Handle back button press
+                        _pageController.previousPage(
+                            duration: Duration(milliseconds: 100),
+                            curve: Curves.easeIn);
+                      },
+                    ),
+                    Text(
+                      "Prev",
+                      style: TextStyle(fontSize: 9),
+                    )
+                  ],
                 ),
               ),
               Container(
@@ -81,14 +89,23 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                 width: screenWidth * 0.1,
                 alignment: Alignment.bottomCenter,
                 padding: EdgeInsets.only(bottom: 8),
-                child: IconButton(
-                  icon: Icon(Icons.arrow_forward),
-                  onPressed: () {
-                    // Handle forward button press
-                    _pageController.nextPage(
-                        duration: Duration(milliseconds: 100),
-                        curve: Curves.easeIn);
-                  },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_forward),
+                      onPressed: () {
+                        // Handle forward button press
+                        _pageController.nextPage(
+                            duration: Duration(milliseconds: 100),
+                            curve: Curves.easeIn);
+                      },
+                    ),
+                    Text(
+                      'Next',
+                      style: TextStyle(fontSize: 9),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -110,7 +127,7 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                 return Column(
                   children: [
                     Container(
-                      color: Colors.purple[300],
+                      color: Colors.purple[100],
                       height: screenHeight * 0.05,
                       child: Center(
                         child: Text(

@@ -41,10 +41,9 @@ Widget Button(String labelName, String label, IconData icon, Color color) {
 }
 
 class TourPanelSlideUp extends ConsumerStatefulWidget {
-  TourPanelSlideUp({required this.tour, required this.city});
+  TourPanelSlideUp({required this.tour});
 
   Tour tour;
-  String city;
   @override
   ConsumerState<TourPanelSlideUp> createState() => _TourPanelSlideUpState();
 }
@@ -240,7 +239,11 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                           builder: (BuildContext context) =>
                               TourAudioLoadingScreen(
                             tour: widget.tour,
-                            settings: {"theme": "none"},
+                            settings: {
+                              "theme": "none",
+                              "duration": "5",
+                              "voice": "male"
+                            },
                           ),
                         ));
                   },
