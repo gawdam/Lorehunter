@@ -69,12 +69,28 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
 
   Future<List<String>> getAudioFile() async {
     List<PlaceAudioTranscript> placeAudioTranscripts = [];
+    int count = 0;
+    String file;
     for (var placeAudioTranscript
         in _tourAudioTranscript.placeAudioTranscripts) {
-      final file = await _audioProcessor.savePlaceAudio(
-          placeAudioTranscript.sections,
-          placeAudioTranscript.placeName,
-          _tourAudioTranscript.tourName);
+      if (count == 0) {
+        file = await _audioProcessor.savePlaceAudio(
+            greeting: _tourAudioTranscript.greeting,
+            placeAudioTranscript.sections,
+            placeAudioTranscript.placeName,
+            _tourAudioTranscript.tourName);
+      } else if (count == _tourAudioTranscript.placeAudioTranscripts.length) {
+        file = await _audioProcessor.savePlaceAudio(
+            placeAudioTranscript.sections,
+            placeAudioTranscript.placeName,
+            _tourAudioTranscript.tourName,
+            outro: _tourAudioTranscript.outro);
+      } else {
+        file = await _audioProcessor.savePlaceAudio(
+            placeAudioTranscript.sections,
+            placeAudioTranscript.placeName,
+            _tourAudioTranscript.tourName);
+      }
       placeAudioTranscript.audioFile = file;
       placeAudioTranscripts.add(placeAudioTranscript);
 

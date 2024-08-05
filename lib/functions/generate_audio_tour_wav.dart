@@ -234,7 +234,8 @@ class AudioProcessor {
   }
 
   Future<String> savePlaceAudio(
-      List<Section> sections, String filename, String tourName) async {
+      List<Section> sections, String filename, String tourName,
+      {String? greeting, String? outro}) async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final finalFilePath = "${documentsDirectory.path}/$tourName/$filename.wav";
     if (await File(finalFilePath).exists()) {
@@ -252,6 +253,10 @@ class AudioProcessor {
 
     String? audio;
     int count = 0;
+
+    if (greeting != null) {
+      audio = await saveTTSAudio(greeting, "body");
+    }
     for (var section in sections) {
       print("Count : $count");
       count += 1;
@@ -273,6 +278,10 @@ class AudioProcessor {
       } else {
         audio = await concatenateAudio([audio, headerFile, bodyFile], count);
       }
+    }
+    if (outro != null) {
+      final outroAudio = await saveTTSAudio(outro, "body");
+      audio = await concatenateAudio([audio!, outroAudio], count);
     }
     var finalAudio = await mixAudio(
         audio!,

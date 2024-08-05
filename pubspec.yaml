@@ -104,6 +104,7 @@ flutter:
     - assets/images/gemini.png
     - assets/images/logo.png
     - assets/images/fastWalkman.gif
+    - assets/images/quiz_icon.png
     - assets/music/music_header.wav
     - assets/music/music_body.mp3
 

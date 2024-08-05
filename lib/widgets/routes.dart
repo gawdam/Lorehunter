@@ -21,8 +21,9 @@ LatLng convertCoordinates(Map<String, dynamic> coordinate) {
 
 class Routes extends ConsumerStatefulWidget {
   final Tour tour;
+  final LatLng? focus;
 
-  const Routes({Key? key, required this.tour}) : super(key: key);
+  const Routes({Key? key, required this.tour, this.focus}) : super(key: key);
 
   @override
   ConsumerState<Routes> createState() => _RoutesState();
@@ -244,8 +245,8 @@ class _RoutesState extends ConsumerState<Routes> {
     coord = calculateAverageLatLng(_coordinates);
     // Update camera position with averageLatLng
     final cameraPosition = CameraPosition(
-      target: coord,
-      zoom: 13.0, // Adjust zoom level if needed
+      target: widget.focus ?? coord, // Default to (0, 0) if no coordinates
+      zoom: widget.focus == null ? 13.0 : 16.0,
     );
 
     await mapController!
@@ -268,8 +269,8 @@ class _RoutesState extends ConsumerState<Routes> {
         myLocationButtonEnabled: true,
         myLocationEnabled: true,
         initialCameraPosition: CameraPosition(
-          target: coord, // Default to (0, 0) if no coordinates
-          zoom: 13.0,
+          target: widget.focus ?? coord, // Default to (0, 0) if no coordinates
+          zoom: widget.focus == null ? 13.0 : 16.0,
         ),
         // cameraTargetBounds:
         //     CameraTargetBounds(LatLngBounds.fromList(_coordinates)),

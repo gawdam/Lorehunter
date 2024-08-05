@@ -41,7 +41,6 @@ List<List<dynamic>> optimizePathNearestNeighbor(
   return [pathPoints, pathPlaces];
 }
 
-// Replace this with your actual distance calculation function (Haversine formula)
 double distance(LatLng p1, LatLng p2) {
   final R = 6371e3; // meters (Earth's radius)
   final lat1 = latlng.degToRadian(p1.latitude);

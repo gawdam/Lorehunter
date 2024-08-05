@@ -25,7 +25,7 @@ class AudioGuide {
     chatBot = model!.startChat();
     final response = await chatBot!.sendMessage(Content.text("""
 I am going for a walking tour named "$tour" in $city. You will act as my tour guide. 
-I am visiting the following places - $commaSeparatedPlaces
+I am visiting the following places - $commaSeparatedPlaces. Do not change the order of the places.
 Talk about the history of the place, current affairs, architecture and things to do/see around here. 
 All your responses should be in plain text, no markdowns, no formatting. 
 Do not use special characters in your transcript. Do not use double quotes or single quotes.

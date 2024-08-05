@@ -24,6 +24,7 @@ class _AudioTranscriptPlayer extends ConsumerState<AudioTranscriptPlayer> {
   String placeName = "sample";
   Duration? _duration;
   Duration _position = Duration.zero;
+  final fadeOutDuration = Duration(seconds: 3);
 
   @override
   void initState() {
@@ -45,6 +46,14 @@ class _AudioTranscriptPlayer extends ConsumerState<AudioTranscriptPlayer> {
   void dispose() {
     _player.dispose();
     super.dispose();
+  }
+
+  void _applyFadeOutEffect() {
+    final remaining = _duration! - _position;
+    final fadeOutFactor =
+        remaining.inMilliseconds / fadeOutDuration.inMilliseconds;
+    final volume = fadeOutFactor.clamp(0.0, 1.0);
+    _player.setVolume(volume);
   }
 
   String _formatDuration(Duration duration) {

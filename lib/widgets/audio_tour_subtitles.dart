@@ -5,10 +5,11 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:lorehunter/models/audio_tour_transcript.dart';
 import 'package:lorehunter/widgets/audio_player.dart'; // Import for rich text display
 
-class TourDetailsPage extends StatelessWidget {
+class AudioTourSubtitles extends StatelessWidget {
   final PlaceAudioTranscript tourData;
 
-  const TourDetailsPage({Key? key, required this.tourData}) : super(key: key);
+  const AudioTourSubtitles({Key? key, required this.tourData})
+      : super(key: key);
 
   String tourToString() {
     // Convert sections and trivia options to JSON-compatible lists
@@ -29,9 +30,6 @@ class TourDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Audio tour"),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
