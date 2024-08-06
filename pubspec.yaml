@@ -105,8 +105,18 @@ flutter:
     - assets/images/logo.png
     - assets/images/fastWalkman.gif
     - assets/images/quiz_icon.png
+    - assets/images/lorehunter.png
+    - assets/images/buttons/fast_forward/ff_down.png
+    - assets/images/buttons/fast_forward/ff_up.png
+    - assets/images/buttons/rewind/rewind_down.png
+    - assets/images/buttons/rewind/rewind_up.png
+    - assets/images/buttons/play_pause/play_down.png
+    - assets/images/buttons/play_pause/play_up.png
+    - assets/images/buttons/play_pause/pause_down.png
+    - assets/images/buttons/play_pause/pause_up.png
     - assets/music/music_header.wav
     - assets/music/music_body.mp3
+    
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -67,13 +67,13 @@ class LocationPicker extends ConsumerWidget {
                   enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
                       borderSide: BorderSide(
-                        color: Colors.purple[500]!,
+                        color: Colors.grey[500]!,
                         width: 1,
                       )),
                   focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
                       borderSide: BorderSide(
-                        color: Colors.purple[500]!,
+                        color: Colors.grey[500]!,
                         width: 2,
                       )),
                   filled: true,
@@ -164,7 +164,7 @@ class LocationPicker extends ConsumerWidget {
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(5)),
-                      side: BorderSide(color: Colors.purple[500]!, width: 1))),
+                      side: BorderSide(color: Colors.grey[500]!, width: 1))),
               backgroundColor: MaterialStateProperty.resolveWith((states) {
                 return Colors.grey[100];
               }),

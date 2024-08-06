@@ -34,7 +34,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   void initState() {
     super.initState();
     placesFinder.initAI();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
   }
 
   Future<void> getPlaces(String city) async {
@@ -57,6 +57,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
     return ProviderScope(
       child: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 225, 210, 228),
         resizeToAvoidBottomInset: false,
         body: Center(
           child: Column(
@@ -66,7 +67,16 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
-                          height: MediaQuery.sizeOf(context).height * 0.045,
+                          height: MediaQuery.sizeOf(context).height * 0.08,
+                        ),
+                        Container(
+                            alignment: Alignment.center,
+                            child: Image.asset(
+                              "assets/images/lorehunter.png",
+                              scale: 3,
+                            )),
+                        SizedBox(
+                          height: MediaQuery.sizeOf(context).height * 0.03,
                         ),
                         Row(
                           children: [
@@ -78,6 +88,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                               width: MediaQuery.sizeOf(context).width * 0.02,
                             ),
                           ],
+                        ),
+                        SizedBox(
+                          height: 5,
                         ),
                         Container(
                           width: MediaQuery.sizeOf(context).width * 0.85,
@@ -116,7 +129,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                     style: TextStyle(
                                         color:
                                             const Color.fromARGB(255, 0, 0, 0),
-                                        fontSize: 14
+                                        fontSize: 16
                                         // fontFamily: "Open Sans",
                                         ),
                                   ),
@@ -173,13 +186,16 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                     snapshot.data!.isNotEmpty) {
                                   return Container(
                                     width: MediaQuery.sizeOf(context).width,
-                                    height:
-                                        MediaQuery.sizeOf(context).height * 0.8,
+                                    height: MediaQuery.sizeOf(context).height *
+                                        0.75,
                                     alignment: Alignment.topCenter,
                                     child: ListView.builder(
                                       itemBuilder: (context, index) {
                                         return GestureDetector(
-                                          onTap: () {
+                                          onTap: () async {
+                                            ref
+                                                .read(tourProvider.notifier)
+                                                .state = snapshot.data![index];
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -201,14 +217,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                   print("no json tours data found.");
                                 }
                               }
-                              return Container(
-                                width: MediaQuery.sizeOf(context).width,
-                                height: MediaQuery.sizeOf(context).height * 0.8,
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Your saved tours will show up here\n\n\nPick a country \nPick a city \nGenerate a walking tour!\n\n",
-                                  style: TextStyle(fontSize: 16),
-                                  textAlign: TextAlign.center,
+                              return Center(
+                                child: Container(
+                                  width: MediaQuery.sizeOf(context).width,
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.7,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "Your saved tours will show up here\n\n\nPick a country \nPick a city \nGenerate a walking tour!\n\n",
+                                    style: TextStyle(fontSize: 16),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                               );
                             }),

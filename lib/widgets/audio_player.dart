@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -25,6 +27,9 @@ class _AudioTranscriptPlayer extends ConsumerState<AudioTranscriptPlayer> {
   Duration? _duration;
   Duration _position = Duration.zero;
   final fadeOutDuration = Duration(seconds: 3);
+  bool _isPlayButtonPressed = false;
+  bool _isFFButtonPressed = false;
+  bool _isRewindButtonPressed = false;
 
   @override
   void initState() {
@@ -104,13 +109,27 @@ class _AudioTranscriptPlayer extends ConsumerState<AudioTranscriptPlayer> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(
-              icon: Icon(Icons.fast_rewind),
-              onPressed: _rewind,
+            GestureDetector(
+              child: Image.asset(
+                alignment: Alignment.bottomCenter,
+                _isRewindButtonPressed
+                    ? 'assets/images/buttons/rewind/rewind_down.png'
+                    : 'assets/images/buttons/rewind/rewind_up.png',
+                scale: 9,
+              ),
+              onTap: _rewind,
+              onTapDown: (details) => setState(() {
+                _isRewindButtonPressed = true;
+              }),
+              onTapUp: (details) => setState(() {
+                _isRewindButtonPressed = false;
+              }),
             ),
-            ElevatedButton(
-              onPressed: () async {
+            GestureDetector(
+              onTap: () => HapticFeedback.lightImpact(),
+              onTapDown: (details) async {
                 setState(() {
+                  _isPlayButtonPressed = true;
                   _isPlaying = !_isPlaying;
                 });
                 if (_isPlaying) {
@@ -119,11 +138,49 @@ class _AudioTranscriptPlayer extends ConsumerState<AudioTranscriptPlayer> {
                   await _player.pause();
                 }
               },
-              child: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
+              onTapUp: (details) {
+                setState(() {
+                  _isPlayButtonPressed = false;
+                });
+              },
+              child: Builder(builder: (context) {
+                String image = 'assets/images/buttons/play_pause/play_up.png';
+                if (_isPlaying) {
+                  if (_isPlayButtonPressed)
+                    image = 'assets/images/buttons/play_pause/pause_down.png';
+                  else
+                    image = 'assets/images/buttons/play_pause/pause_up.png';
+                } else {
+                  if (_isPlayButtonPressed)
+                    image = 'assets/images/buttons/play_pause/play_down.png';
+                  else
+                    image = 'assets/images/buttons/play_pause/play_up.png';
+                }
+
+                return Image.asset(
+                  image,
+                  alignment: Alignment.topCenter,
+                  scale: 8,
+                  width: 100, // Adjust the width as needed
+                  height: 100, // Adjust the height as needed
+                );
+              }),
             ),
-            IconButton(
-              icon: Icon(Icons.fast_forward),
-              onPressed: _forward,
+            GestureDetector(
+              child: Image.asset(
+                alignment: Alignment.bottomCenter,
+                _isFFButtonPressed
+                    ? 'assets/images/buttons/fast_forward/ff_down.png'
+                    : 'assets/images/buttons/fast_forward/ff_up.png',
+                scale: 9,
+              ),
+              onTap: _forward,
+              onTapDown: (details) => setState(() {
+                _isFFButtonPressed = true;
+              }),
+              onTapUp: (details) => setState(() {
+                _isFFButtonPressed = false;
+              }),
             ),
           ],
         ),

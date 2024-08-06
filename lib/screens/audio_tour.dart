@@ -45,7 +45,7 @@ class _AudioTourState extends ConsumerState<AudioTour> {
             // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                color: Colors.grey[200],
+                color: const Color.fromARGB(255, 225, 210, 228),
                 height: screenHeight * 0.12,
                 width: screenWidth * 0.1,
                 alignment: Alignment.bottomCenter,
@@ -61,7 +61,7 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                 ),
               ),
               Container(
-                color: Colors.grey[200],
+                color: const Color.fromARGB(255, 225, 210, 228),
                 height: screenHeight * 0.12,
                 width: screenWidth * 0.8,
                 alignment: Alignment.bottomCenter,
@@ -73,7 +73,7 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                 ),
               ),
               Container(
-                color: Colors.grey[200],
+                color: const Color.fromARGB(255, 225, 210, 228),
                 height: screenHeight * 0.12,
                 width: screenWidth * 0.1,
                 alignment: Alignment.bottomCenter,
@@ -107,7 +107,7 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                 return Column(
                   children: [
                     Container(
-                      color: Colors.purple[100],
+                      color: Color.fromARGB(255, 236, 190, 243),
                       height: screenHeight * 0.05,
                       child: Center(
                         child: Text(
@@ -244,7 +244,10 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                     ),
                     Container(
                       height: 200,
-                      width: screenWidth * 0.9,
+                      color: const Color.fromARGB(255, 225, 210, 228),
+                      width: screenWidth,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                       child: AudioTranscriptPlayer(placeData.audioFile!),
                     ),
                   ],

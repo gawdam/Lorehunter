@@ -112,99 +112,103 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: const Color.fromARGB(255, 225, 210, 228),
         body: Center(
-      child: Container(
-        width: MediaQuery.sizeOf(context).width * 0.8,
-        height: MediaQuery.sizeOf(context).height * 0.9,
-        alignment: Alignment.center,
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: MediaQuery.sizeOf(context).height * 0.1,
-              ),
-              Text("Step 1"),
-              Card(
-                // elevation: 10,
-                child: Container(
-                  // height: 100,
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
-                  child: loadingIndicator("Generating Tour Transcript",
-                      _transcriptGenerated ? "completed" : "inProgress"),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Text("Step 2"),
-              Card(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      loadingIndicator(
-                          "Generating Audio from Transcript",
-                          _progress == 0
-                              ? "notStarted"
-                              : _progress ==
-                                      widget.tour.updatedPlaces!.length + 1
-                                  ? "completed"
-                                  : "inProgress"),
-                      if (_progress > 0)
-                        Container(
-                          height: 200,
-                          padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                          alignment: Alignment.topLeft,
-                          child: generatePlacesLoader(
-                              widget.tour.updatedPlaces!, _progress),
+          child: Container(
+            width: MediaQuery.sizeOf(context).width * 0.8,
+            height: MediaQuery.sizeOf(context).height * 0.9,
+            alignment: Alignment.center,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.1,
+                  ),
+                  Text("Step 1"),
+                  Card(
+                    // elevation: 10,
+                    child: Container(
+                      // height: 100,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+                      child: loadingIndicator("Generating Tour Transcript",
+                          _transcriptGenerated ? "completed" : "inProgress"),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text("Step 2"),
+                  Card(
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          loadingIndicator(
+                              "Generating Audio from Transcript",
+                              _progress == 0
+                                  ? "notStarted"
+                                  : _progress ==
+                                          widget.tour.updatedPlaces!.length + 1
+                                      ? "completed"
+                                      : "inProgress"),
+                          if (_progress > 0)
+                            Container(
+                              height: 200,
+                              padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                              alignment: Alignment.topLeft,
+                              child: generatePlacesLoader(
+                                  widget.tour.updatedPlaces!, _progress),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return AudioTour(
+                          tourAudioTranscript: _tourAudioTranscript,
+                          tour: widget.tour,
+                        );
+                      }));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      side: BorderSide(color: Colors.purple),
+                      elevation: 5,
+                      backgroundColor: Colors.purple[100],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Start tour",
+                          style: TextStyle(color: Colors.black, fontSize: 16),
                         ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return AudioTour(
-                      tourAudioTranscript: _tourAudioTranscript,
-                      tour: widget.tour,
-                    );
-                  }));
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  side: BorderSide(color: Colors.purple),
-                  elevation: 5,
-                  backgroundColor: Colors.purple[100],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Start tour",
-                      style: TextStyle(color: Colors.black, fontSize: 16),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Icon(
+                          Icons.arrow_forward_rounded,
+                          color: Colors.black,
+                        )
+                      ],
                     ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Icon(
-                      Icons.arrow_forward_rounded,
-                      color: Colors.black,
-                    )
-                  ],
-                ),
-              ),
-            ]),
-      ),
-    ));
+                  ),
+                ]),
+          ),
+        ));
   }
 }
 

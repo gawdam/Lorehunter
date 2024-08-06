@@ -26,6 +26,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
   List<PlaceDetails> _placeDetails = [];
   int _timeSpentAtPlaces = 0;
   Tour? _previousTour; // Store the previous tour
+  bool _isTourSaved = false;
 
   @override
   void initState() {
@@ -62,7 +63,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
 
   final double _panelHeightOpen = 850;
 
-  final double _panelHeightClosed = 200.0;
+  final double _panelHeightClosed = 215.0;
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +145,8 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                   ),
                 ],
               ),
-              SizedBox(
+
+              const SizedBox(
                 height: 25.0,
               ),
               Row(
@@ -191,7 +193,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
               //   },
               // ),
               Container(
-                height: MediaQuery.sizeOf(context).height * 0.6,
+                height: MediaQuery.sizeOf(context).height * 0.55,
                 width: MediaQuery.sizeOf(context).width * 0.9,
                 child: Skeletonizer(
                   enabled: _placeDetails.length !=
@@ -274,6 +276,52 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                   ),
                 ),
               ),
+              Container(
+                width: 200,
+                padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.sizeOf(context).width * 0.05),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(0)),
+                ),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await _tour?.toJsonFile();
+                    setState(() {
+                      _isTourSaved = true;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    side: BorderSide(color: Colors.purple),
+                    elevation: 5,
+                    backgroundColor: Color.fromARGB(255, 237, 234, 238),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Save tour",
+                        style: TextStyle(color: Colors.black, fontSize: 16),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      _isTourSaved
+                          ? const Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                            )
+                          : const Icon(
+                              Icons.download,
+                              color: Colors.black,
+                            )
+                    ],
+                  ),
+                ),
+              ),
+
               SizedBox(
                 height: 30,
               ),
