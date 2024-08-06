@@ -53,6 +53,7 @@ class _ItineraryPageState extends ConsumerState<ItineraryPage> {
                   height: MediaQuery.sizeOf(context).height,
                   child: TourPanelSlideUp(
                     tour: widget.tour,
+                    city: widget.tour.city,
                   )),
             ],
           ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lorehunter/models/tour_details.dart';
+import 'package:lorehunter/providers/tour_provider.dart';
 import 'package:lorehunter/screens/audio_tour.dart';
 import 'package:lorehunter/screens/loading_screen.dart';
 import 'package:lorehunter/widgets/place_cards.dart';
@@ -10,61 +11,53 @@ import 'package:marquee/marquee.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-Widget Button(String labelName, String label, IconData icon, Color color) {
-  return Column(
-    children: <Widget>[
-      Tooltip(
-        message: labelName,
-        child: Container(
-          padding: const EdgeInsets.all(14.0),
-          child: Icon(
-            icon,
-            color: Colors.white,
-          ),
-          decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-              boxShadow: const [
-                BoxShadow(
-                  color: Color.fromRGBO(0, 0, 0, 0.15),
-                  blurRadius: 8.0,
-                )
-              ]),
-        ),
-      ),
-      SizedBox(
-        height: 12.0,
-      ),
-      Text(label),
-    ],
-  );
-}
-
 class TourPanelSlideUp extends ConsumerStatefulWidget {
-  TourPanelSlideUp({required this.tour});
+  TourPanelSlideUp({required this.tour, required this.city});
 
   Tour tour;
+  String city;
   @override
   ConsumerState<TourPanelSlideUp> createState() => _TourPanelSlideUpState();
 }
 
 class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
+  final double _initFabHeight = 200.0;
   List<String> _places = [];
   List<PlaceDetails> _placeDetails = [];
-  late int _duration;
+  int _timeSpentAtPlaces = 0;
+  Tour? _previousTour; // Store the previous tour
 
   @override
   void initState() {
-    super.initState();
     // TODO: implement initState
     _placeDetails = widget.tour.places;
     for (var place in _placeDetails) {
       _places.add(place.name);
     }
-    _duration = ((widget.tour.distance ?? 0) / 1000 / 6 * 60).round();
-
     // getPlaceDetails(_places, widget.city);
     // _city = ref.watch(selectedCityProvider);
+  }
+
+  @override
+  void didUpdateWidget(covariant TourPanelSlideUp oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Check if tour has changed
+    if (widget.tour != _previousTour) {
+      _previousTour = widget.tour; // Update previous tour
+      _updatePlacesAndDetails(widget.tour); // Update places and details
+    }
+  }
+
+  void _updatePlacesAndDetails(Tour tour) {
+    setState(() {
+      _placeDetails = tour.places;
+      _places = [];
+      for (var place in _placeDetails) {
+        _places.add(place.name);
+      }
+      _timeSpentAtPlaces = _placeDetails.fold(
+          0, (sum, placeDetails) => sum + placeDetails.tourDuration);
+    });
   }
 
   final double _panelHeightOpen = 850;
@@ -73,7 +66,12 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
 
   @override
   Widget build(BuildContext context) {
-    Widget _panel(ScrollController sc) {
+    final _tour = ref.watch(tourProvider);
+    int duration = ((widget.tour.distance ?? 0) / 1000 / 6 * 60).round() +
+        _timeSpentAtPlaces;
+    print(duration);
+
+    Widget _panel(ScrollController sc, Tour? tour) {
       return MediaQuery.removePadding(
           context: context,
           removeTop: true,
@@ -112,7 +110,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                     alignment: Alignment.center,
                     height: 35,
                     child: willTextOverflow(
-                      text: widget.tour.name,
+                      text: tour?.name ?? widget.tour.name,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 24.0,
@@ -120,7 +118,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                       maxWidth: MediaQuery.sizeOf(context).width * 0.8,
                     )
                         ? Marquee(
-                            text: widget.tour.name,
+                            text: tour?.name ?? widget.tour.name,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 24.0,
@@ -137,7 +135,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                             decelerationCurve: Curves.easeOut,
                           )
                         : Text(
-                            widget.tour.name,
+                            tour?.name ?? widget.tour.name,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 24.0,
@@ -154,25 +152,25 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                 children: <Widget>[
                   Button(
                     "# Places",
-                    "${widget.tour.updatedPlaces?.length ?? widget.tour.places.length} places",
+                    "${(tour ?? widget.tour).updatedPlaces?.length ?? (tour ?? widget.tour).places.length} places",
                     Icons.account_balance,
                     Colors.blue,
                   ),
                   Button(
                     "Distance covered",
-                    "${((widget.tour.distance ?? 0) / 1000).round()} km",
+                    "${(((tour ?? widget.tour).distance ?? 0) / 1000).round()} km",
                     Icons.directions_walk,
                     Colors.red,
                   ),
                   Button(
                     "Tour duration",
-                    "${(_duration / 60).round()} hrs",
+                    "${(duration / 60).round()} hrs",
                     Icons.timer_outlined,
                     Colors.green,
                   ),
                   Button(
                     "Best time to visit",
-                    widget.tour.bestExperiencedAt,
+                    (tour ?? widget.tour).bestExperiencedAt,
                     Icons.watch_outlined,
                     Colors.yellow[700]!,
                   ),
@@ -181,34 +179,37 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
               SizedBox(
                 height: 25.0,
               ),
-//               ListView.builder(
-//   // Let the ListView know how many items it needs to build.
-//   itemCount: _placeDetails.length,
-//   // Provide a builder function. This is where the magic happens.
-//   // Convert each item into a widget based on the type of item it is.
-//   itemBuilder: (context, index) {
-//     final item = _placeDetails[index];
+              //               ListView.builder(
+              //   // Let the ListView know how many items it needs to build.
+              //   itemCount: _placeDetails.length,
+              //   // Provide a builder function. This is where the magic happens.
+              //   // Convert each item into a widget based on the type of item it is.
+              //   itemBuilder: (context, index) {
+              //     final item = _placeDetails[index];
 
-//     return PlaceCard(placeDetails: item);
-//   },
-// ),
+              //     return PlaceCard(placeDetails: item);
+              //   },
+              // ),
               Container(
                 height: MediaQuery.sizeOf(context).height * 0.6,
                 width: MediaQuery.sizeOf(context).width * 0.9,
                 child: Skeletonizer(
-                  enabled: _placeDetails.length != widget.tour.places.length,
+                  enabled: _placeDetails.length !=
+                      (tour ?? widget.tour).places.length,
                   child: ListView.builder(
                     itemBuilder: (context, index) {
-                      if (widget.tour.updatedPlaces!.length <= index) {
+                      if ((tour ?? widget.tour).updatedPlaces!.length <=
+                          index) {
                         return Container();
                       }
                       if (_placeDetails.length >=
-                          _places.indexOf(widget.tour.updatedPlaces![index])) {
-                        if (widget.tour.places[index].name !=
-                            widget.tour.updatedPlaces![index]) {
+                          _places.indexOf(
+                              (tour ?? widget.tour).updatedPlaces![index])) {
+                        if ((tour ?? widget.tour).places[index].name !=
+                            (tour ?? widget.tour).updatedPlaces![index]) {
                           return PlaceCard(
-                              placeDetails: _placeDetails[_places
-                                  .indexOf(widget.tour.updatedPlaces![index])],
+                              placeDetails: _placeDetails[_places.indexOf(
+                                  (tour ?? widget.tour).updatedPlaces![index])],
                               icon: "");
                         }
                       }
@@ -238,7 +239,7 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
                         MaterialPageRoute(
                           builder: (BuildContext context) =>
                               TourAudioLoadingScreen(
-                            tour: widget.tour,
+                            tour: (tour ?? widget.tour),
                             settings: {
                               "theme": "none",
                               "duration": "5",
@@ -280,17 +281,50 @@ class _TourPanelSlideUpState extends ConsumerState<TourPanelSlideUp> {
           ));
     }
 
-    return SlidingUpPanel(
-      maxHeight: _panelHeightOpen,
-      minHeight: _panelHeightClosed,
-      isDraggable: true,
-      parallaxEnabled: true,
-      parallaxOffset: .5,
-      panelBuilder: (sc) => _panel(sc),
-      borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0)),
+    return ProviderScope(
+      child: SlidingUpPanel(
+        maxHeight: _panelHeightOpen,
+        minHeight: _panelHeightClosed,
+        isDraggable: true,
+        parallaxEnabled: true,
+        parallaxOffset: .5,
+        panelBuilder: (sc) => _panel(sc, _tour),
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(18.0), topRight: Radius.circular(18.0)),
+        onPanelSlide: (double pos) => setState(() {}),
+      ),
     );
 
     // the fab
   }
+}
+
+Widget Button(String labelName, String label, IconData icon, Color color) {
+  return Column(
+    children: <Widget>[
+      Tooltip(
+        message: labelName,
+        child: Container(
+          padding: const EdgeInsets.all(14.0),
+          child: Icon(
+            icon,
+            color: Colors.white,
+          ),
+          decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              boxShadow: const [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.15),
+                  blurRadius: 8.0,
+                )
+              ]),
+        ),
+      ),
+      SizedBox(
+        height: 12.0,
+      ),
+      Text(label),
+    ],
+  );
 }

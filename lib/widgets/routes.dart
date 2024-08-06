@@ -86,6 +86,7 @@ class _RoutesState extends ConsumerState<Routes> {
     List<String> optimizedPlaces = result[1];
 
     // Create a map to maintain order
+    print("OPTIMIZED WAYPOINTS - $optimizedPlaces");
 
     // Convert sorted map to a sorted list of places
     return {'coordinates': optimizedCoordinates, 'places': optimizedPlaces};
@@ -139,10 +140,12 @@ class _RoutesState extends ConsumerState<Routes> {
     List<PointLatLng> polylineResult;
 
     List<PolylineWayPoint> waypoints = [];
+    print("Before optimization $_updatedAndSortedPlaces");
     Map result = optimizeWaypoints(_coordinates, _updatedAndSortedPlaces);
     setState(() {
       _updatedAndSortedPlaces = result['places'];
     });
+    print("After optimization $_updatedAndSortedPlaces");
     List<LatLng> optimizedCoordinates = result['coordinates'];
     for (var i = 1; i < optimizedCoordinates.length - 1; i++) {
       waypoints.add(PolylineWayPoint(
@@ -169,7 +172,8 @@ class _RoutesState extends ConsumerState<Routes> {
     }
     tour.updatedPlaces = _updatedAndSortedPlaces;
     tour.routeCoordinates = polylineCoordinates;
-    await tour.toJsonFile();
+    // await tour.toJsonFile();
+
     ref.read(tourProvider.notifier).state = tour;
 
     setState(() {});
