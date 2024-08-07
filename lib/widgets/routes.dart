@@ -174,9 +174,9 @@ class _RoutesState extends ConsumerState<Routes> {
     tour.routeCoordinates = polylineCoordinates;
     // await tour.toJsonFile();
 
-    ref.read(tourProvider.notifier).state = tour;
-
-    setState(() {});
+    setState(() {
+      ref.read(tourProvider.notifier).state = tour;
+    });
     return polylineCoordinates;
   }
 

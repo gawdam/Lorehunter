@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lorehunter/models/tour_details.dart';
 import 'package:lorehunter/widgets/routes.dart';
 import 'package:lorehunter/widgets/tour_panel_slide_up.dart';
+import 'package:lorehunter/widgets/tour_panel_stateless.dart';
 
 class ItineraryPage extends ConsumerStatefulWidget {
   const ItineraryPage({super.key, required this.tour});
@@ -51,10 +52,7 @@ class _ItineraryPageState extends ConsumerState<ItineraryPage> {
                   bottom: 0,
                   width: MediaQuery.sizeOf(context).width,
                   height: MediaQuery.sizeOf(context).height,
-                  child: TourPanelSlideUp(
-                    tour: widget.tour,
-                    city: widget.tour.city,
-                  )),
+                  child: TourPanelStateless()),
             ],
           ),
         ),
