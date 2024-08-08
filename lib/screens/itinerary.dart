@@ -35,7 +35,7 @@ class _ItineraryPageState extends ConsumerState<ItineraryPage> {
             children: [
               Container(
                   width: MediaQuery.sizeOf(context).width * 1,
-                  height: MediaQuery.sizeOf(context).height * 1 - 190,
+                  height: MediaQuery.sizeOf(context).height * 1 - 210,
                   child: Routes(
                     tour: widget.tour,
                   )),

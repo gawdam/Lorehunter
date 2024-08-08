@@ -151,6 +151,7 @@ class TourPanelStateless extends ConsumerWidget {
                 child: Skeletonizer(
                   enabled: false,
                   child: ListView.builder(
+                    // reverse: true,
                     itemBuilder: (context, index) {
                       if (tour?.routeCoordinates == null) {
                         return PlaceCard(
@@ -333,11 +334,12 @@ Widget Button(String labelName, String label, IconData icon, Color color) {
 }
 
 String formatTime(int minutes) {
-  int roundMinutesToNearestFive(int minutes) {
-    return ((minutes / 5).round() * 5).toInt();
+  if (minutes < 60) {
+    final roundedMinutes = ((minutes / 5).round() * 5).toInt();
+    return '${roundedMinutes} min';
+  } else {
+    final hours = (minutes / 60).floor();
+    final roundedMinutes = ((minutes % 60) / 5).round() * 5;
+    return '${hours}h ${roundedMinutes > 0 ? '${roundedMinutes}m' : ''}';
   }
-
-  final hours = (minutes / 60).floor();
-  final roundedMinutes = roundMinutesToNearestFive(minutes % 60);
-  return '${hours}h ${roundedMinutes}m';
 }

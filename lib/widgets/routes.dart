@@ -48,20 +48,17 @@ class _RoutesState extends ConsumerState<Routes> {
   void initState() {
     super.initState();
     _previousPlaces = List<String>.from(widget.tour.places.map((e) => e.name));
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(size: Size(10, 10), devicePixelRatio: 1),
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(48, 48)),
             'assets/images/markers/checkpoint.png')
         .then((onValue) {
       markerCheckpoint = onValue;
     });
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(size: Size(10, 10), devicePixelRatio: 1),
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(48, 48)),
             'assets/images/markers/end.png')
         .then((onValue) {
       markerEnd = onValue;
     });
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(size: Size(10, 10), devicePixelRatio: 1),
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(size: Size(48, 48)),
             'assets/images/markers/start.png')
         .then((onValue) {
       markerStart = onValue;
@@ -130,7 +127,7 @@ class _RoutesState extends ConsumerState<Routes> {
     Polyline polyline = Polyline(
         polylineId: id,
         points: polylineCoordinates,
-        color: Color.fromARGB(255, 17, 65, 224)!,
+        color: Colors.black,
         width: 8);
     setState(() {
       _polylines[id] = polyline;
@@ -188,7 +185,7 @@ class _RoutesState extends ConsumerState<Routes> {
     Tour? tour = ref.read(tourProvider.notifier).state;
 
     tour!.distance = dist;
-    for (int i = 0; i < _coordinates.length; i++) {
+    for (int i = 0; i < tour.places.length; i++) {
       tour.places[i].coordinates = _coordinates[i];
     }
     tour.updatedPlaces = _updatedAndSortedPlaces;
@@ -200,16 +197,15 @@ class _RoutesState extends ConsumerState<Routes> {
 
       ref.read(tourProvider.notifier).state = tour;
     });
-
+    Marker startMarker = _markers.firstWhere(
+        (element) => element.infoWindow.title == _updatedAndSortedPlaces.first);
+    Marker endMarker = _markers.firstWhere(
+        (element) => element.infoWindow.title == _updatedAndSortedPlaces.last);
+    _markers.removeWhere(
+        (element) => element.infoWindow.title == _updatedAndSortedPlaces.first);
+    _markers.removeWhere(
+        (element) => element.infoWindow.title == _updatedAndSortedPlaces.last);
     setState(() {
-      Marker startMarker = _markers.firstWhere((element) =>
-          element.infoWindow.title == _updatedAndSortedPlaces.first);
-      Marker endMarker = _markers.firstWhere((element) =>
-          element.infoWindow.title == _updatedAndSortedPlaces.first);
-      _markers.removeWhere((element) =>
-          element.infoWindow.title == _updatedAndSortedPlaces.first);
-      _markers.removeWhere((element) =>
-          element.infoWindow.title == _updatedAndSortedPlaces.first);
       _markers.add(
         Marker(
           markerId: startMarker.markerId,
@@ -226,9 +222,6 @@ class _RoutesState extends ConsumerState<Routes> {
           icon: markerEnd!,
         ),
       );
-      _markers.add(endMarker);
-      _markers.where((element) =>
-          element.infoWindow.title == _updatedAndSortedPlaces.first);
     });
 
     return polylineCoordinates;
