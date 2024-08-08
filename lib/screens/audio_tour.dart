@@ -70,6 +70,12 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                   currentPosition: _currentPage,
                   totalPlaces:
                       widget.tourAudioTranscript.placeAudioTranscripts.length,
+                  places: widget.tour.updatedPlaces!,
+                  onPressed: (int index) {
+                    _pageController.animateToPage(index,
+                        duration: Durations.long2, curve: Curves.easeIn);
+                    // =  (index.toDouble());
+                  },
                 ),
               ),
               Container(

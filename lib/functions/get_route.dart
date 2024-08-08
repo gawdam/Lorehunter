@@ -37,6 +37,6 @@ Future<Map> getRoutePolyline(String coordinates) async {
   if (status != 200) throw Exception('http.post error: statusCode= $status');
   Map<String, dynamic> value = parseRouteData(res.body);
   List<PointLatLng> result = polylinePoints.decodePolyline(value['geometry']);
-  print("Distance travelled - ${value['distance']}");
+
   return {'result': result, 'distance': value['distance']};
 }

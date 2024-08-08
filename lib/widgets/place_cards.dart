@@ -175,6 +175,24 @@ class _PlaceCardState extends State<PlaceCard> {
                                         ),
                                       ),
                               ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Container(
+                                // color: Colors.grey,
+                                alignment: Alignment.topRight,
+                                height: 30,
+                                child: IconButton(
+                                    onPressed: () {
+                                      launchUrl(Uri.parse(widget
+                                              .placeDetails.wikiURL ??
+                                          "https://www.google.com/search?q=${widget.placeDetails.name}"));
+                                    },
+                                    icon: Icon(
+                                      Icons.link,
+                                      size: 20,
+                                    )),
+                              )
                             ],
                           ),
                         ),

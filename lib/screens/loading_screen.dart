@@ -7,6 +7,8 @@ import 'package:lorehunter/models/audio_tour_transcript.dart';
 import 'package:lorehunter/models/tour_details.dart';
 import 'package:lorehunter/screens/audio_tour.dart';
 
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+
 class TourAudioLoadingScreen extends StatefulWidget {
   final Tour tour;
   final Map<String, String> settings;
@@ -153,7 +155,7 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                               _progress == 0
                                   ? "notStarted"
                                   : _progress ==
-                                          widget.tour.updatedPlaces!.length + 1
+                                          widget.tour.updatedPlaces!.length
                                       ? "completed"
                                       : "inProgress"),
                           if (_progress > 0)
@@ -226,12 +228,12 @@ Widget generatePlacesLoader(List<String> places, int progress) {
       else
         state = "notStarted";
 
-      return loadingIndicator("- $place", state);
+      return loadingIndicator("$place", state, format: "sub");
     }),
   );
 }
 
-Widget loadingIndicator(String text, String state) {
+Widget loadingIndicator(String text, String state, {format = 'super'}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     crossAxisAlignment: CrossAxisAlignment.center,
@@ -240,22 +242,31 @@ Widget loadingIndicator(String text, String state) {
           height: 20,
           child: Text(
             text,
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: format == "super" ? 16 : 14),
           )),
       const SizedBox(width: 10),
       Builder(builder: (context) {
+        // state = 'inProgress';
         switch (state) {
           case 'notStarted':
             return const SizedBox.shrink();
           case 'inProgress':
             return Container(
-                width: 20,
-                height: 20,
-                child: const CircularProgressIndicator());
+              width: 20,
+              height: 30,
+              child: LoadingAnimationWidget.staggeredDotsWave(
+                  color: Colors.purple, size: 25),
+            );
           case 'completed':
-            return const Icon(Icons.check, color: Colors.green);
+            return Container(
+                width: 20,
+                height: 30,
+                child: const Icon(Icons.check, color: Colors.green));
           default:
-            return const SizedBox.shrink();
+            return const SizedBox(
+              height: 30,
+              width: 20,
+            );
         }
       })
     ],

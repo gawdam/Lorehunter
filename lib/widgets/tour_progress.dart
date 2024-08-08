@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class TourProgress extends StatelessWidget {
   final int currentPosition;
   final int totalPlaces;
+  final Function onPressed;
+  final List<String> places;
 
-  const TourProgress(
-      {super.key, required this.currentPosition, required this.totalPlaces});
+  const TourProgress({
+    super.key,
+    required this.currentPosition,
+    required this.totalPlaces,
+    required this.onPressed,
+    required this.places,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +21,7 @@ class TourProgress extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Container(
         alignment: Alignment.center,
-        height: 24,
+        height: 30,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -33,22 +41,27 @@ class TourProgress extends StatelessWidget {
                             : Color.fromARGB(255, 166, 122, 174),
                       )
                     : Container(),
-                CircleAvatar(
-                  foregroundColor: index < currentPosition
-                      ? Colors.purple
-                      : Colors.transparent,
-                  radius: 12,
-                  backgroundColor: Colors.purple,
-                  child: index < currentPosition
-                      ? Icon(
-                          Icons.flag,
-                          color: Colors.white,
-                          size: 12,
-                        )
-                      : CircleAvatar(
-                          radius: 10,
-                          backgroundColor: Colors.grey[200],
-                        ),
+                GestureDetector(
+                  onTap: () {
+                    onPressed(index);
+                  },
+                  child: CircleAvatar(
+                    foregroundColor: index < currentPosition
+                        ? Colors.purple
+                        : Colors.transparent,
+                    radius: 15,
+                    backgroundColor: Colors.purple,
+                    child: index < currentPosition
+                        ? Icon(
+                            Icons.flag,
+                            color: Colors.white,
+                            size: 15,
+                          )
+                        : CircleAvatar(
+                            radius: 13,
+                            backgroundColor: Colors.grey[200],
+                          ),
+                  ),
                 ),
               ],
             );

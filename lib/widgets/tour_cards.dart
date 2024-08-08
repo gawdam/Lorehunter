@@ -166,7 +166,9 @@ class _TourCardState extends State<TourCard> {
                           ),
                           Button(
                             "Tour duration",
-                            "${(5).round()} hrs",
+                            formatTime(
+                                ((widget.tour.distance ?? 0) / 1000 / 6 * 60)
+                                    .round()),
                             Icons.timer_outlined,
                             Colors.green,
                           ),

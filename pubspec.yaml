@@ -114,6 +114,11 @@ flutter:
     - assets/images/buttons/play_pause/play_up.png
     - assets/images/buttons/play_pause/pause_down.png
     - assets/images/buttons/play_pause/pause_up.png
+    - assets/images/markers/checkpoint.png
+    - assets/images/markers/end.png
+    - assets/images/markers/start.png
+
+
     - assets/music/music_header.wav
     - assets/music/music_body.mp3
     

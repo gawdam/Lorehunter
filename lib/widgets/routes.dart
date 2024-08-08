@@ -40,11 +40,32 @@ class _RoutesState extends ConsumerState<Routes> {
   List<String> _previousPlaces = [];
 
   GoogleMapController? mapController;
+  BitmapDescriptor? markerCheckpoint;
+  BitmapDescriptor? markerStart;
+  BitmapDescriptor? markerEnd;
 
   @override
   void initState() {
     super.initState();
     _previousPlaces = List<String>.from(widget.tour.places.map((e) => e.name));
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(size: Size(10, 10), devicePixelRatio: 1),
+            'assets/images/markers/checkpoint.png')
+        .then((onValue) {
+      markerCheckpoint = onValue;
+    });
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(size: Size(10, 10), devicePixelRatio: 1),
+            'assets/images/markers/end.png')
+        .then((onValue) {
+      markerEnd = onValue;
+    });
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(size: Size(10, 10), devicePixelRatio: 1),
+            'assets/images/markers/start.png')
+        .then((onValue) {
+      markerStart = onValue;
+    });
     _createRoute();
   }
 
@@ -175,8 +196,41 @@ class _RoutesState extends ConsumerState<Routes> {
     // await tour.toJsonFile();
 
     setState(() {
+      ref.invalidate(tourProvider);
+
       ref.read(tourProvider.notifier).state = tour;
     });
+
+    setState(() {
+      Marker startMarker = _markers.firstWhere((element) =>
+          element.infoWindow.title == _updatedAndSortedPlaces.first);
+      Marker endMarker = _markers.firstWhere((element) =>
+          element.infoWindow.title == _updatedAndSortedPlaces.first);
+      _markers.removeWhere((element) =>
+          element.infoWindow.title == _updatedAndSortedPlaces.first);
+      _markers.removeWhere((element) =>
+          element.infoWindow.title == _updatedAndSortedPlaces.first);
+      _markers.add(
+        Marker(
+          markerId: startMarker.markerId,
+          position: startMarker.position,
+          infoWindow: startMarker.infoWindow,
+          icon: markerStart!,
+        ),
+      );
+      _markers.add(
+        Marker(
+          markerId: endMarker.markerId,
+          position: endMarker.position,
+          infoWindow: endMarker.infoWindow,
+          icon: markerEnd!,
+        ),
+      );
+      _markers.add(endMarker);
+      _markers.where((element) =>
+          element.infoWindow.title == _updatedAndSortedPlaces.first);
+    });
+
     return polylineCoordinates;
   }
 
@@ -205,8 +259,7 @@ class _RoutesState extends ConsumerState<Routes> {
               infoWindow: InfoWindow(
                 title: place.name,
               ),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueRed),
+              icon: markerCheckpoint!,
             ),
           );
           await Future.delayed(Duration(seconds: 1));
@@ -225,8 +278,7 @@ class _RoutesState extends ConsumerState<Routes> {
             infoWindow: InfoWindow(
               title: place.name,
             ),
-            icon:
-                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+            icon: markerCheckpoint!,
           ),
         );
       }

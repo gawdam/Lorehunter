@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:country_flags/country_flags.dart';
 import 'package:csc_picker/dropdown_with_search.dart';
 import 'package:csc_picker/model/select_status_model.dart';
@@ -13,26 +15,43 @@ import 'package:lorehunter/providers/location_provider.dart';
 String getFlag(String countryCode) {
   String flag = countryCode.replaceAllMapped(RegExp(r'[A-Z]'),
       (match) => String.fromCharCode(match.group(0)!.codeUnitAt(0) + 127397));
-
   return flag;
 }
 
-class LocationPicker extends ConsumerWidget {
-  TextEditingController textController = TextEditingController();
+String getNameFromFlag(String countryCode) {
+  String flag = countryCode.replaceAllMapped(RegExp(r'[A-Z]'),
+      (match) => String.fromCharCode(match.group(0)!.codeUnitAt(0) + 127397));
+  return flag;
+}
+
+class LocationPicker extends ConsumerStatefulWidget {
+  LocationPicker({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    // TODO: implement createState
+    return LoacationPickerState();
+  }
+}
+
+class LoacationPickerState extends ConsumerState<LocationPicker> {
+  TextEditingController textController = TextEditingController();
+
+  SearchController countryController = SearchController();
+
+  @override
+  Widget build(BuildContext context) {
     final countries = ref.watch(countryListProvider);
     final cities = ref.watch(cityListProvider);
 
     final selectedCountry = ref.watch(selectedCountryProvider);
-    final selectedCity = ref.watch(selectedCityProvider);
-
-    String selectedFlag = getFlag(selectedCountry!);
 
     List<String> countriesWithFlags = [];
     countries.forEach((element) {
-      countriesWithFlags.add("$element ${getFlag(element)}");
+      final entry = "${element.countryName} ${getFlag(element.countryCode)}";
+      if (!countriesWithFlags.contains(entry)) {
+        countriesWithFlags.add(entry);
+      }
     });
 
     return Container(
@@ -43,7 +62,7 @@ class LocationPicker extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 48,
+            width: 80,
             height: 40,
             decoration: BoxDecoration(
               // color: Colors.grey[100],
@@ -54,15 +73,14 @@ class LocationPicker extends ConsumerWidget {
                 ),
               ],
             ),
-
             child: DropdownSearch<String>(
-              dropdownButtonProps: DropdownButtonProps(
+              dropdownButtonProps: const DropdownButtonProps(
                   icon: Icon(
-                null,
-                size: 14,
+                Icons.arrow_drop_down_sharp,
+                size: 25,
               )),
               dropdownDecoratorProps: DropDownDecoratorProps(
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.right,
                 dropdownSearchDecoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
@@ -85,31 +103,37 @@ class LocationPicker extends ConsumerWidget {
               // dropdownDecoratorProps: DropDownDecoratorProps(
               //     dropdownSearchDecoration:
               //         InputDecoration(fillColor: Colors.grey[100])),
+              // dropdownBuilder: (context, selectedItem) => Text("hello"),
               popupProps: PopupProps.menu(
                 showSearchBox: true,
                 showSelectedItems: true,
                 searchDelay: Duration.zero,
+                fit: FlexFit.tight,
+
                 listViewProps: ListViewProps(),
                 menuProps: MenuProps(
                   elevation: 10,
                   backgroundColor: Colors.grey[200],
                 ),
+
                 // favoriteItemProps: FavoriteItemProps(),
                 // scrollbarProps: ScrollbarProps(
                 //     thumbVisibility: false, trackVisibility: false),
                 searchFieldProps: TextFieldProps(
+                    selectionHeightStyle: BoxHeightStyle.tight,
                     cursorHeight: 16,
-                    strutStyle: StrutStyle(),
+                    strutStyle: StrutStyle(height: 1),
                     autofocus: true,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, height: 1, fontFamily: null),
-                    padding: EdgeInsets.all(5)),
+                    style:
+                        TextStyle(fontSize: 16, height: 0.5, fontFamily: null),
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 20)),
                 itemBuilder: (context, item, isSelected) => Column(
                   children: [
                     Text(
                       item,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 12,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -118,41 +142,39 @@ class LocationPicker extends ConsumerWidget {
                 ),
               ),
               items: countriesWithFlags,
-              onChanged: (country) {
+              onChanged: (country) async {
                 if (country != null) {
                   ref.read(selectedCountryProvider.notifier).state =
-                      country.substring(0, 2);
+                      country.substring(0, country.length - 5);
+                  // await Future.delayed(Duration(milliseconds: 200));
                 }
               },
-              selectedItem: getFlag(selectedCountry),
-            ),
+              onSaved: (country) async {
+                if (country != null) {
+                  ref.read(selectedCountryProvider.notifier).state =
+                      country.substring(0, country.length - 5);
+                  // await Future.delayed(Duration(milliseconds: 200));
+                }
+              },
 
-            // DropdownWithSearch(
-            //   title: "Country",
-            //   placeHolder: "Select country",
-            //   items: countriesWithFlags,
-            // onChanged: (country) => country == null
-            //     ? null
-            //     : ref.read(selectedCountryProvider.notifier).state = country,
-            //   selected: selectedCountry,
-            //   label: "HELLO" ?? "None",
-            //   itemStyle: TextStyle(fontSize: 14),
-            //   selectedItemStyle: TextStyle(fontSize: 12),
-            // ),
+              selectedItem: getFlag(countries
+                      .where((element) =>
+                          element.countryName == (selectedCountry ?? "France"))
+                      .isEmpty
+                  ? "FR"
+                  : countries
+                      .where((element) =>
+                          element.countryName == (selectedCountry ?? "France"))
+                      .first
+                      .countryCode),
+            ),
           ),
           SizedBox(
             width: 5,
           ),
-          SearchAnchor(
-
-              // viewBackgroundColor: Colors.grey[100],
-              viewOnChanged: (city) {
+          SearchAnchor(viewOnChanged: (city) {
             ref.read(selectedCityProvider.notifier).state = city;
           }, builder: (BuildContext context, SearchController controller) {
-            // controller.text = selectedCity!;
-
-            // print(controller.value.text);
-            // controller.text ??= "Amsterdam";
             return SearchBar(
               textStyle: MaterialStateProperty.resolveWith(
                   (states) => TextStyle(fontFamily: null)),
@@ -172,25 +194,26 @@ class LocationPicker extends ConsumerWidget {
               controller: controller,
               onChanged: (value) {
                 ref.read(selectedCityProvider.notifier).state = value;
-                setState() {}
-                ;
+              },
+              onSubmitted: (value) {
+                ref.read(selectedCityProvider.notifier).state = value;
               },
               onTap: () {
                 controller.openView();
               },
               leading: const Icon(Icons.location_on_outlined),
               constraints: BoxConstraints(
-                  maxWidth: MediaQuery.sizeOf(context).width * 0.85 - 5 - 48,
+                  maxWidth: MediaQuery.sizeOf(context).width * 0.85 - 5 - 80,
                   minHeight: 40),
             );
           }, suggestionsBuilder:
-                  (BuildContext context, SearchController controller) {
+              (BuildContext context, SearchController controller) {
             List<String> filteredCities = [];
             cities.forEach((element) {
-              if (element
+              if (element.cityName
                   .toLowerCase()
                   .contains(controller.text.toLowerCase())) {
-                filteredCities.add(element);
+                filteredCities.add(element.cityName);
               }
             });
             return List<ListTile>.generate(filteredCities.length, (int index) {
@@ -206,18 +229,6 @@ class LocationPicker extends ConsumerWidget {
               );
             });
           }),
-
-          // Container(
-          //   width: MediaQuery.sizeOf(context).width * 0.7,
-          //   child: DropdownWithSearch(
-          //     title: "City",
-          //     placeHolder: "Select city",
-          //     items: cities,
-
-          //     selected: selectedCity,
-          //     label: selectedCity ?? "None",
-          //   ),
-          // ),
         ],
       ),
     );
