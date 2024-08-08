@@ -41,60 +41,27 @@ class _AudioTourState extends ConsumerState<AudioTour> {
       body: Column(
         children: [
           // Section 1: Progress Indicator
-          Row(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                color: const Color.fromARGB(255, 225, 210, 228),
-                height: screenHeight * 0.12,
-                width: screenWidth * 0.1,
-                alignment: Alignment.bottomCenter,
-                padding: EdgeInsets.only(bottom: 8),
-                child: IconButton(
-                  icon: Icon(Icons.arrow_back),
-                  onPressed: () {
-                    // Handle back button press
-                    _pageController.previousPage(
-                        duration: Duration(milliseconds: 100),
-                        curve: Curves.easeIn);
-                  },
-                ),
-              ),
-              Container(
-                color: const Color.fromARGB(255, 225, 210, 228),
-                height: screenHeight * 0.12,
-                width: screenWidth * 0.8,
-                alignment: Alignment.bottomCenter,
-                padding: EdgeInsets.only(bottom: 20),
-                child: TourProgress(
-                  currentPosition: _currentPage,
-                  totalPlaces:
-                      widget.tourAudioTranscript.placeAudioTranscripts.length,
-                  places: widget.tour.updatedPlaces!,
-                  onPressed: (int index) {
-                    _pageController.animateToPage(index,
-                        duration: Durations.long2, curve: Curves.easeIn);
-                    // =  (index.toDouble());
-                  },
-                ),
-              ),
-              Container(
-                color: const Color.fromARGB(255, 225, 210, 228),
-                height: screenHeight * 0.12,
-                width: screenWidth * 0.1,
-                alignment: Alignment.bottomCenter,
-                padding: EdgeInsets.only(bottom: 8),
-                child: IconButton(
-                  icon: Icon(Icons.arrow_forward),
-                  onPressed: () {
-                    // Handle forward button press
-                    _pageController.nextPage(
-                        duration: Duration(milliseconds: 100),
-                        curve: Curves.easeIn);
-                  },
-                ),
-              ),
-            ],
+          Container(
+            color: Colors.white,
+            height: screenHeight * 0.15,
+            width: screenWidth * 0.95,
+            alignment: Alignment.bottomCenter,
+            padding: EdgeInsets.only(bottom: 20),
+            child: TourProgress(
+              currentPosition: _currentPage,
+              totalPlaces:
+                  widget.tourAudioTranscript.placeAudioTranscripts.length,
+              places: widget.tour.updatedPlaces!,
+              onPressed: (int index) {
+                _pageController.animateToPage(index,
+                    duration: Durations.long2, curve: Curves.easeIn);
+                // =  (index.toDouble());
+              },
+            ),
+          ),
+          Container(
+            height: 2,
+            color: Colors.purple,
           ),
           Expanded(
             child: PageView.builder(
@@ -112,16 +79,6 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                     widget.tourAudioTranscript.placeAudioTranscripts[index];
                 return Column(
                   children: [
-                    Container(
-                      color: Color.fromARGB(255, 236, 190, 243),
-                      height: screenHeight * 0.05,
-                      child: Center(
-                        child: Text(
-                          placeData.placeName,
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    ),
                     Expanded(
                       child: Stack(
                         children: [
@@ -138,6 +95,8 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                             left: 16,
                             bottom: 16,
                             child: FloatingActionButton(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
                               onPressed: () {
                                 showDialog(
                                   context: context,
@@ -193,6 +152,8 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                             left: 16,
                             bottom: 80,
                             child: FloatingActionButton(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
                               onPressed: () {
                                 showDialog(
                                   context: context,
@@ -249,13 +210,78 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                       ),
                     ),
                     Container(
+                      height: 2,
+                      color: Colors.purple,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          color: Colors.white,
+                          // height: screenHeight * 0.15,
+                          width: screenWidth * 0.1,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.only(top: 10),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.keyboard_arrow_left,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              // Handle back button press
+                              _pageController.previousPage(
+                                  duration: Duration(milliseconds: 100),
+                                  curve: Curves.easeIn);
+                            },
+                          ),
+                        ),
+                        Container(
+                          alignment: Alignment.bottomCenter,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color:
+                                  Colors.white, // Set the border color to black
+                              width: 2.0, // Set the border width
+                            ),
+                          ),
+                          height: screenHeight * 0.05,
+                          child: Text(
+                            placeData.placeName,
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Container(
+                          color: Colors.white,
+                          // height: screenHeight * 0.15,
+                          width: screenWidth * 0.1,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.only(top: 10),
+                          child: IconButton(
+                            icon: Icon(Icons.keyboard_arrow_right, size: 30),
+                            onPressed: () {
+                              // Handle forward button press
+                              _pageController.nextPage(
+                                  duration: Duration(milliseconds: 100),
+                                  curve: Curves.easeIn);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
                       height: 200,
-                      color: const Color.fromARGB(255, 225, 210, 228),
+                      color: Color.fromARGB(255, 255, 255, 255),
                       width: screenWidth,
                       padding:
                           EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                       child: AudioTranscriptPlayer(placeData.audioFile!),
                     ),
+                    SizedBox(
+                      height: 20,
+                    )
                   ],
                 );
               },

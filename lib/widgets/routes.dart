@@ -48,24 +48,6 @@ class _RoutesState extends ConsumerState<Routes> {
   void initState() {
     super.initState();
     _previousPlaces = List<String>.from(widget.tour.places.map((e) => e.name));
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(size: Size(10, 10), devicePixelRatio: 1),
-            'assets/images/markers/checkpoint.png')
-        .then((onValue) {
-      markerCheckpoint = onValue;
-    });
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(size: Size(10, 10), devicePixelRatio: 1),
-            'assets/images/markers/end.png')
-        .then((onValue) {
-      markerEnd = onValue;
-    });
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(size: Size(10, 10), devicePixelRatio: 1),
-            'assets/images/markers/start.png')
-        .then((onValue) {
-      markerStart = onValue;
-    });
     _createRoute();
   }
 
@@ -82,6 +64,27 @@ class _RoutesState extends ConsumerState<Routes> {
     }
   }
 
+  Future<void> loadAssets() async {
+    await BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(size: Size(48, 48)),
+            'assets/images/markers/checkpoint.png')
+        .then((onValue) {
+      markerCheckpoint = onValue;
+    });
+    await BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(size: Size(48, 48)),
+            'assets/images/markers/end.png')
+        .then((onValue) {
+      markerEnd = onValue;
+    });
+    await BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(size: Size(48, 48)),
+            'assets/images/markers/start.png')
+        .then((onValue) {
+      markerStart = onValue;
+    });
+  }
+
   void _clearMapData() {
     setState(() {
       _markers.clear();
@@ -93,15 +96,9 @@ class _RoutesState extends ConsumerState<Routes> {
 
   Map<String, dynamic> optimizeWaypoints(
       List<LatLng> coordinates, List<String> places) {
-    List<Map> sortedByCoord = List.generate(coordinates.length,
-        (index) => {'coord': coordinates[index], 'place': places[index]});
-    sortedByCoord
-        .sort((a, b) => a['coord'].latitude.compareTo(b['coord'].latitude));
     List result = optimizePathNearestNeighbor(
-      List.generate(
-          coordinates.length, (index) => sortedByCoord[index]['coord']),
-      List.generate(
-          coordinates.length, (index) => sortedByCoord[index]['place']),
+      coordinates,
+      places,
     );
     List<LatLng> optimizedCoordinates = result[0];
     List<String> optimizedPlaces = result[1];
@@ -130,7 +127,7 @@ class _RoutesState extends ConsumerState<Routes> {
     Polyline polyline = Polyline(
         polylineId: id,
         points: polylineCoordinates,
-        color: Color.fromARGB(255, 17, 65, 224)!,
+        color: Colors.black,
         width: 8);
     setState(() {
       _polylines[id] = polyline;
@@ -168,11 +165,6 @@ class _RoutesState extends ConsumerState<Routes> {
     });
     print("After optimization $_updatedAndSortedPlaces");
     List<LatLng> optimizedCoordinates = result['coordinates'];
-    for (var i = 1; i < optimizedCoordinates.length - 1; i++) {
-      waypoints.add(PolylineWayPoint(
-          location:
-              "${optimizedCoordinates[i].latitude}, ${optimizedCoordinates[i].longitude}"));
-    }
     var res = await getRoutePolyline(
         convertLatLngListToJson(optimizedCoordinates, _updatedAndSortedPlaces));
     polylineResult = res['result'];
@@ -188,7 +180,7 @@ class _RoutesState extends ConsumerState<Routes> {
     Tour? tour = ref.read(tourProvider.notifier).state;
 
     tour!.distance = dist;
-    for (int i = 0; i < _coordinates.length; i++) {
+    for (int i = 0; i < tour.places.length; i++) {
       tour.places[i].coordinates = _coordinates[i];
     }
     tour.updatedPlaces = _updatedAndSortedPlaces;
@@ -200,16 +192,15 @@ class _RoutesState extends ConsumerState<Routes> {
 
       ref.read(tourProvider.notifier).state = tour;
     });
-
+    Marker startMarker = _markers.firstWhere(
+        (element) => element.infoWindow.title == _updatedAndSortedPlaces.first);
+    Marker endMarker = _markers.firstWhere(
+        (element) => element.infoWindow.title == _updatedAndSortedPlaces.last);
+    _markers.removeWhere(
+        (element) => element.infoWindow.title == _updatedAndSortedPlaces.first);
+    _markers.removeWhere(
+        (element) => element.infoWindow.title == _updatedAndSortedPlaces.last);
     setState(() {
-      Marker startMarker = _markers.firstWhere((element) =>
-          element.infoWindow.title == _updatedAndSortedPlaces.first);
-      Marker endMarker = _markers.firstWhere((element) =>
-          element.infoWindow.title == _updatedAndSortedPlaces.first);
-      _markers.removeWhere((element) =>
-          element.infoWindow.title == _updatedAndSortedPlaces.first);
-      _markers.removeWhere((element) =>
-          element.infoWindow.title == _updatedAndSortedPlaces.first);
       _markers.add(
         Marker(
           markerId: startMarker.markerId,
@@ -226,16 +217,15 @@ class _RoutesState extends ConsumerState<Routes> {
           icon: markerEnd!,
         ),
       );
-      _markers.add(endMarker);
-      _markers.where((element) =>
-          element.infoWindow.title == _updatedAndSortedPlaces.first);
     });
 
     return polylineCoordinates;
   }
 
   Future<void> _createMarkers() async {
+    int index = 0;
     for (final place in widget.tour.places) {
+      index += 1;
       LatLng latLng;
       if (place.coordinates == null) {
         final coordinate =
@@ -271,16 +261,40 @@ class _RoutesState extends ConsumerState<Routes> {
           coord = calculateAverageLatLng(_coordinates);
         });
 
-        _markers.add(
-          Marker(
-            markerId: MarkerId(latLng.toString()),
-            position: latLng,
-            infoWindow: InfoWindow(
-              title: place.name,
+        if (index == 1) {
+          _markers.add(
+            Marker(
+              markerId: MarkerId(latLng.toString()),
+              position: latLng,
+              infoWindow: InfoWindow(
+                title: place.name,
+              ),
+              icon: markerStart ?? BitmapDescriptor.defaultMarker,
             ),
-            icon: markerCheckpoint!,
-          ),
-        );
+          );
+        } else if (index == widget.tour.places.length) {
+          _markers.add(
+            Marker(
+              markerId: MarkerId(latLng.toString()),
+              position: latLng,
+              infoWindow: InfoWindow(
+                title: place.name,
+              ),
+              icon: markerEnd ?? BitmapDescriptor.defaultMarker,
+            ),
+          );
+        } else {
+          _markers.add(
+            Marker(
+              markerId: MarkerId(latLng.toString()),
+              position: latLng,
+              infoWindow: InfoWindow(
+                title: place.name,
+              ),
+              icon: markerCheckpoint ?? BitmapDescriptor.defaultMarker,
+            ),
+          );
+        }
       }
     }
     // await mapController!.animateCamera(CameraUpdate.newCameraPosition(
@@ -289,6 +303,7 @@ class _RoutesState extends ConsumerState<Routes> {
   }
 
   Future<Map<String, dynamic>> _createRoute() async {
+    await loadAssets();
     await _createMarkers();
     await generatePolylineFromPoints();
     return {'markers': _markers, 'polyline': _polylines};

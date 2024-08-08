@@ -92,6 +92,9 @@ class _AudioTranscriptPlayer extends ConsumerState<AudioTranscriptPlayer> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Slider(
+          activeColor: Colors.purple,
+          thumbColor: Colors.purple,
+          inactiveColor: Colors.black,
           value: _position.inSeconds.toDouble(),
           min: 0.0,
           max: _duration?.inSeconds.toDouble() ?? 0.0,

@@ -21,7 +21,7 @@ class TourProgress extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Container(
         alignment: Alignment.center,
-        height: 30,
+        height: 50,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -31,36 +31,55 @@ class TourProgress extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 index != 0
-                    ? Container(
-                        height: 5,
-                        width: MediaQuery.sizeOf(context).width *
-                            0.7 /
-                            (totalPlaces + 1),
-                        color: index < currentPosition
-                            ? Colors.purple
-                            : Color.fromARGB(255, 166, 122, 174),
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            alignment: Alignment.topCenter,
+                            height: 5,
+                            width: MediaQuery.sizeOf(context).width *
+                                0.7 /
+                                (totalPlaces + 1),
+                            color: index < currentPosition
+                                ? Colors.purple
+                                : Color.fromARGB(255, 166, 122, 174),
+                            padding: EdgeInsets.symmetric(vertical: 40),
+                          ),
+                          Container(
+                            height: 22,
+                          )
+                        ],
                       )
                     : Container(),
                 GestureDetector(
                   onTap: () {
                     onPressed(index);
                   },
-                  child: CircleAvatar(
-                    foregroundColor: index < currentPosition
-                        ? Colors.purple
-                        : Colors.transparent,
-                    radius: 15,
-                    backgroundColor: Colors.purple,
-                    child: index < currentPosition
-                        ? Icon(
-                            Icons.flag,
-                            color: Colors.white,
-                            size: 15,
-                          )
-                        : CircleAvatar(
-                            radius: 13,
-                            backgroundColor: Colors.grey[200],
-                          ),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        foregroundColor: index < currentPosition
+                            ? Colors.purple
+                            : Colors.transparent,
+                        radius: 14,
+                        backgroundColor: Colors.purple,
+                        child: index < currentPosition
+                            ? Icon(
+                                Icons.flag,
+                                color: Colors.white,
+                                size: 14,
+                              )
+                            : CircleAvatar(
+                                radius: 12,
+                                backgroundColor: Colors.grey[200],
+                              ),
+                      ),
+                      Container(
+                        height: 20,
+                        child: Text("${(index + 1).toString()}"),
+                      )
+                    ],
                   ),
                 ),
               ],

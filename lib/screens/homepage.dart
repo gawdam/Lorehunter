@@ -186,8 +186,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                     snapshot.data!.isNotEmpty) {
                                   return Container(
                                     width: MediaQuery.sizeOf(context).width,
-                                    height: MediaQuery.sizeOf(context).height *
-                                        0.75,
+                                    height:
+                                        MediaQuery.sizeOf(context).height * 0.7,
                                     alignment: Alignment.topCenter,
                                     child: ListView.builder(
                                       itemBuilder: (context, index) {

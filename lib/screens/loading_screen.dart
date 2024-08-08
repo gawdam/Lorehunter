@@ -57,7 +57,8 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
         widget.tour.updatedPlaces!.join(", "),
         widget.tour.city,
         widget.tour.name);
-    final audioTourScript = await jsonDecode(jsonString);
+    final audioTourScript =
+        await jsonDecode(jsonString.replaceAll(r'\', r'\\'));
     setState(() {
       _tourAudioTranscript =
           TourAudioTranscript.fromJson(audioTourScript, widget.tour.id);
@@ -75,6 +76,7 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
     String file;
     for (var placeAudioTranscript
         in _tourAudioTranscript.placeAudioTranscripts) {
+      count += 1;
       if (count == 0) {
         file = await _audioProcessor.savePlaceAudio(
             greeting: _tourAudioTranscript.greeting,
@@ -117,7 +119,7 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
         backgroundColor: const Color.fromARGB(255, 225, 210, 228),
         body: Center(
           child: Container(
-            width: MediaQuery.sizeOf(context).width * 0.8,
+            width: MediaQuery.sizeOf(context).width * 0.9,
             height: MediaQuery.sizeOf(context).height * 0.9,
             alignment: Alignment.center,
             child: Column(
@@ -154,8 +156,8 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                               "Generating Audio from Transcript",
                               _progress == 0
                                   ? "notStarted"
-                                  : _progress ==
-                                          widget.tour.updatedPlaces!.length
+                                  : _progress >=
+                                          widget.tour.updatedPlaces!.length - 1
                                       ? "completed"
                                       : "inProgress"),
                           if (_progress > 0)
@@ -173,41 +175,44 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                   Expanded(
                     child: Container(),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return AudioTour(
-                          tourAudioTranscript: _tourAudioTranscript,
-                          tour: widget.tour,
-                        );
-                      }));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      side: BorderSide(color: Colors.purple),
-                      elevation: 5,
-                      backgroundColor: Colors.purple[100],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Start tour",
-                          style: TextStyle(color: Colors.black, fontSize: 16),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Colors.black,
+                  _progress >= widget.tour.updatedPlaces!.length - 1
+                      ? ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return AudioTour(
+                                tourAudioTranscript: _tourAudioTranscript,
+                                tour: widget.tour,
+                              );
+                            }));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            side: BorderSide(color: Colors.purple),
+                            elevation: 5,
+                            backgroundColor: Colors.purple[100],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Start tour",
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 16),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                color: Colors.black,
+                              )
+                            ],
+                          ),
                         )
-                      ],
-                    ),
-                  ),
+                      : Container(),
                 ]),
           ),
         ));

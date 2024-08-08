@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -35,10 +36,24 @@ class _ItineraryPageState extends ConsumerState<ItineraryPage> {
             children: [
               Container(
                   width: MediaQuery.sizeOf(context).width * 1,
-                  height: MediaQuery.sizeOf(context).height * 1 - 190,
+                  height: MediaQuery.sizeOf(context).height * 1 - 210,
                   child: Routes(
                     tour: widget.tour,
                   )),
+              // Positioned(
+              //     left: 25,
+              //     bottom: 250,
+              //     child: ElevatedButton(
+              //       child: Row(
+              //         children: [
+              //           Text("Reverse Tour"),
+              //           SizedBox(
+              //             width: 5,
+              //           ),
+              //         ],
+              //       ),
+              //       onPressed: () {},
+              //     )),
               Positioned(
                 top: 50.0, // Adjust position as needed
                 left: 20.0, // Adjust position as needed
