@@ -193,7 +193,11 @@ class TourPanelStateless extends ConsumerWidget {
                   borderRadius: BorderRadius.all(Radius.circular(0)),
                 ),
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    await tour?.toJsonFile();
+
+                    isTourSaved = true;
+
                     Navigator.push(
                         context,
                         MaterialPageRoute(

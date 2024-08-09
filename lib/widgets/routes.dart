@@ -158,12 +158,10 @@ class _RoutesState extends ConsumerState<Routes> {
     List<PointLatLng> polylineResult;
 
     List<PolylineWayPoint> waypoints = [];
-    print("Before optimization $_updatedAndSortedPlaces");
     Map result = optimizeWaypoints(_coordinates, _updatedAndSortedPlaces);
     setState(() {
       _updatedAndSortedPlaces = result['places'];
     });
-    print("After optimization $_updatedAndSortedPlaces");
     List<LatLng> optimizedCoordinates = result['coordinates'];
     var res = await getRoutePolyline(
         convertLatLngListToJson(optimizedCoordinates, _updatedAndSortedPlaces));
@@ -223,9 +221,7 @@ class _RoutesState extends ConsumerState<Routes> {
   }
 
   Future<void> _createMarkers() async {
-    int index = 0;
     for (final place in widget.tour.places) {
-      index += 1;
       LatLng latLng;
       if (place.coordinates == null) {
         final coordinate =
@@ -261,7 +257,7 @@ class _RoutesState extends ConsumerState<Routes> {
           coord = calculateAverageLatLng(_coordinates);
         });
 
-        if (index == 1) {
+        if (place.name == widget.tour.updatedPlaces!.first) {
           _markers.add(
             Marker(
               markerId: MarkerId(latLng.toString()),
@@ -272,7 +268,7 @@ class _RoutesState extends ConsumerState<Routes> {
               icon: markerStart ?? BitmapDescriptor.defaultMarker,
             ),
           );
-        } else if (index == widget.tour.places.length) {
+        } else if (place.name == widget.tour.updatedPlaces!.last) {
           _markers.add(
             Marker(
               markerId: MarkerId(latLng.toString()),

@@ -61,7 +61,7 @@ class _AudioTourState extends ConsumerState<AudioTour> {
           ),
           Container(
             height: 2,
-            color: Colors.purple,
+            color: Colors.black,
           ),
           Expanded(
             child: PageView.builder(
@@ -211,7 +211,7 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                     ),
                     Container(
                       height: 2,
-                      color: Colors.purple,
+                      color: Colors.black,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

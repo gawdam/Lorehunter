@@ -154,10 +154,10 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                         children: [
                           loadingIndicator(
                               "Generating Audio from Transcript",
-                              _progress == 0
+                              _progress <= 0
                                   ? "notStarted"
                                   : _progress >=
-                                          widget.tour.updatedPlaces!.length - 1
+                                          widget.tour.updatedPlaces!.length
                                       ? "completed"
                                       : "inProgress"),
                           if (_progress > 0)
@@ -166,7 +166,7 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                               padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
                               alignment: Alignment.topLeft,
                               child: generatePlacesLoader(
-                                  widget.tour.updatedPlaces!, _progress),
+                                  widget.tour.updatedPlaces!, _progress - 1),
                             ),
                         ],
                       ),
@@ -175,7 +175,7 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                   Expanded(
                     child: Container(),
                   ),
-                  _progress >= widget.tour.updatedPlaces!.length - 1
+                  _progress >= widget.tour.updatedPlaces!.length
                       ? ElevatedButton(
                           onPressed: () {
                             Navigator.push(context,

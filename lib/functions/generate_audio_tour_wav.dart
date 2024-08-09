@@ -19,10 +19,11 @@ class AudioProcessor {
     await flutterTts.getVoices.then((data) {
       try {
         List<Map> voices = List<Map>.from(data);
+
         headerVoice =
             voices.firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-local');
         contentVoice =
-            voices.firstWhere((voice) => voice['name'] == 'en-us-x-tpc-local');
+            voices.firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-local');
       } catch (e) {
         print(e);
       }
