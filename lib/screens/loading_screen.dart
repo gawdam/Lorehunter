@@ -11,10 +11,8 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class TourAudioLoadingScreen extends StatefulWidget {
   final Tour tour;
-  final Map<String, String> settings;
 
-  const TourAudioLoadingScreen(
-      {Key? key, required this.tour, required this.settings})
+  const TourAudioLoadingScreen({Key? key, required this.tour})
       : super(key: key);
 
   @override
@@ -33,9 +31,9 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
   @override
   void initState() {
     super.initState();
-    _audioProcessor = AudioProcessor(
-        voice: widget.settings['voice'], theme: widget.settings['theme']);
-    _audioGuide = AudioGuide(theme: widget.settings['theme']!);
+    _audioProcessor =
+        AudioProcessor(voice: widget.tour.voice, theme: widget.tour.theme);
+    _audioGuide = AudioGuide(theme: widget.tour.theme ?? "The usual");
     generateAudioTour();
   }
 
@@ -57,8 +55,7 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
     final jsonString = await _audioGuide.initSession(
         widget.tour.updatedPlaces!.join(", "),
         widget.tour.city,
-        widget.tour.name,
-        widget.tour.theme ?? "The last of us");
+        widget.tour.name);
     final audioTourScript =
         await jsonDecode(jsonString.replaceAll(r'\', r'\\'));
     setState(() {
@@ -83,7 +80,6 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
           placeAudioTranscript.sections,
           placeAudioTranscript.placeName,
           _tourAudioTranscript.tourName,
-          voice: widget.settings['voice'],
         );
       } else if (widget.tour.updatedPlaces?.last ==
           placeAudioTranscript.placeName) {
@@ -92,14 +88,12 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
           placeAudioTranscript.placeName,
           _tourAudioTranscript.tourName,
           outro: _tourAudioTranscript.outro,
-          voice: widget.settings['voice'],
         );
       } else {
         file = await _audioProcessor.savePlaceAudio(
           placeAudioTranscript.sections,
           placeAudioTranscript.placeName,
           _tourAudioTranscript.tourName,
-          voice: widget.settings['voice'],
         );
       }
       placeAudioTranscript.audioFile = file;
@@ -122,6 +116,8 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("themevoice loading: ${widget.tour?.theme ?? ""}");
+    print("voicetheme loading: ${widget.tour?.voice ?? ""}");
     return Scaffold(
         backgroundColor: const Color.fromARGB(255, 225, 210, 228),
         body: Center(
@@ -163,7 +159,7 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                               "Generating Audio from Transcript",
                               _progress <= 0
                                   ? "notStarted"
-                                  : _progress >=
+                                  : _progress >
                                           widget.tour.updatedPlaces!.length
                                       ? "completed"
                                       : "inProgress"),
@@ -182,7 +178,7 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                   Expanded(
                     child: Container(),
                   ),
-                  _progress >= widget.tour.updatedPlaces!.length
+                  _progress > widget.tour.updatedPlaces!.length
                       ? ElevatedButton(
                           onPressed: () {
                             Navigator.push(context,
@@ -262,7 +258,10 @@ Widget loadingIndicator(String text, String state, {format = 'super'}) {
         // state = 'inProgress';
         switch (state) {
           case 'notStarted':
-            return const SizedBox.shrink();
+            return const SizedBox(
+              height: 30,
+              width: 20,
+            );
           case 'inProgress':
             return Container(
               width: 20,

@@ -7,6 +7,7 @@ List<List<dynamic>> optimizePathNearestNeighbor(
   List<LatLng> points,
   List<String> places,
 ) {
+  print("Lengthofpoints:${points.length}");
   int westStartingIndex = 0;
   for (int i = 1; i < points.length; i++) {
     if (points[i].longitude < points[westStartingIndex].longitude) {

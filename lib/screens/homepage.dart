@@ -33,12 +33,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    placesFinder.initAI();
     // SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
   }
 
   Future<void> getPlaces(String city) async {
-    String jsonString = await placesFinder.askGemini(city);
+    String jsonString = await placesFinder.getPlaces(city);
     tour = getTourFromJson(jsonString, city);
     // await tour?.toJsonFile();
     ref.read(tourProvider.notifier).state = tour;

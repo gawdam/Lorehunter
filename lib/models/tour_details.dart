@@ -18,8 +18,6 @@ class Tour {
     this.updatedPlaces,
     this.routeCoordinates,
     this.updateTime,
-    this.theme,
-    this.voice,
   });
 
   String id;
@@ -34,8 +32,8 @@ class Tour {
   List<String>? updatedPlaces;
   List<LatLng>? routeCoordinates;
 
-  String? theme;
-  String? voice;
+  String? theme = "The usual";
+  String? voice = "male";
 
   DateTime? updateTime;
 

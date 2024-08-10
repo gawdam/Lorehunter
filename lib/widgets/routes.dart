@@ -223,81 +223,59 @@ class _RoutesState extends ConsumerState<Routes> {
   }
 
   Future<void> _createMarkers() async {
+    List<LatLng> newCoordinates = [];
+    List<Marker> newMarkers = [];
+
     for (final place in widget.tour.places) {
-      LatLng latLng;
-      if (place.coordinates == null) {
-        final coordinate =
-            await getCoordinatesForFree(place.name, widget.tour.city);
-        if (coordinate != null) {
-          LatLng latLng = convertCoordinates(coordinate);
-
-          setState(() {
-            _coordinates.add(latLng);
-            coord = calculateAverageLatLng(_coordinates);
-            mapController?.animateCamera(CameraUpdate.newCameraPosition(
-                CameraPosition(target: coord, zoom: 13)));
-          });
-
-          _updatedAndSortedPlaces.add(place.name);
-
-          _markers.add(
-            Marker(
-              markerId: MarkerId(coordinate.toString()),
-              position: latLng,
-              infoWindow: InfoWindow(
-                title: place.name,
-              ),
-              icon: markerCheckpoint!,
-            ),
-          );
-          await Future.delayed(Duration(seconds: 1));
-        }
-      } else {
-        latLng = place.coordinates!;
-        setState(() {
-          _coordinates.add(latLng);
-          coord = calculateAverageLatLng(_coordinates);
-        });
-
-        if (place.name == widget.tour.updatedPlaces!.first) {
-          _markers.add(
-            Marker(
-              markerId: MarkerId(latLng.toString()),
-              position: latLng,
-              infoWindow: InfoWindow(
-                title: place.name,
-              ),
-              icon: markerStart ?? BitmapDescriptor.defaultMarker,
-            ),
-          );
-        } else if (place.name == widget.tour.updatedPlaces!.last) {
-          _markers.add(
-            Marker(
-              markerId: MarkerId(latLng.toString()),
-              position: latLng,
-              infoWindow: InfoWindow(
-                title: place.name,
-              ),
-              icon: markerEnd ?? BitmapDescriptor.defaultMarker,
-            ),
-          );
-        } else {
-          _markers.add(
-            Marker(
-              markerId: MarkerId(latLng.toString()),
-              position: latLng,
-              infoWindow: InfoWindow(
-                title: place.name,
-              ),
-              icon: markerCheckpoint ?? BitmapDescriptor.defaultMarker,
-            ),
-          );
-        }
+      LatLng? latLng = place.coordinates ?? (await _getLatLngForPlace(place));
+      if (latLng != null) {
+        newCoordinates.add(latLng);
+        Marker marker = _createMarkerForPlace(place, latLng);
+        _markers.add(marker);
       }
     }
-    // await mapController!.animateCamera(CameraUpdate.newCameraPosition(
-    //     CameraPosition(target: coord, zoom: 13)));
-    setState(() {});
+
+    setState(() {
+      _coordinates.addAll(newCoordinates);
+      coord = calculateAverageLatLng(_coordinates);
+      _markers.addAll(newMarkers);
+    });
+
+    if (mapController != null) {
+      await mapController!.animateCamera(
+        CameraUpdate.newCameraPosition(CameraPosition(target: coord, zoom: 13)),
+      );
+    }
+  }
+
+  Future<LatLng?> _getLatLngForPlace(PlaceDetails place) async {
+    if (place.coordinates != null) return place.coordinates!;
+    final coordinate =
+        await getCoordinatesForFree(place.name, widget.tour.city);
+    if (coordinate != null) {
+      LatLng latLng = convertCoordinates(coordinate);
+      _updatedAndSortedPlaces.add(place.name);
+      return latLng;
+    }
+    return null;
+  }
+
+  Marker _createMarkerForPlace(PlaceDetails place, LatLng latLng) {
+    BitmapDescriptor icon;
+    if (place.name == widget.tour.updatedPlaces?.first) {
+      icon = markerStart ?? BitmapDescriptor.defaultMarker;
+    } else if (place.name == widget.tour.updatedPlaces?.last) {
+      icon = markerEnd ?? BitmapDescriptor.defaultMarker;
+    } else {
+      icon = markerCheckpoint ?? BitmapDescriptor.defaultMarker;
+    }
+
+    return Marker(
+      markerId: MarkerId(latLng.toString()),
+      position: latLng,
+      infoWindow: InfoWindow(title: place.name),
+      icon: icon,
+    );
   }
 
   Future<Map<String, dynamic>> _createRoute() async {

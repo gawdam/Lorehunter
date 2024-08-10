@@ -26,6 +26,10 @@ class TourPanelStateless extends ConsumerWidget {
     final distance = tour?.distance;
     final duration = ((tour?.distance ?? 0) / 1000 / 6 * 60).round();
     bool isTourSaved = false;
+
+    print("themevoice slideup: ${tour?.theme ?? ""}");
+    print("voicetheme slideup: ${tour?.voice ?? ""}");
+
     Widget _panel(ScrollController sc) {
       return MediaQuery.removePadding(
           context: context,
@@ -213,11 +217,6 @@ class TourPanelStateless extends ConsumerWidget {
                                 builder: (BuildContext context) =>
                                     TourAudioLoadingScreen(
                                   tour: tour!,
-                                  settings: {
-                                    "theme": tour.theme ?? "The usual",
-                                    "duration": "5",
-                                    "voice": tour.voice ?? "male",
-                                  },
                                 ),
                               ));
                         },
@@ -265,6 +264,7 @@ class TourPanelStateless extends ConsumerWidget {
                                 context: context,
                                 builder: (context) => ThemeSelectionDialog(
                                       initialTheme: tour.theme,
+                                      initialVoice: tour.voice,
                                     ));
                           },
                           style: ElevatedButton.styleFrom(

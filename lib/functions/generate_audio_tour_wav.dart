@@ -27,14 +27,14 @@ class AudioProcessor {
 
         if (voice == "male") {
           headerVoice = voices
-              .firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-local');
+              .firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-network');
           contentVoice = voices
-              .firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-local');
+              .firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-network');
         } else {
           headerVoice = voices
-              .firstWhere((voice) => voice['name'] == 'en-us-x-tpc-local');
+              .firstWhere((voice) => voice['name'] == 'en-us-x-tpc-network');
           contentVoice = voices
-              .firstWhere((voice) => voice['name'] == 'en-us-x-tpc-local');
+              .firstWhere((voice) => voice['name'] == 'en-us-x-tpc-network');
         }
       } catch (e) {
         print(e);
@@ -248,14 +248,16 @@ class AudioProcessor {
 
   Future<String> savePlaceAudio(
       List<Section> sections, String filename, String tourName,
-      {String? greeting, String? outro, String? voice}) async {
+      {String? greeting, String? outro}) async {
+    print("themevoice func: ${theme ?? ""}");
+    print("voicetheme func: ${voice ?? ""}");
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final finalFilePath = "${documentsDirectory.path}/$tourName/$filename.wav";
     if (await File(finalFilePath).exists()) {
       print("audio file already exists");
       return finalFilePath;
     }
-
+    print(theme);
     var headerBackground =
         await rootBundle.load("assets/music/music_header.wav");
     var bodyBackground = await rootBundle.load("assets/music/music_body.mp3");
