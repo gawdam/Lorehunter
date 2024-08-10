@@ -25,7 +25,7 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
   bool _transcriptGenerated = false;
   late AudioGuide _audioGuide;
   late TourAudioTranscript _tourAudioTranscript;
-  AudioProcessor _audioProcessor = AudioProcessor();
+  late AudioProcessor _audioProcessor;
   final List<String> _audioFiles = [];
 
   int _progress = 0;
@@ -33,7 +33,8 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
   @override
   void initState() {
     super.initState();
-
+    _audioProcessor = AudioProcessor(
+        voice: widget.settings['voice'], theme: widget.settings['theme']);
     _audioGuide = AudioGuide(theme: widget.settings['theme']!);
     generateAudioTour();
   }
@@ -78,22 +79,28 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
         in _tourAudioTranscript.placeAudioTranscripts) {
       if (widget.tour.updatedPlaces?.first == placeAudioTranscript.placeName) {
         file = await _audioProcessor.savePlaceAudio(
-            greeting: _tourAudioTranscript.greeting,
-            placeAudioTranscript.sections,
-            placeAudioTranscript.placeName,
-            _tourAudioTranscript.tourName);
+          greeting: _tourAudioTranscript.greeting,
+          placeAudioTranscript.sections,
+          placeAudioTranscript.placeName,
+          _tourAudioTranscript.tourName,
+          voice: widget.settings['voice'],
+        );
       } else if (widget.tour.updatedPlaces?.last ==
           placeAudioTranscript.placeName) {
         file = await _audioProcessor.savePlaceAudio(
-            placeAudioTranscript.sections,
-            placeAudioTranscript.placeName,
-            _tourAudioTranscript.tourName,
-            outro: _tourAudioTranscript.outro);
+          placeAudioTranscript.sections,
+          placeAudioTranscript.placeName,
+          _tourAudioTranscript.tourName,
+          outro: _tourAudioTranscript.outro,
+          voice: widget.settings['voice'],
+        );
       } else {
         file = await _audioProcessor.savePlaceAudio(
-            placeAudioTranscript.sections,
-            placeAudioTranscript.placeName,
-            _tourAudioTranscript.tourName);
+          placeAudioTranscript.sections,
+          placeAudioTranscript.placeName,
+          _tourAudioTranscript.tourName,
+          voice: widget.settings['voice'],
+        );
       }
       placeAudioTranscript.audioFile = file;
       placeAudioTranscripts.add(placeAudioTranscript);

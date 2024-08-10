@@ -10,7 +10,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AudioProcessor {
+  AudioProcessor({required this.voice, required this.theme});
+  final voice;
+  final theme;
+
   final FlutterTts flutterTts = FlutterTts();
+
   final List<String> tempFiles = [];
 
   Future<String> saveTTSAudio(String script, String type) async {
@@ -20,10 +25,17 @@ class AudioProcessor {
       try {
         List<Map> voices = List<Map>.from(data);
 
-        headerVoice =
-            voices.firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-local');
-        contentVoice =
-            voices.firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-local');
+        if (voice == "male") {
+          headerVoice = voices
+              .firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-local');
+          contentVoice = voices
+              .firstWhere((voice) => voice['name'] == 'en-gb-x-gbd-local');
+        } else {
+          headerVoice = voices
+              .firstWhere((voice) => voice['name'] == 'en-us-x-tpc-local');
+          contentVoice = voices
+              .firstWhere((voice) => voice['name'] == 'en-us-x-tpc-local');
+        }
       } catch (e) {
         print(e);
       }
@@ -40,7 +52,7 @@ class AudioProcessor {
           {"name": contentVoice["name"], "locale": contentVoice["locale"]});
       flutterTts.setSpeechRate(0.5);
       flutterTts.setVolume(1);
-      flutterTts.setPitch(1.1);
+      flutterTts.setPitch(1.0);
     }
 
     final externalDirectory = Directory("/storage/emulated/0/Music/");
@@ -236,7 +248,7 @@ class AudioProcessor {
 
   Future<String> savePlaceAudio(
       List<Section> sections, String filename, String tourName,
-      {String? greeting, String? outro}) async {
+      {String? greeting, String? outro, String? voice}) async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final finalFilePath = "${documentsDirectory.path}/$tourName/$filename.wav";
     if (await File(finalFilePath).exists()) {
@@ -247,10 +259,18 @@ class AudioProcessor {
     var headerBackground =
         await rootBundle.load("assets/music/music_header.wav");
     var bodyBackground = await rootBundle.load("assets/music/music_body.mp3");
+    var bodyThemedBackground =
+        await rootBundle.load("assets/music/music_theme.mp3");
 
     await writeToFile(
         headerBackground, documentsDirectory.path + "/headerBG.wav");
-    await writeToFile(bodyBackground, documentsDirectory.path + "/bodyBG.wav");
+    if (theme == "The usual") {
+      await writeToFile(
+          bodyBackground, documentsDirectory.path + "/bodyBG.wav");
+    } else {
+      await writeToFile(
+          bodyThemedBackground, documentsDirectory.path + "/bodyBG.wav");
+    }
 
     String? audio;
     int count = 0;

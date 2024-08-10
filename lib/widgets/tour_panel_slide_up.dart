@@ -7,6 +7,7 @@ import 'package:lorehunter/providers/tour_provider.dart';
 import 'package:lorehunter/screens/audio_tour.dart';
 import 'package:lorehunter/screens/loading_screen.dart';
 import 'package:lorehunter/widgets/place_cards.dart';
+import 'package:lorehunter/widgets/theme_selection.dart';
 import 'package:marquee/marquee.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -25,7 +26,6 @@ class TourPanelStateless extends ConsumerWidget {
     final distance = tour?.distance;
     final duration = ((tour?.distance ?? 0) / 1000 / 6 * 60).round();
     bool isTourSaved = false;
-    String selectedTheme = "The usual";
     Widget _panel(ScrollController sc) {
       return MediaQuery.removePadding(
           context: context,
@@ -214,9 +214,9 @@ class TourPanelStateless extends ConsumerWidget {
                                     TourAudioLoadingScreen(
                                   tour: tour!,
                                   settings: {
-                                    "theme": tour.theme ?? selectedTheme,
+                                    "theme": tour.theme ?? "The usual",
                                     "duration": "5",
-                                    "voice": "male"
+                                    "voice": tour.voice ?? "male",
                                   },
                                 ),
                               ));
@@ -263,49 +263,8 @@ class TourPanelStateless extends ConsumerWidget {
                             print("alerts");
                             showDialog(
                                 context: context,
-                                builder: (context) => AlertDialog(
-                                      title: const Text('Select Theme'),
-                                      content: Row(
-                                        children: [
-                                          const Text('Theme: '),
-                                          DropdownButton<String>(
-                                            value: tour.theme ?? selectedTheme,
-                                            items: const [
-                                              DropdownMenuItem(
-                                                  value: 'The last of us',
-                                                  child:
-                                                      Text('The last of us')),
-                                              DropdownMenuItem(
-                                                  value: 'The usual',
-                                                  child: Text('The usual')),
-                                            ],
-                                            onChanged: (value) {
-                                              ref.invalidate(tourProvider);
-                                              selectedTheme = value!;
-                                              tour.theme = value;
-                                              ref
-                                                  .read(tourProvider.notifier)
-                                                  .state = tour;
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            ref
-                                                .read(tourProvider.notifier)
-                                                .state = tour;
-                                          },
-                                          child: const Text('Save'),
-                                        ),
-                                      ],
+                                builder: (context) => ThemeSelectionDialog(
+                                      initialTheme: tour.theme,
                                     ));
                           },
                           style: ElevatedButton.styleFrom(

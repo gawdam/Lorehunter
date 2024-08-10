@@ -19,6 +19,7 @@ class Tour {
     this.routeCoordinates,
     this.updateTime,
     this.theme,
+    this.voice,
   });
 
   String id;
@@ -34,6 +35,7 @@ class Tour {
   List<LatLng>? routeCoordinates;
 
   String? theme;
+  String? voice;
 
   DateTime? updateTime;
 

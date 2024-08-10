@@ -121,6 +121,7 @@ flutter:
 
     - assets/music/music_header.wav
     - assets/music/music_body.mp3
+    - assets/music/music_theme.mp3
     
 
 
