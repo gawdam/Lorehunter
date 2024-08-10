@@ -25,6 +25,7 @@ class TourPanelStateless extends ConsumerWidget {
     final distance = tour?.distance;
     final duration = ((tour?.distance ?? 0) / 1000 / 6 * 60).round();
     bool isTourSaved = false;
+    String selectedTheme = "The usual";
     Widget _panel(ScrollController sc) {
       return MediaQuery.removePadding(
           context: context,
@@ -186,56 +187,141 @@ class TourPanelStateless extends ConsumerWidget {
                 height: 24,
               ),
               Container(
-                width: 200,
-                padding: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.sizeOf(context).width * 0.05),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(0)),
-                ),
-                child: ElevatedButton(
-                  onPressed: () async {
-                    await tour?.toJsonFile();
+                width: MediaQuery.sizeOf(context).width * 0.9,
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Container(
+                      width: MediaQuery.sizeOf(context).width * 0.7,
+                      // padding: EdgeInsets.symmetric(
+                      //     horizontal: MediaQuery.sizeOf(context).width * 0.05),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(0)),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await tour?.toJsonFile();
 
-                    isTourSaved = true;
+                          isTourSaved = true;
 
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              TourAudioLoadingScreen(
-                            tour: tour!,
-                            settings: {
-                              "theme": "none",
-                              "duration": "5",
-                              "voice": "male"
-                            },
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    TourAudioLoadingScreen(
+                                  tour: tour!,
+                                  settings: {
+                                    "theme": tour.theme ?? selectedTheme,
+                                    "duration": "5",
+                                    "voice": "male"
+                                  },
+                                ),
+                              ));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
                           ),
-                        ));
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
+                          side: BorderSide(color: Colors.purple),
+                          elevation: 5,
+                          backgroundColor: Colors.purple[100],
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Generate audio tour",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 16),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Icon(
+                              Icons.headphones,
+                              color: Colors.black,
+                            )
+                          ],
+                        ),
+                      ),
                     ),
-                    side: BorderSide(color: Colors.purple),
-                    elevation: 5,
-                    backgroundColor: Colors.purple[100],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Generate audio tour",
-                        style: TextStyle(color: Colors.black, fontSize: 16),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Container(
+                      width: MediaQuery.sizeOf(context).width * 0.2 - 5,
+                      // padding: EdgeInsets.symmetric(
+                      //     horizontal: MediaQuery.sizeOf(context).width * 0.05),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(0)),
                       ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Icon(
-                        Icons.headphones,
-                        color: Colors.black,
-                      )
-                    ],
-                  ),
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            print("alerts");
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: const Text('Select Theme'),
+                                      content: Row(
+                                        children: [
+                                          const Text('Theme: '),
+                                          DropdownButton<String>(
+                                            value: tour.theme ?? selectedTheme,
+                                            items: const [
+                                              DropdownMenuItem(
+                                                  value: 'The last of us',
+                                                  child:
+                                                      Text('The last of us')),
+                                              DropdownMenuItem(
+                                                  value: 'The usual',
+                                                  child: Text('The usual')),
+                                            ],
+                                            onChanged: (value) {
+                                              ref.invalidate(tourProvider);
+                                              selectedTheme = value!;
+                                              tour.theme = value;
+                                              ref
+                                                  .read(tourProvider.notifier)
+                                                  .state = tour;
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            ref
+                                                .read(tourProvider.notifier)
+                                                .state = tour;
+                                          },
+                                          child: const Text('Save'),
+                                        ),
+                                      ],
+                                    ));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            side: BorderSide(color: Colors.purple),
+                            elevation: 5,
+                            backgroundColor: Color.fromARGB(255, 237, 234, 238),
+                          ),
+                          child: Icon(
+                            Icons.settings,
+                            color: Colors.black,
+                          )),
+                    ),
+                  ],
                 ),
               ),
               Container(

@@ -18,6 +18,7 @@ class Tour {
     this.updatedPlaces,
     this.routeCoordinates,
     this.updateTime,
+    this.theme,
   });
 
   String id;
@@ -31,6 +32,8 @@ class Tour {
   double? distance;
   List<String>? updatedPlaces;
   List<LatLng>? routeCoordinates;
+
+  String? theme;
 
   DateTime? updateTime;
 
@@ -46,6 +49,7 @@ class Tour {
         'routeCoordinates':
             routeCoordinates?.map((point) => point.toJson()).toList(),
         'updateTime': DateTime.now().toString(),
+        'theme': theme,
       };
 
   Future<void> toJsonFile() async {

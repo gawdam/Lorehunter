@@ -56,7 +56,8 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
     final jsonString = await _audioGuide.initSession(
         widget.tour.updatedPlaces!.join(", "),
         widget.tour.city,
-        widget.tour.name);
+        widget.tour.name,
+        widget.tour.theme ?? "The last of us");
     final audioTourScript =
         await jsonDecode(jsonString.replaceAll(r'\', r'\\'));
     setState(() {
@@ -72,18 +73,17 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
 
   Future<List<String>> getAudioFile() async {
     List<PlaceAudioTranscript> placeAudioTranscripts = [];
-    int count = 0;
     String file;
     for (var placeAudioTranscript
         in _tourAudioTranscript.placeAudioTranscripts) {
-      count += 1;
-      if (count == 0) {
+      if (widget.tour.updatedPlaces?.first == placeAudioTranscript.placeName) {
         file = await _audioProcessor.savePlaceAudio(
             greeting: _tourAudioTranscript.greeting,
             placeAudioTranscript.sections,
             placeAudioTranscript.placeName,
             _tourAudioTranscript.tourName);
-      } else if (count == _tourAudioTranscript.placeAudioTranscripts.length) {
+      } else if (widget.tour.updatedPlaces?.last ==
+          placeAudioTranscript.placeName) {
         file = await _audioProcessor.savePlaceAudio(
             placeAudioTranscript.sections,
             placeAudioTranscript.placeName,
@@ -223,6 +223,7 @@ Widget generatePlacesLoader(List<String> places, int progress) {
   String state;
   String place;
   return ListView.builder(
+    padding: EdgeInsets.zero,
     itemCount: places.length,
     itemBuilder: ((context, index) {
       place = places[index];

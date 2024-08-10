@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lorehunter/models/tour_details.dart';
 import 'package:marquee/marquee.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -21,17 +22,17 @@ bool willTextOverflow({
   return textPainter.didExceedMaxLines;
 }
 
-class PlaceCard extends StatefulWidget {
+class PlaceCard extends ConsumerStatefulWidget {
   final PlaceDetails placeDetails;
 
   const PlaceCard({Key? key, required this.placeDetails, required String icon})
       : super(key: key);
 
   @override
-  State<PlaceCard> createState() => _PlaceCardState();
+  ConsumerState<PlaceCard> createState() => _PlaceCardState();
 }
 
-class _PlaceCardState extends State<PlaceCard> {
+class _PlaceCardState extends ConsumerState<PlaceCard> {
   String? _imageURL;
 
   Future<String?> getWikiImageURL(String? wikiURL) async {

@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lorehunter/models/audio_tour_transcript.dart';
 import 'package:lorehunter/models/tour_details.dart';
+import 'package:lorehunter/screens/tour_complete.dart';
 import 'package:lorehunter/widgets/audio_player.dart';
 import 'package:lorehunter/widgets/audio_tour_subtitles.dart';
 import 'package:lorehunter/widgets/quiz.dart';
@@ -42,9 +43,9 @@ class _AudioTourState extends ConsumerState<AudioTour> {
         children: [
           // Section 1: Progress Indicator
           Container(
-            color: Colors.white,
+            color: Color.fromARGB(255, 240, 240, 240),
             height: screenHeight * 0.15,
-            width: screenWidth * 0.95,
+            width: screenWidth,
             alignment: Alignment.bottomCenter,
             padding: EdgeInsets.only(bottom: 20),
             child: TourProgress(
@@ -95,7 +96,8 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                             left: 16,
                             bottom: 16,
                             child: FloatingActionButton(
-                              backgroundColor: Colors.white,
+                              backgroundColor:
+                                  Color.fromARGB(255, 240, 240, 240),
                               foregroundColor: Colors.black,
                               onPressed: () {
                                 showDialog(
@@ -106,7 +108,8 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Container(
-                                            color: Colors.white,
+                                            color: Color.fromARGB(
+                                                255, 240, 240, 240),
                                             alignment: Alignment.topRight,
                                             child: Row(
                                               mainAxisAlignment:
@@ -152,7 +155,8 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                             left: 16,
                             bottom: 80,
                             child: FloatingActionButton(
-                              backgroundColor: Colors.white,
+                              backgroundColor:
+                                  Color.fromARGB(255, 240, 240, 240),
                               foregroundColor: Colors.black,
                               onPressed: () {
                                 showDialog(
@@ -163,7 +167,8 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Container(
-                                            color: Colors.white,
+                                            color: Color.fromARGB(
+                                                255, 240, 240, 240),
                                             alignment: Alignment.topRight,
                                             child: Row(
                                               mainAxisAlignment:
@@ -189,7 +194,8 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                                             ),
                                           ),
                                           Container(
-                                              color: Colors.white,
+                                              color: Color.fromARGB(
+                                                  255, 240, 240, 240),
                                               // padding: EdgeInsets.all(16),
                                               child: Quiz(
                                                 trivia: placeData.trivia,
@@ -218,8 +224,8 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          color: Colors.white,
-                          // height: screenHeight * 0.15,
+                          color: Color.fromARGB(255, 240, 240, 240),
+                          height: screenHeight * 0.05,
                           width: screenWidth * 0.1,
                           alignment: Alignment.center,
                           padding: EdgeInsets.only(top: 10),
@@ -231,31 +237,33 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                             onPressed: () {
                               // Handle back button press
                               _pageController.previousPage(
-                                  duration: Duration(milliseconds: 100),
+                                  duration: Duration(milliseconds: 500),
                                   curve: Curves.easeIn);
                             },
                           ),
                         ),
-                        Container(
-                          alignment: Alignment.bottomCenter,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                              color:
-                                  Colors.white, // Set the border color to black
-                              width: 2.0, // Set the border width
+                        Expanded(
+                          child: Container(
+                            alignment: Alignment.bottomCenter,
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 240, 240, 240),
+                              border: Border.all(
+                                color: Color.fromARGB(255, 240, 240,
+                                    240), // Set the border color to black
+                                width: 2.0, // Set the border width
+                              ),
                             ),
-                          ),
-                          height: screenHeight * 0.05,
-                          child: Text(
-                            placeData.placeName,
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                            height: screenHeight * 0.05,
+                            child: Text(
+                              placeData.placeName,
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                         Container(
-                          color: Colors.white,
-                          // height: screenHeight * 0.15,
+                          color: Color.fromARGB(255, 240, 240, 240),
+                          height: screenHeight * 0.05,
                           width: screenWidth * 0.1,
                           alignment: Alignment.center,
                           padding: EdgeInsets.only(top: 10),
@@ -264,7 +272,7 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                             onPressed: () {
                               // Handle forward button press
                               _pageController.nextPage(
-                                  duration: Duration(milliseconds: 100),
+                                  duration: Duration(milliseconds: 500),
                                   curve: Curves.easeIn);
                             },
                           ),
@@ -273,15 +281,51 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                     ),
                     Container(
                       height: 200,
-                      color: Color.fromARGB(255, 255, 255, 255),
+                      color: Color.fromARGB(255, 240, 240, 240),
                       width: screenWidth,
                       padding:
                           EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                       child: AudioTranscriptPlayer(placeData.audioFile!),
                     ),
-                    SizedBox(
-                      height: 20,
-                    )
+                    index !=
+                            widget.tourAudioTranscript.placeAudioTranscripts
+                                    .length -
+                                1
+                        ? Container()
+                        : Container(
+                            height: 40,
+                            color: Color.fromARGB(255, 240, 240, 240),
+                            alignment: Alignment.center,
+                            child: Container(
+                              width: screenWidth * 0.8,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              TourComplete(tour: widget.tour)));
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  side: BorderSide(color: Colors.purple),
+                                  elevation: 5,
+                                  backgroundColor: Colors.purple[100],
+                                ),
+                                child: const Text(
+                                  "Finish tour!",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ),
+                    Container(
+                        height: 30, color: Color.fromARGB(255, 240, 240, 240))
                   ],
                 );
               },

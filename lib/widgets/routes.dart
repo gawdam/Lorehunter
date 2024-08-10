@@ -158,10 +158,12 @@ class _RoutesState extends ConsumerState<Routes> {
     List<PointLatLng> polylineResult;
 
     List<PolylineWayPoint> waypoints = [];
+    print("Before optimization $_updatedAndSortedPlaces");
     Map result = optimizeWaypoints(_coordinates, _updatedAndSortedPlaces);
     setState(() {
       _updatedAndSortedPlaces = result['places'];
     });
+    print("After optimization $_updatedAndSortedPlaces");
     List<LatLng> optimizedCoordinates = result['coordinates'];
     var res = await getRoutePolyline(
         convertLatLngListToJson(optimizedCoordinates, _updatedAndSortedPlaces));

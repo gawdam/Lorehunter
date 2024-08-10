@@ -24,7 +24,6 @@ class _QuizState extends State<Quiz> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.trivia.correctAnswer);
     return Container(
       color: const Color.fromARGB(255, 228, 213, 231),
       alignment: Alignment.center,
@@ -50,40 +49,69 @@ class _QuizState extends State<Quiz> {
             children: widget.trivia.options.asMap().entries.map((entry) {
               final index = entry.key;
               final option = entry.value;
-              return Container(
-                width: MediaQuery.sizeOf(context).width * 0.7,
-                child: ElevatedButton(
-                  onPressed: isAnswered
-                      ? null
-                      : () {
-                          setState(() {
-                            selectedOption = index;
-                            isAnswered = true;
-                          });
-                        },
-                  style: ElevatedButton.styleFrom(
-                    disabledBackgroundColor: Colors.purple[100],
-                    disabledForegroundColor: Colors.purple,
-                    foregroundColor: Colors.purple,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
+              return Flex(
+                direction: Axis.vertical,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: MediaQuery.sizeOf(context).width * 0.7,
+                    child: ElevatedButton(
+                      onPressed: isAnswered
+                          ? null
+                          : () {
+                              setState(() {
+                                selectedOption = index;
+                                isAnswered = true;
+                              });
+                            },
+                      style: ElevatedButton.styleFrom(
+                        disabledBackgroundColor: isAnswered
+                            ? (selectedOption == index &&
+                                    selectedOption == correctAnswer)
+                                ? Colors.green[300]!
+                                : (selectedOption == index)
+                                    ? Colors.red[300]!
+                                    : (index == correctAnswer)
+                                        ? Colors.green[300]
+                                        : Colors.purple[100]
+                            : Colors.purple[100],
+                        disabledForegroundColor: Colors.purple,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        side: BorderSide(
+                          width: 2,
+                          color: isAnswered
+                              ? (selectedOption == index &&
+                                      selectedOption == correctAnswer)
+                                  ? Colors.green[700]!
+                                  : (selectedOption == index)
+                                      ? Colors.red[700]!
+                                      : (index == correctAnswer)
+                                          ? Colors.green[700]!
+                                          : Colors.purple!
+                              : Colors.purple,
+                        ),
+                        elevation: 5,
+                        backgroundColor: isAnswered
+                            ? (selectedOption == index &&
+                                    selectedOption == correctAnswer)
+                                ? Colors.green[700]!
+                                : (selectedOption == index)
+                                    ? Colors.red[700]!
+                                    : Colors.purple[100]
+                            : Colors.purple[100],
+                      ),
+                      child: Text(
+                        option,
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    side: BorderSide(
-                      width: 2,
-                      color: isAnswered
-                          ? (selectedOption == index &&
-                                  selectedOption == correctAnswer)
-                              ? Colors.green[700]!
-                              : (selectedOption == index)
-                                  ? Colors.red[700]!
-                                  : Colors.purple
-                          : Colors.purple,
-                    ),
-                    elevation: 5,
-                    backgroundColor: Colors.purple[100],
                   ),
-                  child: Text(option),
-                ),
+                ],
               );
             }).toList(),
           ),
@@ -97,7 +125,7 @@ class _QuizState extends State<Quiz> {
                 selectedOption == correctAnswer
                     ? 'You\'re absolutely right! ${widget.trivia.feedback} '
                     : 'Incorrect answer. ${widget.trivia.feedback} ',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 14),
               ),
             ),
           SizedBox(
