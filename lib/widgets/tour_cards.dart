@@ -69,121 +69,97 @@ class TourCard extends StatefulWidget {
 class _TourCardState extends State<TourCard> {
   List<String> _imageURLs = [];
 
-  Future<void> getWikiImageURLs(List<PlaceDetails> placeDetails) async {
-    for (var placeDetail in placeDetails) {
-      if (placeDetail.wikiURL == null) {
-        return null;
+  @override
+  void initState() {
+    for (var place in widget.tour.places) {
+      if (place.imageURL != null) {
+        _imageURLs.add(place.imageURL!);
       }
-      String title = placeDetail.wikiURL!.split("/").last;
-
-      final url = Uri.parse(
-          "https://en.wikipedia.org/w/api.php?action=query&titles=$title&prop=pageimages&format=json&pithumbsize=500");
-
-      try {
-        final response = await http.get(url);
-        if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
-          final pages = data['query']['pages'];
-          final pageId = pages.keys.first; // Assuming there's only one page
-
-          if (pages[pageId].containsKey('thumbnail')) {
-            final thumbnail = pages[pageId]['thumbnail'];
-            setState(() {
-              _imageURLs.add(thumbnail['source']);
-            });
-          } else {}
-        } else {}
-      } catch (error) {}
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getWikiImageURLs(widget.tour.places),
-        builder: (context, snapshot) {
-          return Container(
-              // color: Colors.black,
-              // width: 200, //not working!
-              // height: 420,
-              padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.sizeOf(context).width * 0.05,
-                // vertical: 2.5,
-              ),
-              child: Card(
-                // color: Color.fromARGB(255, 221, 220, 220),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.tour.name,
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8.0),
+    return Container(
+        // color: Colors.black,
+        // width: 200, //not working!
+        // height: 420,
+        padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.sizeOf(context).width * 0.05,
+          // vertical: 2.5,
+        ),
+        child: Card(
+          // color: Color.fromARGB(255, 221, 220, 220),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  widget.tour.name,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8.0),
 
-                      // Carousel of images
-                      CarouselSlider(
-                        items: _imageURLs
-                            .map((_imageURL) =>
-                                buildCarouselItem(_imageURL, "London bridge"))
-                            .toList(),
-                        options: CarouselOptions(
-                          height: 150.0,
-                          enlargeCenterPage: true,
-                          autoPlay: true,
-                          autoPlayInterval: const Duration(milliseconds: 1600),
-                          viewportFraction: 0.8,
-                        ),
-                      ),
-                      const SizedBox(height: 8.0),
-
-                      // Tour brief description
-                      Text(
-                        widget.tour.brief,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8.0),
-
-                      // Placeholder for button row (replace with your implementation)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Button(
-                            "# Places",
-                            "${widget.tour.updatedPlaces?.length ?? widget.tour.places.length} places",
-                            Icons.account_balance,
-                            Colors.blue,
-                          ),
-                          Button(
-                            "Distance covered",
-                            "${((widget.tour.distance ?? 0) / 1000).round()} km",
-                            Icons.directions_walk,
-                            Colors.red,
-                          ),
-                          Button(
-                            "Tour duration",
-                            formatTime(
-                                ((widget.tour.distance ?? 0) / 1000 / 6 * 60)
-                                    .round()),
-                            Icons.timer_outlined,
-                            Colors.green,
-                          ),
-                          Button(
-                            "Best time to visit",
-                            widget.tour.bestExperiencedAt,
-                            Icons.watch_outlined,
-                            Colors.yellow[700]!,
-                          ),
-                        ],
-                      ),
-                    ],
+                // Carousel of images
+                CarouselSlider(
+                  items: _imageURLs
+                      .map((_imageURL) =>
+                          buildCarouselItem(_imageURL, "London bridge"))
+                      .toList(),
+                  options: CarouselOptions(
+                    height: 150.0,
+                    enlargeCenterPage: true,
+                    autoPlay: true,
+                    autoPlayInterval: const Duration(milliseconds: 1600),
+                    viewportFraction: 0.8,
                   ),
                 ),
-              ));
-        });
+                const SizedBox(height: 8.0),
+
+                // Tour brief description
+                Text(
+                  widget.tour.brief,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8.0),
+
+                // Placeholder for button row (replace with your implementation)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Button(
+                      "# Places",
+                      "${widget.tour.updatedPlaces?.length ?? widget.tour.places.length} places",
+                      Icons.account_balance,
+                      Colors.blue,
+                    ),
+                    Button(
+                      "Distance covered",
+                      "${((widget.tour.distance ?? 0) / 1000).round()} km",
+                      Icons.directions_walk,
+                      Colors.red,
+                    ),
+                    Button(
+                      "Tour duration",
+                      formatTime(((widget.tour.distance ?? 0) / 1000 / 6 * 60)
+                          .round()),
+                      Icons.timer_outlined,
+                      Colors.green,
+                    ),
+                    Button(
+                      "Best time to visit",
+                      widget.tour.bestExperiencedAt,
+                      Icons.watch_outlined,
+                      Colors.yellow[700]!,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 }

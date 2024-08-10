@@ -83,9 +83,10 @@ class TourCompleteItinerary extends StatelessWidget {
                                             width: 2.0, // Set the border width
                                           ),
                                         ),
-                                        child: Icon(
-                                          Icons.camera_alt_outlined,
-                                          size: 50,
+                                        child: Image.network(
+                                          tour.places[index].imageURL!,
+                                          scale: 2,
+                                          fit: BoxFit.cover,
                                         ),
                                       ),
                                     ),

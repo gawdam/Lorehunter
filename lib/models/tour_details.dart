@@ -103,8 +103,8 @@ class PlaceDetails {
     required this.type,
     required this.tourDuration,
     required this.wikiURL,
-    this.imageURL,
     this.coordinates,
+    this.imageURL,
   });
   String name;
 
@@ -122,6 +122,7 @@ class PlaceDetails {
         'place_brief': brief,
         'place_type': type,
         'place_wikiURL': wikiURL,
+        'place_imageURL': imageURL,
         'place_duration': tourDuration,
         'coordinates': coordinates?.toJson(),
       };

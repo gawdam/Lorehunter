@@ -48,15 +48,23 @@ class AudioTourSubtitles extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  SelectableText(
                     section.header,
                     style: const TextStyle(
                         fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8.0),
-                  Html(
-                    data: section
-                        .tourAudio, // Use Html widget for rich text display
+                  Theme(
+                    data: ThemeData(
+                      textSelectionTheme: TextSelectionThemeData(
+                          selectionColor: Colors.purple[100],
+                          cursorColor: Colors.purple,
+                          selectionHandleColor: Colors.purple),
+                    ),
+                    child: SelectableText(
+                      section
+                          .tourAudio, // Use Html widget for rich text display
+                    ),
                   ),
                 ],
               ),

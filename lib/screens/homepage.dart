@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -10,6 +12,40 @@ import 'package:lorehunter/providers/tour_provider.dart';
 import 'package:lorehunter/screens/itinerary.dart';
 import 'package:lorehunter/widgets/tour_cards.dart';
 import 'package:lorehunter/widgets/location_picker.dart';
+import 'package:http/http.dart' as http;
+
+Future<String?> getWikiImageURL(String? wikiURL) async {
+  if (wikiURL == null) {
+    return null;
+  }
+  String title = wikiURL.split("/").last;
+
+  final url = Uri.parse(
+      "https://en.wikipedia.org/w/api.php?action=query&titles=$title&prop=pageimages&format=json&pithumbsize=500");
+
+  try {
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final pages = data['query']['pages'];
+      final pageId = pages.keys.first; // Assuming there's only one page
+
+      if (pages[pageId].containsKey('thumbnail')) {
+        final thumbnail = pages[pageId]['thumbnail'];
+
+        return thumbnail['source'];
+      } else {
+        return null;
+      }
+    } else {
+      print('Failed to get response: ${response.statusCode}');
+      return null;
+    }
+  } catch (error) {
+    print('Error fetching image: $error');
+    return null;
+  }
+}
 
 class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({super.key});
@@ -39,7 +75,15 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   Future<void> getPlaces(String city) async {
     String jsonString = await placesFinder.getPlaces(city);
     tour = getTourFromJson(jsonString, city);
+    final List<PlaceDetails> places = [];
     // await tour?.toJsonFile();
+    if (tour != null) {
+      for (var place in tour!.places) {
+        place.imageURL = await getWikiImageURL(place.wikiURL);
+        places.add(place);
+      }
+      tour!.places = places;
+    }
     ref.read(tourProvider.notifier).state = tour;
     Navigator.push(
         context,

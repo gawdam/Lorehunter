@@ -33,43 +33,6 @@ class PlaceCard extends ConsumerStatefulWidget {
 }
 
 class _PlaceCardState extends ConsumerState<PlaceCard> {
-  String? _imageURL;
-
-  Future<String?> getWikiImageURL(String? wikiURL) async {
-    if (wikiURL == null) {
-      return null;
-    }
-    String title = wikiURL.split("/").last;
-
-    final url = Uri.parse(
-        "https://en.wikipedia.org/w/api.php?action=query&titles=$title&prop=pageimages&format=json&pithumbsize=500");
-
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final pages = data['query']['pages'];
-        final pageId = pages.keys.first; // Assuming there's only one page
-
-        if (pages[pageId].containsKey('thumbnail')) {
-          final thumbnail = pages[pageId]['thumbnail'];
-          setState(() {
-            _imageURL = thumbnail['source'];
-          });
-          return thumbnail['source'];
-        } else {
-          return null;
-        }
-      } else {
-        print('Failed to get response: ${response.statusCode}');
-        return null;
-      }
-    } catch (error) {
-      print('Error fetching image: $error');
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -88,43 +51,40 @@ class _PlaceCardState extends ConsumerState<PlaceCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  FutureBuilder(
-                      future: getWikiImageURL(widget.placeDetails.wikiURL),
-                      builder: (context, snapshot) {
-                        return Skeletonizer(
-                            enabled: _imageURL == null,
-                            child: _imageURL != null
-                                ? Container(
-                                    width: 80,
-                                    height: 80,
-                                    decoration: BoxDecoration(
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Color.fromARGB(
-                                                20, 155, 39, 176)!,
-                                            blurRadius: 0)
-                                      ],
-                                      borderRadius: BorderRadius.circular(
-                                          11.0), // Set the desired radius
-                                      border: Border.all(
-                                        color: Colors.purple[
-                                            500]!, // Set the border color
-                                        width: 1.0, // Set the border width
-                                      ),
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.network(
-                                        _imageURL!,
-                                        scale: 2,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ))
-                                : Container(
-                                    width: 80,
-                                    height: 80,
-                                  ));
-                      }),
+                  widget.placeDetails.imageURL != null
+                      ? Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Color.fromARGB(20, 155, 39, 176)!,
+                                  blurRadius: 0)
+                            ],
+                            borderRadius: BorderRadius.circular(
+                                11.0), // Set the desired radius
+                            border: Border.all(
+                              color:
+                                  Colors.purple[500]!, // Set the border color
+                              width: 1.0, // Set the border width
+                            ),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              widget.placeDetails.imageURL!,
+                              scale: 2,
+                              fit: BoxFit.cover,
+                            ),
+                          ))
+                      : Container(
+                          width: 80,
+                          height: 80,
+                          child: Icon(
+                            Icons.account_balance,
+                            color: Colors.black,
+                          ),
+                        ),
                   SizedBox(
                     width: 10,
                   ),

@@ -29,6 +29,50 @@ class AudioGuide {
       topK: 40,
       stopSequences: [],
       responseMimeType: 'application/json',
+      responseSchema: Schema.object(
+        properties: {
+          "tourName": Schema.string(description: "Name of the tour"),
+          "greeting": Schema.string(description: "Greeting for the tour"),
+          "outro": Schema.string(description: "Outro for the tour"),
+          "placeAudioTranscripts": Schema.array(
+            items: Schema.object(properties: {
+              "placeName": Schema.string(description: "name of the place"),
+              "sections": Schema.array(
+                items: Schema.object(properties: {
+                  "header": Schema.string(description: "Header of the section"),
+                  "tourAudio": Schema.string(
+                      description:
+                          "The audio transcript for the walking tour of this section"),
+                }, requiredProperties: [
+                  "header",
+                  "tourAudio"
+                ]),
+              ),
+              "trivia": Schema.object(
+                properties: {
+                  "question": Schema.string(description: "A trivia question"),
+                  "correctAnswer": Schema.string(
+                      description: "The correct answer for the question"),
+                  "feedback": Schema.string(
+                      description: "feedback for the correct answer"),
+                  "options":
+                      Schema.array(items: Schema.string(description: "Options"))
+                },
+                requiredProperties: [
+                  "question",
+                  "options",
+                  "correctAnswer",
+                  "feedback"
+                ],
+              ),
+            }, requiredProperties: [
+              "placeName",
+              "sections",
+              "trivia"
+            ]),
+          ),
+        },
+      ),
     );
 
     model ??= GenerativeModel(
@@ -38,6 +82,6 @@ class AudioGuide {
     );
 
     final response = await model!.generateContent(content);
-    return response.text!;
+    return (response.text!);
   }
 }

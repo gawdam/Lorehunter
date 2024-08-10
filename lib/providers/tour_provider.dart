@@ -43,15 +43,17 @@ final placeDetailsProvider = StateProvider<List<PlaceDetails?>?>((ref) => null);
 PlaceDetails getPlaceDetailsFromJson(Map jsonMap) {
 // Create a Tour object from the JSON data
   final placeDetails = PlaceDetails(
-    name: jsonMap['place_name'],
-    brief: jsonMap['place_brief'],
-    wikiURL: jsonMap['place_wikiURL'],
-    tourDuration: jsonMap['place_duration'],
-    type: jsonMap['place_type'],
-    coordinates: jsonMap.containsKey('coordinates')
-        ? LatLng(jsonMap['coordinates'][0] as double,
-            jsonMap['coordinates'][1] as double)
-        : null,
-  );
+      name: jsonMap['place_name'],
+      brief: jsonMap['place_brief'],
+      wikiURL: jsonMap['place_wikiURL'],
+      tourDuration: jsonMap['place_duration'],
+      type: jsonMap['place_type'],
+      coordinates: jsonMap.containsKey('coordinates')
+          ? LatLng(jsonMap['coordinates'][0] as double,
+              jsonMap['coordinates'][1] as double)
+          : null,
+      imageURL: jsonMap.containsKey('place_imageURL')
+          ? (jsonMap['place_imageURL'])
+          : null);
   return placeDetails;
 }
