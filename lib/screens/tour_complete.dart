@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lorehunter/models/tour_details.dart';
+import 'package:lorehunter/screens/homepage.dart';
 import 'package:lorehunter/widgets/tour_complete_itinerary.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -135,7 +136,10 @@ class TourComplete extends StatelessWidget {
                   borderRadius: BorderRadius.all(Radius.circular(0)),
                 ),
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (builder) => MyHomePage()));
+                  },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),

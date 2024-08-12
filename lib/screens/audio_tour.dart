@@ -200,7 +200,8 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                                               // padding: EdgeInsets.all(16),
                                               child: Quiz(
                                                 trivia: placeData.trivia,
-                                                onPressed: (trivia) {
+                                                onPressed: (Trivia trivia) {
+                                                  print(trivia.selectedAnswer);
                                                   placeData.trivia = trivia;
                                                   widget
                                                       .tourAudioTranscript
@@ -209,6 +210,7 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                                                       .trivia = trivia;
                                                   ref.invalidate(
                                                       audioTourProvider);
+
                                                   ref
                                                           .read(
                                                               audioTourProvider
@@ -216,6 +218,8 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                                                           .state =
                                                       widget
                                                           .tourAudioTranscript;
+                                                  final audioTour = ref
+                                                      .watch(audioTourProvider);
                                                 },
                                               )),
                                         ],

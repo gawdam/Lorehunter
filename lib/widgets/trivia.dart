@@ -72,8 +72,8 @@ class _QuizState extends State<Quiz> {
                                   selectedOption = index;
                                   isAnswered = true;
                                   widget.trivia.selectedAnswer = selectedOption;
-                                  widget.onPressed(widget.trivia);
                                 });
+                                widget.onPressed(widget.trivia);
                               },
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.all(5),

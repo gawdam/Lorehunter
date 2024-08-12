@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lorehunter/models/tour_details.dart';
+import 'package:lorehunter/providers/audio_tour_provider.dart';
 
 List<List<String>> splitList(List<String> strings) {
   final oddStrings = <String>[];
@@ -17,13 +19,15 @@ List<List<String>> splitList(List<String> strings) {
   return [evenStrings, oddStrings];
 }
 
-class TourCompleteItinerary extends StatelessWidget {
+class TourCompleteItinerary extends ConsumerWidget {
   Tour tour;
   Size? staticScreenSize;
   TourCompleteItinerary({super.key, required this.tour, this.staticScreenSize});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tourAudio = ref.watch(audioTourProvider);
+
     final screenSize = staticScreenSize ?? MediaQuery.of(context).size;
     return Container(
       color: const Color.fromARGB(255, 240, 240, 240),
@@ -293,30 +297,30 @@ class TourCompleteItinerary extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Container(
-                    width: 100,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          "assets/images/quiz_icon.png",
-                          scale: 3.5,
-                        ),
-                        Text(
-                          "Trivia score",
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "60%",
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
-                        )
-                      ],
-                    ),
-                  )
+                  // Container(
+                  //   width: 100,
+                  //   child: Column(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       Image.asset(
+                  //         "assets/images/quiz_icon.png",
+                  //         scale: 3.5,
+                  //       ),
+                  //       Text(
+                  //         "Trivia score",
+                  //         style: TextStyle(fontSize: 12),
+                  //       ),
+                  //       SizedBox(
+                  //         height: 5,
+                  //       ),
+                  //       Text(
+                  //         "${(tourAudio!.placeAudioTranscripts.where((element) => element.trivia.correctAnswer == element.trivia.selectedAnswer).length * 100 / tour.updatedPlaces!.length).toString()}%",
+                  //         style: TextStyle(
+                  //             fontSize: 14, fontWeight: FontWeight.bold),
+                  //       )
+                  //     ],
+                  //   ),
+                  // )
                 ],
               ),
             ),
