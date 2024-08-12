@@ -4,10 +4,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lorehunter/models/audio_tour_transcript.dart';
 import 'package:lorehunter/models/tour_details.dart';
+import 'package:lorehunter/providers/audio_tour_provider.dart';
 import 'package:lorehunter/screens/tour_complete.dart';
 import 'package:lorehunter/widgets/audio_player.dart';
 import 'package:lorehunter/widgets/audio_tour_subtitles.dart';
-import 'package:lorehunter/widgets/quiz.dart';
+import 'package:lorehunter/widgets/trivia.dart';
 import 'package:lorehunter/widgets/routes.dart';
 import 'package:lorehunter/widgets/tour_progress.dart';
 
@@ -199,6 +200,23 @@ class _AudioTourState extends ConsumerState<AudioTour> {
                                               // padding: EdgeInsets.all(16),
                                               child: Quiz(
                                                 trivia: placeData.trivia,
+                                                onPressed: (trivia) {
+                                                  placeData.trivia = trivia;
+                                                  widget
+                                                      .tourAudioTranscript
+                                                      .placeAudioTranscripts[
+                                                          index]
+                                                      .trivia = trivia;
+                                                  ref.invalidate(
+                                                      audioTourProvider);
+                                                  ref
+                                                          .read(
+                                                              audioTourProvider
+                                                                  .notifier)
+                                                          .state =
+                                                      widget
+                                                          .tourAudioTranscript;
+                                                },
                                               )),
                                         ],
                                       ),

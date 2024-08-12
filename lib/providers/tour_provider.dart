@@ -46,7 +46,7 @@ PlaceDetails getPlaceDetailsFromJson(Map jsonMap) {
       name: jsonMap['place_name'],
       brief: jsonMap['place_brief'],
       wikiURL: jsonMap['place_wikiURL'],
-      tourDuration: jsonMap['place_duration'],
+      tip: jsonMap['place_tip'],
       type: jsonMap['place_type'],
       coordinates: jsonMap.containsKey('coordinates')
           ? LatLng(jsonMap['coordinates'][0] as double,

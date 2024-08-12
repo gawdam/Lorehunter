@@ -14,29 +14,36 @@ List<List<String>> splitList(List<String> strings) {
     }
   }
 
-  return [oddStrings, evenStrings];
+  return [evenStrings, oddStrings];
 }
 
 class TourCompleteItinerary extends StatelessWidget {
   Tour tour;
-  TourCompleteItinerary({super.key, required this.tour});
+  Size? staticScreenSize;
+  TourCompleteItinerary({super.key, required this.tour, this.staticScreenSize});
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
+    final screenSize = staticScreenSize ?? MediaQuery.of(context).size;
     return Container(
-      color: const Color.fromARGB(255, 225, 210, 228),
+      color: const Color.fromARGB(255, 240, 240, 240),
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
-          Text(
-            tour.name,
-            style: TextStyle(
-                fontSize: 20,
-                color: Color.fromARGB(255, 135, 53, 150),
-                fontWeight: FontWeight.bold),
+          Container(
+            width: screenSize.width * 0.8,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 2)),
+            child: Text(
+              tour.name,
+              style: TextStyle(
+                  fontSize: 16,
+                  color: const Color.fromARGB(255, 115, 28, 131),
+                  fontWeight: FontWeight.bold),
+            ),
           ),
           Row(
             mainAxisSize: MainAxisSize.max,
@@ -45,7 +52,7 @@ class TourCompleteItinerary extends StatelessWidget {
             children: [
               Container(
                 width: screenSize.width * 0.4,
-                height: screenSize.height * 0.6,
+                height: screenSize.height * 0.48,
                 child: ListView.builder(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
@@ -53,7 +60,12 @@ class TourCompleteItinerary extends StatelessWidget {
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: splitList(tour.updatedPlaces!)[0].length,
                     itemBuilder: (context, index) {
-                      final oddPlaces = splitList(tour.updatedPlaces!)[0];
+                      final oddPlaceList = splitList(tour.updatedPlaces!)[0];
+                      final List<PlaceDetails> oddPlaces =
+                          List.from(oddPlaceList.map(
+                        (e) => tour.places
+                            .firstWhere((element) => element.name == e),
+                      ));
                       return Column(
                         children: [
                           Row(
@@ -83,15 +95,20 @@ class TourCompleteItinerary extends StatelessWidget {
                                             width: 2.0, // Set the border width
                                           ),
                                         ),
-                                        child: Image.network(
-                                          tour.places[index].imageURL!,
-                                          scale: 2,
-                                          fit: BoxFit.cover,
-                                        ),
+                                        child: oddPlaces[index].imageURL != null
+                                            ? Image.network(
+                                                oddPlaces[index].imageURL!,
+                                                scale: 2,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Icon(
+                                                Icons.camera_alt_outlined,
+                                                size: 50,
+                                              ),
                                       ),
                                     ),
                                     Text(
-                                      oddPlaces[index],
+                                      oddPlaces[index].name,
                                       style: TextStyle(fontSize: 10),
                                       textAlign: TextAlign.center,
                                     ),
@@ -116,7 +133,7 @@ class TourCompleteItinerary extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(
-                            height: 40,
+                            height: 30,
                           ),
                         ],
                       );
@@ -127,12 +144,12 @@ class TourCompleteItinerary extends StatelessWidget {
                 padding:
                     EdgeInsets.only(bottom: tour.updatedPlaces!.length * 20),
                 width: 2,
-                height: 70.0 * tour.updatedPlaces!.length,
+                height: screenSize.height * 0.48,
                 color: Colors.black,
               ),
               Container(
                 width: screenSize.width * 0.4,
-                height: screenSize.height * 0.6,
+                height: screenSize.height * 0.48,
                 child: ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     padding: EdgeInsets.only(top: 10),
@@ -140,11 +157,16 @@ class TourCompleteItinerary extends StatelessWidget {
                     shrinkWrap: true,
                     itemCount: splitList(tour.updatedPlaces!)[1].length,
                     itemBuilder: (context, index) {
-                      final evenPlaces = splitList(tour.updatedPlaces!)[1];
+                      final evenPlaceList = splitList(tour.updatedPlaces!)[1];
+                      final List<PlaceDetails> evenPlaces =
+                          List.from(evenPlaceList.map(
+                        (e) => tour.places
+                            .firstWhere((element) => element.name == e),
+                      ));
                       return Column(
                         children: [
                           SizedBox(
-                            height: 40,
+                            height: 30,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -185,14 +207,21 @@ class TourCompleteItinerary extends StatelessWidget {
                                             width: 2.0, // Set the border width
                                           ),
                                         ),
-                                        child: Icon(
-                                          Icons.camera_alt_outlined,
-                                          size: 50,
-                                        ),
+                                        child:
+                                            evenPlaces[index].imageURL != null
+                                                ? Image.network(
+                                                    evenPlaces[index].imageURL!,
+                                                    scale: 2,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Icon(
+                                                    Icons.camera_alt_outlined,
+                                                    size: 50,
+                                                  ),
                                       ),
                                     ),
                                     Text(
-                                      evenPlaces[index],
+                                      evenPlaces[index].name,
                                       style: TextStyle(fontSize: 10),
                                       textAlign: TextAlign.center,
                                     ),
@@ -210,6 +239,110 @@ class TourCompleteItinerary extends StatelessWidget {
               ),
             ],
           ),
+          Container(
+            padding: const EdgeInsets.all(2.0),
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 2)),
+            child: Container(
+              height: screenSize.height * 0.1 - 16,
+              width: screenSize.width * 0.8,
+
+              // color: const Color.fromARGB(255, 255, 255, 255),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Container(
+                    width: 100,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.directions_walk_rounded),
+                        Text(
+                          "Distance",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        Text(
+                          "${((tour.distance ?? 0) / 100).round() / 10} km",
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 100,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.fastfood),
+                        Text(
+                          "Calories burnt",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          "${((((tour.distance ?? 0) / 100).round() / 10) * 100).round()} kcal",
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 100,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "assets/images/quiz_icon.png",
+                          scale: 3.5,
+                        ),
+                        Text(
+                          "Trivia score",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          "60%",
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 7,
+          ),
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Made using",
+                  style: TextStyle(fontSize: 9),
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                Image.asset(
+                  "assets/images/lorehunter.png",
+                  scale: 10,
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );

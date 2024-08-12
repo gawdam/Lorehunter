@@ -101,7 +101,7 @@ class PlaceDetails {
     required this.name,
     required this.brief,
     required this.type,
-    required this.tourDuration,
+    required this.tip,
     required this.wikiURL,
     this.coordinates,
     this.imageURL,
@@ -110,7 +110,7 @@ class PlaceDetails {
 
   String brief;
   String type;
-  int tourDuration;
+  String tip;
 
   String? wikiURL;
   String? imageURL;
@@ -123,7 +123,7 @@ class PlaceDetails {
         'place_type': type,
         'place_wikiURL': wikiURL,
         'place_imageURL': imageURL,
-        'place_duration': tourDuration,
+        'place_tip': tip,
         'coordinates': coordinates?.toJson(),
       };
 }

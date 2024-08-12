@@ -83,6 +83,7 @@ class _PlaceCardState extends ConsumerState<PlaceCard> {
                           child: Icon(
                             Icons.account_balance,
                             color: Colors.black,
+                            size: 30,
                           ),
                         ),
                   SizedBox(

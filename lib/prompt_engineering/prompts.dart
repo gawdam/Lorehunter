@@ -20,33 +20,7 @@ Talk about the history of the place, current affairs, architecture and things to
 All your responses should be in plain text, no markdowns, no formatting. 
 Do not use special characters in your transcript. Do not use double quotes inside the json key value pairs. Use single quotes instead of double quotes wherever applies.
 Only allowable characters are alphabets, commas, periods, apostrophe and hyphens.
-Sample output:
-{
-"tourName": <str> [name of the tour]
-"greeting": <str> [the greeting to be played as an audio, describing the tour and hint at whats to come],
-"placeAudioTranscripts":
-  [
-  "placeName": <str> [place name, without the city name],
-  
-  "sections": [
-        {
-          "header": <str> [Topics covered in the audio tour (keep it simple). There should be atleast 5 topics eg.history, architecture],
-          "tourAudio": <str> [Audio tour transcript. Should be atleast 300 words in each topic except intro and outro. After the outbreak section needs to be atleast 500 words],
-        },
-        ... [generate same format for all sections. intro and outro are mandatory sections]
-  
-  ],
 
-  "trivia": {
-      "question": <str> [the question posed about the place. make it about an interesting fact or folklore],
-      "options" : list<str> [4 options containing the possible answers to the question],
-      "correctAnswer": <str> [one among a,b,c or d for the 4 options],
-      "feedback": <str> [an explanation for selecting the correct answer. elaborate on the answer],
-  }
-  ]
-...[generate same format for all places]
-"outro": <str> [an outro for the tour. At the end of the outro, ask them to rate the app in google play and consider donating to support], 
-}
 Do not write any additional details. Make sure the JSON is valid.
         """;
     String tlouPrompt = """
@@ -59,33 +33,7 @@ Do not change the order of the places.
 All your responses should be in plain text, no markdowns, no formatting. 
 Do not use special characters in your transcript. Do not use double quotes inside the json key value pairs. Use single quotes instead of double quotes wherever applies.
 Only allowable characters are alphabets, commas, periods, apostrophe and hyphens.
-Sample output:
-{
-"tourName": <str> [name of the tour]
-"greeting": <str> [the greeting to be played as an audio, describing the tour and hint at whats to come],
-"placeAudioTranscripts":
-  [
-  "placeName": <str> [place name, without the city name],
-  
-  "sections": [
-        {
-          "header": <str> [Topics covered in the audio tour (keep it simple). There should be atleast 5 topics eg.history, architecture],
-          "tourAudio": <str> [Audio tour transcript. Should be atleast 300 words in each topic except intro and outro. After the outbreak section needs to be atleast 500 words],
-        },
-        ... [generate same format for all sections. intro and outro are mandatory sections]
-  
-  ],
 
-  "trivia": {
-      "question": <str> [the question posed about the place. make it about folklore],
-      "options" : list<str> [4 options containing the possible answers to the question],
-      "correctAnswer": <str> [one among a,b,c or d for the 4 options],
-      "feedback": <str> [an explanation for selecting the correct answer. elaborate on the answer],
-  }
-  ]
-...[generate same format for all places]
-"outro": <str> [an outro for the tour. At the end of the outro, ask them to rate the app in google play and consider donating to support], 
-}
 Do not write any additional details. Make sure the JSON is valid.
 
 
@@ -94,5 +42,21 @@ Do not write any additional details. Make sure the JSON is valid.
       return usualPrompt;
     }
     return tlouPrompt;
+  }
+}
+
+class TourPrompts {
+  TourPrompts({required this.city});
+  final city;
+
+  String getPrompt() {
+    final prompt = """
+Generate a walking tour for me in the city of $city.
+All places must within 5km radius of each other. 
+All your responses should be in plain text, no markdowns, no formatting.
+
+Do not write any additional details. Make sure the JSON is valid
+    """;
+    return prompt;
   }
 }

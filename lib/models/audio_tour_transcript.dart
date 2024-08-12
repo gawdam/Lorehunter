@@ -68,7 +68,7 @@ class TourAudioTranscript {
 class PlaceAudioTranscript {
   final String placeName;
   final List<Section> sections;
-  final Trivia trivia;
+  Trivia trivia;
 
   String? audioFile;
 
@@ -123,6 +123,7 @@ class Trivia {
   final List<String> options;
   final String correctAnswer;
   final String feedback;
+  int? selectedAnswer;
 
   Trivia({
     required this.question,
@@ -145,6 +146,7 @@ class Trivia {
         'options': options,
         'correctAnswer': correctAnswer,
         'feedback': feedback,
+        'selectedAnswer': selectedAnswer,
       };
 }
 

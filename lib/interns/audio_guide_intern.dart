@@ -29,50 +29,68 @@ class AudioGuide {
       topK: 40,
       stopSequences: [],
       responseMimeType: 'application/json',
-      responseSchema: Schema.object(
-        properties: {
-          "tourName": Schema.string(description: "Name of the tour"),
-          "greeting": Schema.string(description: "Greeting for the tour"),
-          "outro": Schema.string(description: "Outro for the tour"),
-          "placeAudioTranscripts": Schema.array(
-            items: Schema.object(properties: {
-              "placeName": Schema.string(description: "name of the place"),
-              "sections": Schema.array(
-                items: Schema.object(properties: {
-                  "header": Schema.string(description: "Header of the section"),
-                  "tourAudio": Schema.string(
-                      description:
-                          "The audio transcript for the walking tour of this section"),
-                }, requiredProperties: [
-                  "header",
-                  "tourAudio"
-                ]),
-              ),
-              "trivia": Schema.object(
-                properties: {
-                  "question": Schema.string(description: "A trivia question"),
-                  "correctAnswer": Schema.string(
-                      description: "The correct answer for the question"),
-                  "feedback": Schema.string(
-                      description: "feedback for the correct answer"),
-                  "options":
-                      Schema.array(items: Schema.string(description: "Options"))
-                },
-                requiredProperties: [
-                  "question",
-                  "options",
-                  "correctAnswer",
-                  "feedback"
-                ],
-              ),
-            }, requiredProperties: [
-              "placeName",
-              "sections",
-              "trivia"
-            ]),
-          ),
-        },
-      ),
+      responseSchema: Schema.object(properties: {
+        "tourName": Schema.string(description: "Name of the tour"),
+        "greeting": Schema.string(
+            description:
+                "the greeting to be played as an audio, describing the tour and hint at whats to come"),
+        "outro": Schema.string(
+            description:
+                "an outro for the tour. At the end of the outro, ask them to rate the app in google play and consider donating to support"),
+        "placeAudioTranscripts": Schema.array(
+          description: "A list of all the places visited in the tour",
+          items: Schema.object(properties: {
+            "placeName": Schema.string(description: "name of the place"),
+            "sections": Schema.array(
+              description:
+                  "tour of the place, split into multiple sections. Introduction and outro are mandatory sections.",
+              items: Schema.object(properties: {
+                "header": Schema.string(
+                    description:
+                        "Topics covered in the audio tour (keep it simple). There should be atleast 5 topics eg.history, architecture"),
+                "tourAudio": Schema.string(
+                    description:
+                        "Audio tour transcript. Should be atleast 300 words in each topic except Introduction and outro."),
+              }, requiredProperties: [
+                "header",
+                "tourAudio"
+              ]),
+            ),
+            "trivia": Schema.object(
+              description: "trivia of the place",
+              properties: {
+                "question": Schema.string(
+                    description:
+                        "the question posed about the place. make it about an interesting fact or folklore"),
+                "correctAnswer": Schema.string(
+                    description: "one among a,b,c or d for the 4 options"),
+                "feedback": Schema.string(
+                    description:
+                        "an explanation for selecting the correct answer. elaborate on the answer"),
+                "options": Schema.array(
+                    description:
+                        "4 options containing the possible answers to the question",
+                    items: Schema.string(description: "Options"))
+              },
+              requiredProperties: [
+                "question",
+                "options",
+                "correctAnswer",
+                "feedback"
+              ],
+            ),
+          }, requiredProperties: [
+            "placeName",
+            "sections",
+            "trivia"
+          ]),
+        ),
+      }, requiredProperties: [
+        'tourName',
+        'greeting',
+        'outro',
+        'placeAudioTranscripts'
+      ]),
     );
 
     model ??= GenerativeModel(
