@@ -1,3 +1,3 @@
 # LoreHunter
 
-Readme WIP - will be ready by 18th Aug 2024
+Readme WIP - will be ready by 26th Aug 2024
