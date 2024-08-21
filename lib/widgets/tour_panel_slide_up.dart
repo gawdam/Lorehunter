@@ -338,7 +338,7 @@ class TourPanelStateless extends ConsumerWidget {
     return SlidingUpPanel(
       maxHeight: _panelHeightOpen,
       minHeight: _panelHeightClosed,
-      isDraggable: true,
+      isDraggable: tour?.routeCoordinates != null,
       parallaxEnabled: true,
       parallaxOffset: .5,
       panelBuilder: (sc) => _panel(sc),

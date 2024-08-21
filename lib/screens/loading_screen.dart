@@ -21,6 +21,7 @@ class TourAudioLoadingScreen extends StatefulWidget {
 
 class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
   bool _transcriptGenerated = false;
+  bool _badResponse = false;
   late AudioGuide _audioGuide;
   late TourAudioTranscript _tourAudioTranscript;
   late AudioProcessor _audioProcessor;
@@ -42,7 +43,7 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
     super.dispose();
   }
 
-  Future<TourAudioTranscript> getScript() async {
+  Future<TourAudioTranscript?> getScript() async {
     final cachedTranscript = await getAudioTranscriptForTour(widget.tour.id);
     if (cachedTranscript != null) {
       setState(() {
@@ -56,17 +57,25 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
         widget.tour.updatedPlaces!.join(", "),
         widget.tour.city,
         widget.tour.name);
-    final audioTourScript =
-        await jsonDecode(jsonString.replaceAll(r'\', r'\\'));
-    setState(() {
-      _tourAudioTranscript =
-          TourAudioTranscript.fromJson(audioTourScript, widget.tour.id);
-      _transcriptGenerated = true;
-      _progress += 1;
-    });
+    try {
+      final audioTourScript = await jsonDecode(jsonString);
+      setState(() {
+        _tourAudioTranscript =
+            TourAudioTranscript.fromJson(audioTourScript, widget.tour.id);
+        _transcriptGenerated = true;
+        _progress += 1;
+      });
 
-    await _tourAudioTranscript.toJsonFile();
-    return _tourAudioTranscript;
+      await _tourAudioTranscript.toJsonFile();
+      return _tourAudioTranscript;
+    } on Exception catch (e) {
+      setState(() {
+        _progress += 1;
+        _transcriptGenerated = true;
+        _badResponse = true;
+      });
+      print("Json error : $e");
+    }
   }
 
   Future<List<String>> getAudioFile() async {
@@ -141,7 +150,8 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 10, vertical: 25),
                       child: loadingIndicator("Generating Tour Transcript",
-                          _transcriptGenerated ? "completed" : "inProgress"),
+                          _transcriptGenerated ? "completed" : "inProgress",
+                          badResponse: _badResponse),
                     ),
                   ),
                   SizedBox(
@@ -178,6 +188,9 @@ class _TourAudioLoadingScreenState extends State<TourAudioLoadingScreen> {
                   Expanded(
                     child: Container(),
                   ),
+                  _badResponse
+                      ? Text("Error generating tour, go back and try again!")
+                      : Container(),
                   _progress > widget.tour.updatedPlaces!.length
                       ? ElevatedButton(
                           onPressed: () {
@@ -242,7 +255,8 @@ Widget generatePlacesLoader(List<String> places, int progress) {
   );
 }
 
-Widget loadingIndicator(String text, String state, {format = 'super'}) {
+Widget loadingIndicator(String text, String state,
+    {format = 'super', badResponse = false}) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     crossAxisAlignment: CrossAxisAlignment.center,
@@ -270,10 +284,17 @@ Widget loadingIndicator(String text, String state, {format = 'super'}) {
                   color: Colors.purple, size: 25),
             );
           case 'completed':
-            return Container(
-                width: 20,
-                height: 30,
-                child: const Icon(Icons.check, color: Colors.green));
+            {
+              if (badResponse == true)
+                return Container(
+                    width: 20,
+                    height: 30,
+                    child: const Icon(Icons.error, color: Colors.red));
+              return Container(
+                  width: 20,
+                  height: 30,
+                  child: const Icon(Icons.check, color: Colors.green));
+            }
           default:
             return const SizedBox(
               height: 30,

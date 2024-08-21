@@ -173,6 +173,10 @@ class LoacationPickerState extends ConsumerState<LocationPicker> {
             width: 5,
           ),
           SearchAnchor(viewOnChanged: (city) {
+            print("troubleshootviewOnChanged-" + city);
+            ref.read(selectedCityProvider.notifier).state = city;
+          }, viewOnSubmitted: (city) {
+            print("troubleshootviewOnSubmitted-" + city);
             ref.read(selectedCityProvider.notifier).state = city;
           }, builder: (BuildContext context, SearchController controller) {
             return SearchBar(
@@ -193,9 +197,11 @@ class LoacationPickerState extends ConsumerState<LocationPicker> {
               hintText: "City",
               controller: controller,
               onChanged: (value) {
+                print("troubleshootonChanged-" + value);
                 ref.read(selectedCityProvider.notifier).state = value;
               },
               onSubmitted: (value) {
+                print("troubleshootonSubmitted-" + value);
                 ref.read(selectedCityProvider.notifier).state = value;
               },
               onTap: () {
@@ -224,6 +230,8 @@ class LoacationPickerState extends ConsumerState<LocationPicker> {
                   style: TextStyle(fontFamily: null),
                 ),
                 onTap: () {
+                  ref.read(selectedCityProvider.notifier).state = item;
+                  print("troubleshoot Item sent - " + item);
                   controller.closeView(item);
                 },
               );
