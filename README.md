@@ -1,5 +1,6 @@
 
-# LoreHunter
+![image](https://github.com/user-attachments/assets/08fe73c3-bbf3-47bc-a01f-0d5224e53e57)
+
 
 The Walking Tours App is designed to provide immersive and engaging walking experiences in various cities around the world. With detailed itineraries, audio guides, and interactive maps, this app offers a unique way to discover the hidden gems and rich history of urban destinations.
 
